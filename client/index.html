@@ -41,7 +41,7 @@
     let httpLocation = host.indexOf('//') + 2;
     host = host.substr(httpLocation, host.length - httpLocation);
     var client = new Colyseus.Client('ws://' + host);
-    var chatRoom = client.join("chat");
+    var chatRoom = client.join("game");
     chatRoom.onUpdate.addOnce(function(state) {
       // setup initial messages
       for (var i = 0; i < state.messages.length; i++) {

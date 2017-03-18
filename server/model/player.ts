@@ -2,11 +2,14 @@ import { Tower } from './tower';
 import { Unit } from './unit';
 
 export class Player{
-    private id: number;
+    id: number;
+    name: string;
     towers: Tower[] = [];
     units: Unit[] = [];
 
-    constructor(id: number){
+    constructor(id: number, name: string){
+        this.id = id;
+        this.name = name;
     }
 
     update(){

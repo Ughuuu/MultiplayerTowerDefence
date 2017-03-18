@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var express = require("express");
 var app_const_1 = require("../constants/app.const");
 var RouteManager = (function () {
@@ -14,4 +15,3 @@ var RouteManager = (function () {
 }());
 exports.RouteManager = RouteManager;
 ;
-//# sourceMappingURL=index.js.map

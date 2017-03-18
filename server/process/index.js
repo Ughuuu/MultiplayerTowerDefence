@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var app_const_1 = require("../constants/app.const");
 var pm2 = require('pm2');
 var MACHINE_NAME = 'heroku_machine';
@@ -39,4 +40,3 @@ var ProcessManager = (function () {
     return ProcessManager;
 }());
 exports.ProcessManager = ProcessManager;
-//# sourceMappingURL=index.js.map

@@ -7,8 +7,7 @@
     "url": "git://github.com/gamestdio/colyseus-unity3d.git"
   },
   "scripts": {
-    "start": "nodemon --harmony ./index.js",
-	  "production": "tsc && node index"
+    "start": "tsc && nodemon --harmony ./index.js"
   },
   "engines": {
     "node": ">= 6.4"

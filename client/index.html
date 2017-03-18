@@ -29,12 +29,10 @@
       var host = window.document.location.host.replace(/:.*/, '');
 
       $.getJSON("/getPort", function(json) {
-        console.log(json);
           var port = json.port;
           var client = new Colyseus.Client('ws://' + host + ':' + port);
           var chatRoom = client.join("chat");
           chatRoom.onUpdate.addOnce(function(state) {
-            console.log("initial setup:", state);
             // setup initial messages
             for (var i=0; i<state.messages.length; i++) {
               addMessage(state.messages[i]);

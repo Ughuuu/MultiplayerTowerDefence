@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var express = require("express");
 var index_1 = require("./routes/index");
 var index_2 = require("./rooms/index");
@@ -12,3 +11,4 @@ index_2.RoomManager.init(httpServer);
 httpServer.listen(app_const_1.AppConstants.port, function () {
     console.log("Listening on http://localhost:" + app_const_1.AppConstants.port);
 });
+//# sourceMappingURL=index.js.map

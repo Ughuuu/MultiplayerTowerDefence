@@ -6,7 +6,7 @@ export class RouteManager {
     app.use(express.static(AppConstants.root + AppConstants.clientFiles));
 
     app.get('/', function (req, res) {
-      res.sendFile(AppConstants.root + AppConstants.clientFiles + '/index.html');
+      res.sendFile(AppConstants.root + AppConstants.clientFiles + 'index.html');
     });
   }
 };

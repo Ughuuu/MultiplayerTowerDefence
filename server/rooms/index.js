@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var colyseus_1 = require("colyseus");
 var chat_room_1 = require("./chat.room");
 var RoomManager = (function () {
@@ -12,3 +11,4 @@ var RoomManager = (function () {
     return RoomManager;
 }());
 exports.RoomManager = RoomManager;
+//# sourceMappingURL=index.js.map

@@ -1,13 +1,11 @@
 import { Room } from "colyseus";
-import { StateHandler } from "../Controller/StateHandler"
+import { StateHandler } from "../controller/state.handler"
 
 export class ChatRoom extends Room<any> {
-    //stateHandler: StateHandler;
     constructor(options) {
         super(options);
         this.setPatchRate(1000);
-        statehandler:StateHandler = new StateHandler();
-        this.setState(statehandler);
+        this.setState(new StateHandler());
         console.log("ChatRoom created!", options);
     }
 
@@ -18,12 +16,9 @@ export class ChatRoom extends Room<any> {
     onLeave(client) {
         this.state.onLeave(client);
     }
-    update(){
-
+    onMessage(client, data) {
+        this.state.onMessage(client,data)
     }
-  onMessage(client, data) {
-      this.state.onMessage(client,data)
-  }
 
   onDispose () {
   }

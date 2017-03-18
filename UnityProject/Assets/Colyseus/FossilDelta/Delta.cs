@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Fossil
 {
@@ -175,12 +174,11 @@ namespace Fossil
 			while(zDelta.HaveBytes()) {
 				uint cnt, ofst;
 				cnt = zDelta.GetInt();
-                char character = zDelta.GetChar();
 
-                switch (character) {
+				switch (zDelta.GetChar()) {
 				case '@':
 					ofst = zDelta.GetInt();
-                    if (zDelta.HaveBytes() && zDelta.GetChar() != ',')
+					if (zDelta.HaveBytes() && zDelta.GetChar() != ',')
 						throw new Exception("copy command not terminated by \',\'");
 					total += cnt;
 					if (total > limit)

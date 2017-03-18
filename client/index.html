@@ -40,7 +40,6 @@
     var host = window.location.href;
     let httpLocation = host.indexOf('//') + 2;
     host = host.substr(httpLocation, host.length - httpLocation);
-
     var client = new Colyseus.Client('ws://' + host);
     var chatRoom = client.join("chat");
     chatRoom.onUpdate.addOnce(function(state) {
@@ -59,7 +58,6 @@
       });
       document.getElementById('input').value = null;
     }
-
     function addMessage(message) {
       var node = document.createElement("p");
       node.innerHTML = message;

@@ -7,9 +7,6 @@ var RouteManager = (function () {
     }
     RouteManager.init = function (app) {
         app.use(express.static(app_const_1.AppConstants.root + app_const_1.AppConstants.clientFiles));
-        app.get('/getPort', function (req, res) {
-            res.json({ port: app_const_1.AppConstants.port });
-        });
         app.get('/', function (req, res) {
             res.sendFile(app_const_1.AppConstants.root + app_const_1.AppConstants.clientFiles + '/index.html');
         });

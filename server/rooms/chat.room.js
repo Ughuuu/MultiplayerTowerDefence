@@ -15,7 +15,7 @@ var ChatRoom = (function (_super) {
     __extends(ChatRoom, _super);
     function ChatRoom(options) {
         var _this = _super.call(this, options) || this;
-        _this.setPatchRate(1000);
+        _this.setPatchRate(200);
         _this.setState({ messages: [] });
         console.log("ChatRoom created!", options);
         return _this;
@@ -27,11 +27,16 @@ var ChatRoom = (function (_super) {
         this.state.messages.push(client.id + " left.");
     };
     ChatRoom.prototype.onMessage = function (client, data) {
-        this.state.messages.push(data.message);
-        console.log("ChatRoom:", client.id, data);
+        if (typeof data == 'string') {
+            data = JSON.parse(data);
+        }
+        this.state.messages.push(client.id + ':' + data.message);
     };
     ChatRoom.prototype.onDispose = function () {
         console.log("Dispose ChatRoom");
+    };
+    ChatRoom.prototype.requestJoin = function (options) {
+        return this.clients.length < 10;
     };
     return ChatRoom;
 }(colyseus_1.Room));

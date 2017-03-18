@@ -3,51 +3,67 @@ using System.Collections;
 using System;
 using Colyseus;
 using MsgPack;
+using UnityEngine.UI;
 
 public class ClientListener : MonoBehaviour {
 
 	Client colyseus;
 	Room chatRoom;
 
-	// Use this for initialization
+    class Message
+    {
+        public string message;
+
+        public Message(string message)
+        {
+            this.message = message;
+        }
+    }
+
+    public void SendText()
+    {
+        InputField uiField = GameObject.Find("InputField").GetComponent<InputField>();
+        Message msg = new Message(uiField.text);
+        Debug.Log(JsonUtility.ToJson(msg));
+        chatRoom.Send(JsonUtility.ToJson(msg));
+    }
+
 	IEnumerator Start () {
-		colyseus = new Client("ws://localhost:3553");
+        if (Debug.isDebugBuild)
+        {
+            colyseus = new Client("ws://localhost:3333");
+        }
+        else
+        {
+            colyseus = new Client("ws://localhost:3333");
+            //colyseus = new Client("ws://multiplayertd.herokuapp.com");
+        }
 		colyseus.OnOpen += OnOpenHandler;
 		yield return StartCoroutine(colyseus.Connect());
 
 		chatRoom = colyseus.Join("chat");
-		chatRoom.OnJoin += OnRoomJoined;
-		chatRoom.OnUpdate += OnUpdateHandler;
+        chatRoom.OnJoin += OnRoomJoined;
+        chatRoom.state.Listen ("messages/:number", "add", OnPlayerMessage);
+        chatRoom.OnUpdate += OnUpdate;
 
-		chatRoom.state.Listen ("players", "add", this.OnAddPlayer);
-		chatRoom.state.Listen ("players/:id/:axis", "replace", this.OnPlayerMove);
-		chatRoom.state.Listen ("players/:id", "remove", this.OnPlayerRemoved);
-		chatRoom.state.Listen (this.OnChangeFallback);
+        while (true)
+        {
+            colyseus.Recv();
 
-		int i = 0;
-
-		while (true)
-		{
-			colyseus.Recv();
-
-			// string reply = colyseus.RecvString();
-			if (colyseus.error != null)
+            if (colyseus.error != null)
 			{
 				Debug.LogError ("Error: "+colyseus.error);
 				break;
 			}
 
-			i++;
-
-			if (i % 50 == 0) {
-				chatRoom.Send("some_command");
-			}
-
 			yield return 0;
 		}
-
-		OnApplicationQuit();
 	}
+
+    void AddMessage(string message)
+    {
+        GameObject.Find("TextBoard").GetComponent<Text>().text += message + '\n';
+    }
 
 	void OnOpenHandler (object sender, EventArgs e)
 	{
@@ -59,44 +75,30 @@ public class ClientListener : MonoBehaviour {
 		Debug.Log("Joined room successfully.");
 	}
 
-	void OnAddPlayer (string[] path, MessagePackObject value)
-	{
-		Debug.Log ("OnAddPlayer");
-		Debug.Log (path[0]);
-		Debug.Log (value);
-	}
-
-	void OnPlayerMove (string[] path, MessagePackObject value)
+	void OnPlayerMessage (string[] path, MessagePackObject value)
 	{
 		Debug.Log ("OnPlayerMove");
 		Debug.Log (path[0]);
 		Debug.Log (value);
+        AddMessage(path[0] + value);
 	}
 
-	void OnPlayerRemoved (string[] path, MessagePackObject value)
-	{
-		Debug.Log ("OnPlayerRemoved");
-		Debug.Log (value);
-	}
+    void OnUpdate(object sender, RoomUpdateEventArgs e)
+    {
+        var list = e.state.AsDictionary()["messages"].AsList();
+        if (list.Count == 0)
+            return;
+        AddMessage(list[list.Count - 1].AsString());
+    }
 
-	void OnChangeFallback (string[] path, string operation, MessagePackObject value) 
+    void OnApplicationQuit()
 	{
-		Debug.Log ("OnChangeFallback");
-		Debug.Log (operation);
-		Debug.Log (path[0]);
-		Debug.Log (value);
-	}
-
-
-	void OnUpdateHandler (object sender, RoomUpdateEventArgs e)
-	{
-				Debug.Log(e.state);
-	}
-
-	void OnApplicationQuit()
-	{
-		// Ensure the connection with server is closed immediatelly
 		colyseus.Close();
 	}
+
+    ~ClientListener()
+    {
+        colyseus.Close();
+    }
 
 }

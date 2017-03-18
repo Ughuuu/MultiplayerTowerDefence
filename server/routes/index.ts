@@ -6,7 +6,6 @@ export class RouteManager {
     app.use(express.static(AppConstants.root + AppConstants.clientFiles));
 
     app.get('/getPort', function(req, res){
-      console.log('ask for port');
       res.json({port: AppConstants.port});
     });
 

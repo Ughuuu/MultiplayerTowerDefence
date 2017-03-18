@@ -1,7 +1,6 @@
 import { Room } from "colyseus";
 
 export class ChatRoom extends Room<any> {
-
   constructor ( options ) {
     super( options );
     this.setPatchRate( 1000 );
@@ -25,5 +24,4 @@ export class ChatRoom extends Room<any> {
   onDispose () {
     console.log("Dispose ChatRoom");
   }
-
 }

@@ -7,6 +7,6 @@ var AppConstants = (function () {
 }());
 AppConstants.root = process.cwd();
 AppConstants.mode = (process.env.NODE_ENV === 'production') ? true : false;
-AppConstants.clientFiles = '/client';
+AppConstants.clientFiles = '/client/';
 AppConstants.port = process.env.PORT || 3333;
 exports.AppConstants = AppConstants;

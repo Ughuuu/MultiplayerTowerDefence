@@ -1,20 +1,22 @@
 {
-  "name": "colyseus-unity3d",
+  "name": "multiplayer-td",
   "private": true,
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/gamestdio/colyseus-unity3d.git"
   },
   "scripts": {
     "start": "nodemon --harmony ./index.js",
-	"production": "node index"
+	  "production": "tsc && node index"
   },
   "engines": {
-    "node": ">= 5.x"
+    "node": ">= 6.4"
   },
   "dependencies": {
     "colyseus": "^0.4.3-rc5",
-    "express": "^4.13.3"
+    "express": "^4.13.3",
+    "typescript": "^2.2.1"
   },
   "devDependencies": {
     "nodemon": "^1.7.1"

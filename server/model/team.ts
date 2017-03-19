@@ -1,9 +1,7 @@
 import { Player } from './player';
 
-export class Team{
-    private id: number;
+export class Team {
     players: Player[] = [];
 
-    constructor(id: number){
-    }
+    constructor(public id: number) { }
 }

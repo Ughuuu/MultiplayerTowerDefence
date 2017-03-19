@@ -2,15 +2,24 @@ import { Room } from "colyseus";
 import { StateHandler } from "../controller/state.handler";
 import { PhysicsHandler } from "../controller/physics.handler";
 import { ChatHandler } from "../controller/chat.handler";
+import { UnitBuilder } from "../builders/unit.builder";
+import { TowerBuilder } from "../builders/tower.builder";
 
 
 export class GameRoom extends Room<StateHandler> {
     static fps: number = 1000 / 30;
     static ms: number = 1 / 30;
+    invervalId: number;
 
     addHandlers(stateHandler: StateHandler): StateHandler{
         stateHandler.addHandler(new PhysicsHandler());
-        stateHandler.addHandler(new ChatHandler());  
+        stateHandler.addHandler(new ChatHandler());
+        return stateHandler;
+    }
+
+    addBuilders(stateHandler: StateHandler): StateHandler{
+        stateHandler.addBuilder(new UnitBuilder(stateHandler.handlers['PhysicsHandler']));
+        stateHandler.addBuilder(new TowerBuilder(stateHandler.handlers['PhysicsHandler']));
         return stateHandler;
     }
 
@@ -18,12 +27,13 @@ export class GameRoom extends Room<StateHandler> {
         super(options);
         console.log("Room Created", options);
         this.setPatchRate(GameRoom.fps);
-        this.setState(this.addHandlers(new StateHandler()));
-        setInterval(this.update.bind(this), GameRoom.fps);
+        this.setState(this.addBuilders(this.addHandlers(new StateHandler())));
+        this.setSimulationInterval(function() {this.update()}.bind(this), GameRoom.fps);
     }
 
     update() {
-        this.state.update();
+        var gameRoom: GameRoom = this;
+        this.state.update(gameRoom);
     }
 
     onJoin(client) {
@@ -39,6 +49,7 @@ export class GameRoom extends Room<StateHandler> {
     }
 
     onDispose() {
+        clearInterval(this.invervalId);
         this.state.onDispose();
     }
 }

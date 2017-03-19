@@ -14,14 +14,16 @@ var colyseus_1 = require("colyseus");
 var state_handler_1 = require("../controller/state.handler");
 var physics_handler_1 = require("../controller/physics.handler");
 var chat_handler_1 = require("../controller/chat.handler");
+var unit_builder_1 = require("../builders/unit.builder");
+var tower_builder_1 = require("../builders/tower.builder");
 var GameRoom = (function (_super) {
     __extends(GameRoom, _super);
     function GameRoom(options) {
         var _this = _super.call(this, options) || this;
         console.log("Room Created", options);
         _this.setPatchRate(GameRoom.fps);
-        _this.setState(_this.addHandlers(new state_handler_1.StateHandler()));
-        setInterval(_this.update.bind(_this), GameRoom.fps);
+        _this.setState(_this.addBuilders(_this.addHandlers(new state_handler_1.StateHandler())));
+        _this.setSimulationInterval(function () { this.update(); }.bind(_this), GameRoom.fps);
         return _this;
     }
     GameRoom.prototype.addHandlers = function (stateHandler) {
@@ -29,8 +31,14 @@ var GameRoom = (function (_super) {
         stateHandler.addHandler(new chat_handler_1.ChatHandler());
         return stateHandler;
     };
+    GameRoom.prototype.addBuilders = function (stateHandler) {
+        stateHandler.addBuilder(new unit_builder_1.UnitBuilder(stateHandler.handlers['PhysicsHandler']));
+        stateHandler.addBuilder(new tower_builder_1.TowerBuilder(stateHandler.handlers['PhysicsHandler']));
+        return stateHandler;
+    };
     GameRoom.prototype.update = function () {
-        this.state.update();
+        var gameRoom = this;
+        this.state.update(gameRoom);
     };
     GameRoom.prototype.onJoin = function (client) {
         this.state.onJoin(client);
@@ -42,6 +50,7 @@ var GameRoom = (function (_super) {
         this.state.onMessage(client, data);
     };
     GameRoom.prototype.onDispose = function () {
+        clearInterval(this.invervalId);
         this.state.onDispose();
     };
     return GameRoom;
@@ -49,3 +58,4 @@ var GameRoom = (function (_super) {
 GameRoom.fps = 1000 / 30;
 GameRoom.ms = 1 / 30;
 exports.GameRoom = GameRoom;
+//# sourceMappingURL=game.room.js.map

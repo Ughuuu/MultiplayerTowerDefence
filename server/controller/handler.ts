@@ -1,11 +1,14 @@
 import { Player } from '../model/player';
+import { GameRoom } from '../rooms/game.room';
 
-export abstract class Handler  {
-    onJoin(player: Player){}
-    onLeave(player: Player){}
-    onMessage(player: Player, data){}
-    onDispose(players){}    
-    update(players){}
+export abstract class Handler {
+    constructor(public name: string) { }
 
-    abstract toJSON() : any;
+    onJoin(player: Player, handlers, builders) { }
+    onLeave(player: Player, handlers, builders) { }
+    onMessage(player: Player, data, handlers, builders) { }
+    onDispose(players, handlers, builders) { }
+    update(players, gameRoom: GameRoom, handlers, builders) { }
+
+    abstract toJSON(players, handlers, builders): any;
 }

@@ -12,3 +12,4 @@ index_2.RoomManager.init(httpServer);
 httpServer.listen(app_const_1.AppConstants.port, function () {
     console.log("Listening on http://localhost:" + app_const_1.AppConstants.port);
 });
+//# sourceMappingURL=index.js.map

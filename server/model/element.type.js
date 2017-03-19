@@ -10,3 +10,4 @@ var ElementType;
     ElementType[ElementType["Nature"] = 5] = "Nature";
     ElementType[ElementType["Earth"] = 6] = "Earth";
 })(ElementType = exports.ElementType || (exports.ElementType = {}));
+//# sourceMappingURL=element.type.js.map

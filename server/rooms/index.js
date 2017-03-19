@@ -12,3 +12,4 @@ var RoomManager = (function () {
     return RoomManager;
 }());
 exports.RoomManager = RoomManager;
+//# sourceMappingURL=index.js.map

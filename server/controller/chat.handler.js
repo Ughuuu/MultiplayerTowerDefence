@@ -14,21 +14,23 @@ var handler_1 = require("./handler");
 var ChatHandler = (function (_super) {
     __extends(ChatHandler, _super);
     function ChatHandler() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super.call(this, 'ChatHandler') || this;
         _this.messages = [];
         return _this;
     }
     ChatHandler.prototype.onJoin = function (player) {
-        console.log(player);
         this.messages.push('Player ' + player.id + ' joined.');
     };
     ChatHandler.prototype.onLeave = function (player) {
         this.messages.push('Player ' + player.id + ' exited.');
     };
     ChatHandler.prototype.onMessage = function (player, data) {
-        this.messages.push(player.id + ' ' + ' ' + data.message);
+        this.messages.push(player.id + ' ' + ' ' + data);
     };
-    ChatHandler.prototype.toJSON = function () {
+    ChatHandler.prototype.update = function (players, gameRoom, handlers, builders) {
+        //gameRoom.broadcast(this.toJSON(players, handlers, builders));
+    };
+    ChatHandler.prototype.toJSON = function (players, handlers, builders) {
         return {
             messages: this.messages
         };
@@ -36,3 +38,4 @@ var ChatHandler = (function (_super) {
     return ChatHandler;
 }(handler_1.Handler));
 exports.ChatHandler = ChatHandler;
+//# sourceMappingURL=chat.handler.js.map

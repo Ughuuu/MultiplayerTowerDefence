@@ -1,20 +1,9 @@
 import { Tower } from './tower';
 import { Unit } from './unit';
 
-export class Player{
-    id: number;
-    name: string;
-    towers: Tower[] = [];
-    units: Unit[] = [];
+export class Player {
+    tower_ids= [];
+    unit_ids= [];
 
-    constructor(id: number, name: string){
-        this.id = id;
-        this.name = name;
-    }
-
-    update(){
-        for(let tower of this.towers){
-            tower.update();
-        }
-    }
+    constructor(public id: number, public name: string) { }
 }

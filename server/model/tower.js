@@ -1,14 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Tower = (function () {
-    function Tower(position, health, elementType, owner) {
-        this.position = position;
-        this.health = health;
-        this.elementType = elementType;
-        this.owner = owner;
+    function Tower(id, owner_id) {
+        this.id = id;
+        this.owner_id = owner_id;
     }
-    Tower.prototype.update = function () {
-    };
     return Tower;
 }());
 exports.Tower = Tower;
+//# sourceMappingURL=tower.js.map

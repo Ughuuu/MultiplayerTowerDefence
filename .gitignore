@@ -28,4 +28,5 @@ Thumbs.db
 .map
 server/**/*.js
 client/**/*.js
+node_modules
 !client/scripts/lib/**/*

@@ -4,7 +4,7 @@ import { PhysicsHandler } from "../controller/physics.handler";
 import { ChatHandler } from "../controller/chat.handler";
 import { UnitBuilder } from "../builders/unit.builder";
 import { TowerBuilder } from "../builders/tower.builder";
-import { MapHandler } from "../controller/map.handlter";
+import { MapHandler } from "../controller/map.handler";
 
 export class GameRoom extends Room<StateHandler> {
     static fps: number = 1000 / 30;

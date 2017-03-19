@@ -14,8 +14,7 @@ class Main {
         return Main.instance;
     }
 
-    public CreateCommunication(client)
-    {
+    public CreateCommunication(client) {
         this.communication = new Communication(client);
     }
 
@@ -34,18 +33,9 @@ class Main {
         this.renderer = new Render();
 
         this.renderer.CreateScene(WIDTH, HEIGHT, container);
-        
-        function update() {
-            // Draw!
-            this.renderer.render(this.scene, this.camera);
 
-            // Schedule the next frame.
-            requestAnimationFrame(update);
-        }
-
-        // Schedule the first frame.
-        requestAnimationFrame(update);
     }
+
     public CreateCamera() {
         const WIDTH = window.innerWidth;
         const HEIGHT = window.innerHeight;
@@ -55,11 +45,12 @@ class Main {
         const FAR = 10000;
         this.renderer.CreateCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
     }
-    public CreateLight()
-    {
+
+    public CreateLight() {
         this.renderer.CreateLight(0xFFFFFF, 10, 20, 30);
     }
-    public CreateSphere(radius) {
+
+    public CreateSphere(radius: number, id: any, x: number, y: number) {
         const sphereMaterial =
             new THREE.MeshLambertMaterial(
                 {
@@ -69,17 +60,21 @@ class Main {
         const segments = 16;
         const rings = 16;
         const sphere = new THREE.Mesh(
-
             new THREE.SphereGeometry(
                 radius,
                 segments,
                 rings),
-
             sphereMaterial);
+        this.renderer.scene.add(sphere);
+        sphere.position.x = x;
+        sphere.position.y = y;
         sphere.position.z = -300;
+        sphere.name = id;
+        this.renderer.update();
+
     }
     constructor() {
-      
+
     }
 
 }

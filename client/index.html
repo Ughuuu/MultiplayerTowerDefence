@@ -45,9 +45,11 @@
       let main = Main.getInstance();
       main.CreateCommunication(client);
       main.GetCommunication().joinRoom('game');
+      main.GetCommunication().createTower(0,20,30);
       main.CreateScene();
       main.CreateCamera();
       main.CreateLight();
+      main.CreateSphere(50);
      
 
       // Set the scene size.

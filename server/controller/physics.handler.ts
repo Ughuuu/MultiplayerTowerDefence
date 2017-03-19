@@ -21,16 +21,27 @@ export class PhysicsHandler extends Handler {
         unitBuilder.create(type, player.id, new Point(0, 0));
     }
 
-    createTower(type: number, player: Player, towerBuilder: TowerBuilder){
-        towerBuilder.create(type, player.id, new Point(0, 0));
+    createTower(type: number, position: Point, player: Player, towerBuilder: TowerBuilder){
+        towerBuilder.create(type, player.id, position);
+    }
+
+    destroyTower(player: Player, tower_id: number){
+
     }
 
     onMessage(player: Player, data: any, handlers, builders) {
         if(data['createTower'] != null){
-            this.createTower(data['createTower'], player, builders['TowerBuilder']);
+            let type: number = data['createTower']['type'];
+            let position: Point = data['createTower']['position'];
+            if(type == null || position == null)
+                return;
+            this.createTower(type, position, player, builders['TowerBuilder']);
         }
         if(data['createUnit'] != null){
-            this.createUnit(data['createUnit'], player, builders['UnitBuilder']);
+            let type: number = data['createUnit']['type'];
+            if(type == null)
+                return;
+            this.createUnit(type, player, builders['UnitBuilder']);
         }
     }
 
@@ -45,13 +56,15 @@ export class PhysicsHandler extends Handler {
         let unitBuilder: UnitBuilder = builders['UnitBuilder'];
         for(let key in this.bodies){
             let body = this.bodies[key];
-            let body_id: number = body.userData;
+            let body_id: number = body.GetUserData();
             let tower = towerBuilder.get(body_id);
             if(tower != null){
                 let towerType = TowerBuilder.types[tower.type];
                 bodies_data[key] = {
+                    isTower: true,
                     type: tower.type,
-                    position: body.GetPosition(),
+                    x: body.GetPosition().x,
+                    y: body.GetPosition().y,
                     angle: body.GetAngle()
                 };
                 continue;
@@ -60,8 +73,10 @@ export class PhysicsHandler extends Handler {
             if(unit != null){
                 let unitType = UnitBuilder.types[unit.type];
                 bodies_data[key] = {
+                    isTower: false,
                     type: unit.type,
-                    position: body.GetPosition(),
+                    x: body.GetPosition().x,
+                    y: body.GetPosition().y,
                     angle: body.GetAngle()
                 };
                 continue;
@@ -90,8 +105,8 @@ export class PhysicsHandler extends Handler {
         // Define body
         let bodyDef = new b2.BodyDef;
         bodyDef.type = b2.BodyType.dynamicBody;
-        bodyDef.userData = this.body_index;
         let body = this.world.CreateBody(bodyDef);
+        body.SetUserData(this.body_index);
         // Define fixture
         let fixDef = new b2.FixtureDef;
         fixDef.density = 1.0;

@@ -4,6 +4,7 @@ class Render {
     scene: any;
     renderer: any;
     light: any;
+    camera: any;
     constructor() {
 
     }
@@ -14,14 +15,14 @@ class Render {
         container.appendChild(this.renderer.domElement);
     }
     CreateCamera(viewAngle,aspect,near,far) { 
-        const camera =
+         this.camera =
             new THREE.PerspectiveCamera(
                 viewAngle,
                 aspect,
                 near,
                 far
             );
-        this.scene.add(camera);
+        this.scene.add(this.camera);
     }
     CreateLight(value,x,y,z) {
         const pointLight =
@@ -35,15 +36,16 @@ class Render {
         // add to the scene
         this.scene.add(pointLight);
     }
-    static update(state) {
-        console.log(state);
+    update() {
+      // Draw!
+      this.renderer.render(this.scene, this.camera);
+
+      // Schedule the next frame.
+      requestAnimationFrame(function() {this.update() }.bind(this));
     }
-    static listen(number, message) {
-        console.log('listen', number, message);
-    }
-    static onJoin(client, room) {
-        console.log(client, "joined", room);
-    }
+
+    // Schedule the first frame.
+   // requestAnimationFrame(function() { this.update() }.bind(this));
 }
 /*
 

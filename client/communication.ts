@@ -1,25 +1,33 @@
 ﻿class Communication {
-    constructor(public client: any) {
-        console.log(client);
-        var chatRoom = client.join("game");
-        chatRoom.onUpdate.addOnce(this.update);
-        chatRoom.state.listen(this.listen); 
-        function addMessage(message) {
-            var node = document.createElement("p");
-            node.innerHTML = message;
-            document.getElementById('messages').appendChild(node);
-        }
+    static client: any;
+    static state: any;
+    constructor(client) {
+       
     } 
-    SendMessage(message) {
-        this.client.send(message);
+    static CreateComunication(client) {
+        Communication.state = null;
+        Communication.client = client;
+        console.log(client);
     }
-    update() {
-        console.log('update');
-
+    static joinRoom(room) {
+        var gameRoom = Communication.client.join("game");
+        gameRoom.onJoin.add(Communication.onJoin);
+        
+        gameRoom.onUpdate.add(Communication.update);
+        gameRoom.state.listen(Communication.listen);
     }
-    listen() {
-        this.SendMessage('pSlm');
-        console.log('listen');
+    static SendMessage(message) { 
+        console.log('Send', message);
+        Communication.client.send(message);
+    }
+    static update(state) {
+        console.log(state);
+    }
+    static listen(number,message) {
+        console.log('listen',number, message);
+    }
+    static onJoin(client, room){
+        console.log(client, "joined", room);
     }
 }
 /*

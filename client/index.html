@@ -30,8 +30,8 @@
   <strong>Messages</strong><br>
 
   <form id="form">
-    <input type="text" id="input" value="" />
-    <input type="submit" value="send" />
+    <input type="text" id="input" value="plm" />
+    <input type="button" onclick="Communication.SendMessage(document.getElementById('input').value)" value="send" />
   </form>
 
   <div id="messages"></div>
@@ -41,7 +41,8 @@
       let httpLocation = host.indexOf('//') + 2;
       host = host.substr(httpLocation, host.length - httpLocation);
       var client = new Colyseus.Client('ws://' + host);
-      var com = new Communication(client);
+      Communication.CreateComunication(client);
+      Communication.joinRoom('game');
   </script>
 </body>
 

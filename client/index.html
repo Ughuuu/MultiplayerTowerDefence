@@ -8,9 +8,10 @@
       text-align: center;
     }
   </style>
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="communication.js"></script>
+    <script src="scripts\index.js"></script>
+    <script src="Scripts\communication.js"></script>
+    <script src="scripts\lib\threelib\three.js"></script>
+    <script src="Scripts\render\render.js"></script>
   <!-- dummy Symbol polyfill -->
   <script>
     if (typeof(Symbol) === "undefined") {
@@ -22,7 +23,6 @@
 
   <!-- colyseus.js client -->
   <script type="text/javascript" src="https://rawgit.com/gamestdio/colyseus.js/master/dist/colyseus.js"></script>
-
 </head>
 
 <body>
@@ -34,15 +34,25 @@
     <input type="button" onclick="Communication.SendMessage(document.getElementById('input').value)" value="send" />
   </form>
 
-  <div id="messages"></div>
+  <div id="container"></div>
 
   <script>
       var host = window.location.href;
       let httpLocation = host.indexOf('//') + 2;
       host = host.substr(httpLocation, host.length - httpLocation);
       var client = new Colyseus.Client('ws://' + host);
-      Communication.CreateComunication(client);
-      Communication.joinRoom('game');
+    
+      let main = Main.getInstance();
+      main.CreateCommunication(client);
+      main.GetCommunication().joinRoom('game');
+      main.CreateScene();
+      main.CreateCamera();
+      main.CreateLight();
+     
+
+      // Set the scene size.
+ 
+
   </script>
 </body>
 

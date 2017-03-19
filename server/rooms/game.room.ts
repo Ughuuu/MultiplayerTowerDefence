@@ -2,7 +2,7 @@ import { Room } from "colyseus";
 import { StateHandler } from "../controller/state.handler";
 import { PhysicsHandler } from "../controller/physics.handler";
 import { ChatHandler } from "../controller/chat.handler";
-
+import { MapHandler } from "../controller/map.handlter"
 
 export class GameRoom extends Room<StateHandler> {
     static fps: number = 1000 / 30;
@@ -10,7 +10,13 @@ export class GameRoom extends Room<StateHandler> {
 
     addHandlers(stateHandler: StateHandler): StateHandler{
         stateHandler.addHandler(new PhysicsHandler());
-        stateHandler.addHandler(new ChatHandler());  
+        stateHandler.addHandler(new ChatHandler());
+        var matrix = [
+            [0, 0, 0, 1, 0],
+            [1, 0, 0, 0, 1],
+            [0, 0, 1, 0, 0],
+        ];
+        stateHandler.addHandler(new MapHandler(matrix)); 
         return stateHandler;
     }
 

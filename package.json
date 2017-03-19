@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "tsc && node index.js",
-    "dev": "tsc && nodemon --harmony ./index.js"
+    "dev": "concurrently \"tsc -w\" \"nodemon --harmony ./index.js\""
   },
   "engines": {
     "node": ">= 6.4"
@@ -17,10 +17,13 @@
     "colyseus": "^0.4.3-rc5",
     "express": "^4.13.3",
     "lucy-b2": "^1.0.1",
+    "pathfinding": "^0.4.18",
     "pm2": "^2.4.2",
     "typescript": "^2.2.1"
   },
   "devDependencies": {
+    "concurrently": "^3.4.0",
+    "gulp": "^3.9.0",
     "nodemon": "^1.7.1"
   }
 }

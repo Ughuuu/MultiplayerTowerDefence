@@ -4,7 +4,7 @@ import { PhysicsHandler } from "../controller/physics.handler";
 import { ChatHandler } from "../controller/chat.handler";
 import { UnitBuilder } from "../builders/unit.builder";
 import { TowerBuilder } from "../builders/tower.builder";
-
+import { MapHandler } from "../controller/map.handlter";
 
 export class GameRoom extends Room<StateHandler> {
     static fps: number = 1000 / 30;
@@ -20,6 +20,12 @@ export class GameRoom extends Room<StateHandler> {
     addBuilders(stateHandler: StateHandler): StateHandler{
         stateHandler.addBuilder(new UnitBuilder(stateHandler.handlers['PhysicsHandler']));
         stateHandler.addBuilder(new TowerBuilder(stateHandler.handlers['PhysicsHandler']));
+        var matrix = [
+            [0, 0, 0, 1, 0],
+            [1, 0, 0, 0, 1],
+            [0, 0, 1, 0, 0],
+        ];
+        stateHandler.addHandler(new MapHandler(matrix));
         return stateHandler;
     }
 

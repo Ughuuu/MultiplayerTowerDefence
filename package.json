@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "tsc && node index.js",
-    "dev": "tsc && nodemon --harmony ./index.js"
+    "dev": "concurrently \"tsc -w\" \"nodemon --harmony ./index.js\""
   },
   "engines": {
     "node": ">= 6.4"
@@ -22,6 +22,8 @@
     "typescript": "^2.2.1"
   },
   "devDependencies": {
+    "concurrently": "^3.4.0",
+    "gulp": "^3.9.0",
     "nodemon": "^1.7.1"
   }
 }

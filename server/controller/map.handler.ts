@@ -4,7 +4,7 @@ var PF = require('pathfinding');
 export class MapHandler extends Handler {
     map: any;
     constructor(matrix) {
-        super();
+        super('MapHandler');
         this.map = new PF.Grid(matrix); 
         
     }

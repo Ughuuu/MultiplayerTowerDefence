@@ -42,7 +42,7 @@ class Render {
     }
     public create3DModel(id: any, position: THREE.Vector3, rotation: THREE.Vector3, scale: number, file: string) {
         var loader = new THREE.JSONLoader();
-        loader.load(file, function (geometry, materials) {
+        loader.load(file, function (geometry:THREE.Geometry, materials:any) {
             var material = materials[0];
             material.morphTargets = true;
             material.color.setHex(0xffaaaa);
@@ -59,11 +59,32 @@ class Render {
                 mesh.name = id;
                 this.scene.add(mesh);
                 this.animationMixer.clipAction(geometry.animations[0], mesh)
-                    .setDuration(1)			// one second
+                    .setDuration(geometry.animations[0].duration)			// one second
                     .startAt(- Math.random())	// random phase (already running)
                     .play();					// let's go
         }.bind(this));
 
+    }
+    public createSphere(radius: number, id: any, x: number, y: number) {
+        const sphereMaterial =
+            new THREE.MeshLambertMaterial(
+                {
+                    color: 0xCC0000
+                });
+        // Set up the sphere vars
+        const segments = 16;
+        const rings = 16;
+        const sphere = new THREE.Mesh(
+            new THREE.SphereGeometry(
+                radius,
+                segments,
+                rings),
+            sphereMaterial);
+        this.scene.add(sphere);
+        sphere.position.x = x;
+        sphere.position.y = y;
+        sphere.position.z = -300;
+        sphere.name = id;
     }
     update() {
         this.renderer.render(this.scene, this.camera);

@@ -1,4 +1,5 @@
-﻿enum ElementType {
+﻿/// <reference path="./units/generic.unit.ts" />
+enum ElementType {
     Normal = 0,
     Fire,
     Water,
@@ -41,7 +42,6 @@ class Communication {
     state: any;
     unitTypes: UnitType[];
     towerTypes: TowerType[];
-
     constructor(client) {
         this.state = null;
         this.client = client;
@@ -54,24 +54,28 @@ class Communication {
         gameRoom.onUpdate.addOnce(this.init);
         gameRoom.state.listen(this.listen);
         gameRoom.state.listen("bodies/:id/:attribute", "replace", (id, xy, value) => {
-            let obj = Main.getInstance().getRenderer().scene.getObjectByName(id);
-            if (obj != null) {
-                if (xy == 'x') {
+            let obj = Main.getInstance().getUnit(id).mesh; //Main.getInstance().getRenderer().scene.getObjectByName(id);
+            switch (xy)
+                {
+                case 'x':
                     obj.updateMatrix();
                     obj.position.x = value;
-                }
-                else if (xy == 'y') {
+                    break;
+                case 'y':
                     obj.updateMatrix();
-                    obj.position.y=value;
-                }
-                console.log(obj.position);
-            }
+                    obj.position.y = value;
+                    break;
+                default:
+                    obj.updateMatrix();
+                    obj.rotation.y = value;
+            } 
         });
         gameRoom.state.listen("bodies/:id", "add", (id, value) => {
             //console.log(id);
-            console.log(value);
+            //console.log(value); 
             //Main.getInstance().createSphere(1, id, value.x, value.y);
-            Main.getInstance().getRenderer().create3DModel(id, new THREE.Vector3(value.x, value.y, -300), new THREE.Vector3(0, 0, 0), 0.025, "img/monster.json");
+            Main.getInstance().addUnit(id, "img/monster.json", 100, new THREE.Vector3(value.x, value.y, -300), new THREE.Vector3(0, 0, 0), 0.025, );
+            //this.generic = new GenericUnit(id, "img/monster.json",100, new THREE.Vector3(value.x, value.y, -300), new THREE.Vector3(0, 0, 0), 0.025, );//Main.getInstance().getRenderer().create3DModel(id, new THREE.Vector3(value.x, value.y, -300), new THREE.Vector3(0, 0, 0), 0.025, "img/monster.json");
         });
     }
 
@@ -109,7 +113,7 @@ class Communication {
     sendMessage(message) {
         this.client.send(message);
 
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 1; i++) {
             this.createUnit(0);
         }
     }

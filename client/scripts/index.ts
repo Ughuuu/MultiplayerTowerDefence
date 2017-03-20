@@ -1,12 +1,13 @@
 
 /// <reference path="./render/render.ts" />
 /// <reference path="./communication.ts" />
-
+/// <reference path="./units/generic.unit.ts" />
 class Main {
     private static instance: Main;
 
     private communication: Communication;
     private renderer: Render;
+    private unitsMap = {};
     static getInstance() {
         if (!Main.instance) {
             Main.instance = new Main();
@@ -26,6 +27,12 @@ class Main {
         return this.renderer;
     }
 
+    public addUnit(id: number, modelName: string, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
+        this.unitsMap[id] = new GenericUnit(modelName, health, position, rotation, scale);
+    }
+    public getUnit(id: number) {
+        return this.unitsMap[id];
+    }
     public createScene() {
         const WIDTH = 1000;// window.innerWidth;
         const HEIGHT = 800;//window.innerHeight;
@@ -50,29 +57,6 @@ class Main {
         this.renderer.createLight(0xFFFFFF, 10, 20, 30);
     }
 
-    public createSphere(radius: number, id: any, x: number, y: number) {
-        const sphereMaterial =
-            new THREE.MeshLambertMaterial(
-                {
-                    color: 0xCC0000
-                });
-        // Set up the sphere vars
-        const segments = 16;
-        const rings = 16;
-        const sphere = new THREE.Mesh(
-            new THREE.SphereGeometry(
-                radius,
-                segments,
-                rings),
-            sphereMaterial);
-        this.renderer.scene.add(sphere);
-        sphere.position.x = x;
-        sphere.position.y = y;
-        sphere.position.z = -300;
-        sphere.name = id;
-    }
-
-    
     public update(){
         this.renderer.update();
     }

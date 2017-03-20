@@ -31,7 +31,7 @@
 
   <form id="form">
     <input type="text" id="input" value="plm" />
-    <input type="button" onclick="Communication.SendMessage(document.getElementById('input').value)" value="send" />
+    <input type="button" onclick="Main.getInstance().GetCommunication().sendMessage(document.getElementById('input').value)" value="send" />
   </form>
 
   <div id="container"></div>
@@ -45,11 +45,15 @@
       let main = Main.getInstance();
       main.CreateCommunication(client);
       main.GetCommunication().joinRoom('game');
-      main.GetCommunication().createTower(0,20,30);
+      let com = main.GetCommunication();
+      for(let i=0;i<100;i++){
+        com.createTower(0,i*5 - 50,-50);
+      }
       main.CreateScene();
       main.CreateCamera();
       main.CreateLight();
       main.CreateSphere(50);
+      main.update();
      
 
       // Set the scene size.

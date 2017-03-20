@@ -53,19 +53,18 @@ class Communication {
         gameRoom.onUpdate.addOnce(this.init);
         gameRoom.state.listen(this.listen);
         gameRoom.state.listen("bodies/:id/:attribute", "replace", (id, xy, value) => {
-            console.log(`body ${id} changed attribute ${xy} to ${value}`);
-            let obj = Main.getInstance().GetRenderer().scene.getObjectByName(id, true);
+            let obj = Main.getInstance().GetRenderer().scene.getObjectByName(id);
             if (xy == 'x') {
                 obj.position.x = value;
             }
-            else {
+            else if (xy == 'y'){
                 obj.position.y = value;
             }
         });
         gameRoom.state.listen("bodies/:id", "add", (id, value) => {
-            console.log(id);
-            console.log(value);
-            Main.getInstance().CreateSphere(10, id, value.x, value.y);
+            //console.log(id);
+            //console.log(value);
+            Main.getInstance().CreateSphere(1, id, value.x, value.y);
         });
     }
 
@@ -102,6 +101,10 @@ class Communication {
 
     sendMessage(message) {
         this.client.send(message);
+        
+        for(let i=0;i<10;i++){
+            this.createUnit(0);
+        }
     }
 
     init(state) {
@@ -109,7 +112,7 @@ class Communication {
         this.towerTypes = state.tower_types;
     }
 
-    listen(number, message) {
+    listen(number, message, value) {
     }
 
     onJoin(client, room) {

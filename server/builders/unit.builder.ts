@@ -20,7 +20,7 @@ export class UnitBuilder extends Builder {
     public static types: UnitType[] = [
         new UnitType('light_creep',
             'creep_texture.png',
-            0.1,
+            1,
             10,
             15,
             ElementType.Normal,
@@ -37,7 +37,7 @@ export class UnitBuilder extends Builder {
     create(type: number, owner_id: number, position: Point): number {
         let unit_type = UnitBuilder.types[type];
         let circleShape = this.physicsHandler.createCircle(unit_type.radius);
-        let body_id = this.physicsHandler.createBody(circleShape, position);
+        let body_id = this.physicsHandler.createBody(circleShape, position, false);
         let unit = new Unit(body_id, owner_id);
         unit.health = unit_type.health;
         unit.damage = unit_type.damage;

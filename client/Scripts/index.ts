@@ -70,9 +70,12 @@ class Main {
         sphere.position.y = y;
         sphere.position.z = -300;
         sphere.name = id;
-        this.renderer.update();
 
     }
+    public update(){
+        this.renderer.update();
+    }
+    
     constructor() {
 
     }

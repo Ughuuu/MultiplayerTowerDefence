@@ -18,7 +18,7 @@ export class PhysicsHandler extends Handler {
     }
 
     createUnit(type: number, player: Player, unitBuilder: UnitBuilder){
-        unitBuilder.create(type, player.id, new Point(0, 0));
+        unitBuilder.create(type, player.id, new Point((Math.random()*50)%50, (Math.random()*50)%50));
     }
 
     createTower(type: number, position: Point, player: Player, towerBuilder: TowerBuilder){
@@ -46,7 +46,7 @@ export class PhysicsHandler extends Handler {
     }
 
     update(players, gameRoom: GameRoom, handlers, builders) {
-        this.world.Step(GameRoom.ms, 10, 10);
+        this.world.Step(GameRoom.ms, 8, 3);
         //gameRoom.broadcast(this.toJSON(players, handlers, builders));
     }
 
@@ -101,10 +101,10 @@ export class PhysicsHandler extends Handler {
         return shape;
     }
 
-    createBody(shape: any, position : Point) {
+    createBody(shape: any, position : Point, isStatic: boolean) {
         // Define body
         let bodyDef = new b2.BodyDef;
-        bodyDef.type = b2.BodyType.dynamicBody;
+        bodyDef.type = isStatic ? b2.BodyType.staticBody : b2.BodyType.dynamicBody;
         let body = this.world.CreateBody(bodyDef);
         body.SetUserData(this.body_index);
         // Define fixture
@@ -117,7 +117,6 @@ export class PhysicsHandler extends Handler {
 
         // Create fixture
         body.CreateFixture(fixDef);
-
         // Move body into initial position ( and rotation )
         body.SetTransform(position.x, position.y, 0);
 

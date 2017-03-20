@@ -8,7 +8,8 @@
   },
   "scripts": {
     "start": "tsc && node index.js",
-    "dev": "concurrently \"tsc -w\" \"nodemon --harmony ./index.js\""
+    "dev": "concurrently \"tsc -w\" \"nodemon --harmony ./index.js\"",
+    "info": "pm2 start index.js"
   },
   "engines": {
     "node": ">= 6.4"

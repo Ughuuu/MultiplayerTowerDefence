@@ -14,7 +14,7 @@ class Render {
         this.renderer = new THREE.WebGLRenderer();
         this.scene = new THREE.Scene();
         this.renderer.setSize(width, height);
-       // this.animationMixer = new THREE.AnimationMixer(this.scene);
+        this.animationMixer = new THREE.AnimationMixer(this.scene);
         this.clock = new THREE.Clock();
         container.appendChild(this.renderer.domElement);
     }
@@ -49,7 +49,6 @@ class Render {
 
             var faceMaterial = new THREE.MultiMaterial(materials);
             var mesh = new THREE.Mesh(geometry, faceMaterial);
-                mesh = new THREE.Mesh(geometry, faceMaterial);
                 mesh.scale.set(scale, scale, scale);
 
                 mesh.position.set(position.x, position.y, position.z);
@@ -57,9 +56,8 @@ class Render {
 
                 mesh.matrixAutoUpdate = false;
                 mesh.updateMatrix();
-
+                mesh.name = id;
                 this.scene.add(mesh);
-                this.animationMixer = new THREE.AnimationMixer(mesh);
                 this.animationMixer.clipAction(geometry.animations[0], mesh)
                     .setDuration(1)			// one second
                     .startAt(- Math.random())	// random phase (already running)

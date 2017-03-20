@@ -55,16 +55,21 @@ class Communication {
         gameRoom.state.listen(this.listen);
         gameRoom.state.listen("bodies/:id/:attribute", "replace", (id, xy, value) => {
             let obj = Main.getInstance().getRenderer().scene.getObjectByName(id);
-            if (xy == 'x') {
-                obj.position.x = value;
-            }
-            else if (xy == 'y') {
-                obj.position.y = value;
+            if (obj != null) {
+                if (xy == 'x') {
+                    obj.updateMatrix();
+                    obj.position.x = value;
+                }
+                else if (xy == 'y') {
+                    obj.updateMatrix();
+                    obj.position.y=value;
+                }
+                console.log(obj.position);
             }
         });
         gameRoom.state.listen("bodies/:id", "add", (id, value) => {
             //console.log(id);
-            //console.log(value);
+            console.log(value);
             //Main.getInstance().createSphere(1, id, value.x, value.y);
             Main.getInstance().getRenderer().create3DModel(id, new THREE.Vector3(value.x, value.y, -300), new THREE.Vector3(0, 0, 0), 0.025, "img/monster.json");
         });

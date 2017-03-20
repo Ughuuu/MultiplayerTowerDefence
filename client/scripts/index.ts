@@ -14,43 +14,43 @@ class Main {
         return Main.instance;
     }
 
-    public CreateCommunication(client) {
+    public createCommunication(client) {
         this.communication = new Communication(client);
     }
 
-    public GetCommunication() {
+    public getCommunication() {
         return this.communication;
     }
 
-    public GetRenderer() {
+    public getRenderer() {
         return this.renderer;
     }
 
-    public CreateScene() {
-        const WIDTH = window.innerWidth;
-        const HEIGHT = window.innerHeight;
+    public createScene() {
+        const WIDTH = 1000;// window.innerWidth;
+        const HEIGHT = 800;//window.innerHeight;
         const container = document.querySelector('#container');
         this.renderer = new Render();
 
-        this.renderer.CreateScene(WIDTH, HEIGHT, container);
+        this.renderer.createScene(WIDTH, HEIGHT, container);
 
     }
 
-    public CreateCamera() {
+    public createCamera() {
         const WIDTH = window.innerWidth;
         const HEIGHT = window.innerHeight;
         const VIEW_ANGLE = 45;
         const ASPECT = WIDTH / HEIGHT;
         const NEAR = 0.1;
         const FAR = 10000;
-        this.renderer.CreateCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+        this.renderer.createCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
     }
 
-    public CreateLight() {
-        this.renderer.CreateLight(0xFFFFFF, 10, 20, 30);
+    public createLight() {
+        this.renderer.createLight(0xFFFFFF, 10, 20, 30);
     }
 
-    public CreateSphere(radius: number, id: any, x: number, y: number) {
+    public createSphere(radius: number, id: any, x: number, y: number) {
         const sphereMaterial =
             new THREE.MeshLambertMaterial(
                 {
@@ -70,8 +70,9 @@ class Main {
         sphere.position.y = y;
         sphere.position.z = -300;
         sphere.name = id;
-
     }
+
+    
     public update(){
         this.renderer.update();
     }

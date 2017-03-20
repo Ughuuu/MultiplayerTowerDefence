@@ -43,16 +43,15 @@
       var client = new Colyseus.Client('ws://' + host);
     
       let main = Main.getInstance();
-      main.CreateCommunication(client);
-      main.GetCommunication().joinRoom('game');
-      let com = main.GetCommunication();
-      for(let i=0;i<100;i++){
-        com.createTower(0,i*5 - 50,-50);
+      main.createCommunication(client);
+      main.getCommunication().joinRoom('game');
+      let com = main.getCommunication();
+      for(let i=0;i<10;i++){
+        com.createTower(0,i*40 - 200,-50);
       }
-      main.CreateScene();
-      main.CreateCamera();
-      main.CreateLight();
-      main.CreateSphere(50);
+      main.createScene();
+      main.createCamera();
+      main.createLight();
       main.update();
      
 

@@ -13,7 +13,8 @@ export class UnitType {
         public elementType: ElementType,
         public speed: number,
         public armor: number,
-        public walkType: WalkType) { }
+        public walkType: WalkType,
+        public mass: number) { }
 }
 
 export class UnitBuilder extends Builder {
@@ -26,7 +27,8 @@ export class UnitBuilder extends Builder {
             ElementType.Normal,
             1,
             0,
-            WalkType.Ground)
+            WalkType.Ground,
+            1)
     ];
     units = {};
 
@@ -37,7 +39,7 @@ export class UnitBuilder extends Builder {
     create(type: number, owner_id: number, position: Point): number {
         let unit_type = UnitBuilder.types[type];
         let circleShape = this.physicsHandler.createCircle(unit_type.radius);
-        let body_id = this.physicsHandler.createBody(circleShape, position, false);
+        let body_id = this.physicsHandler.createBody(circleShape, unit_type.mass, position);
         let unit = new Unit(body_id, owner_id);
         unit.health = unit_type.health;
         unit.damage = unit_type.damage;

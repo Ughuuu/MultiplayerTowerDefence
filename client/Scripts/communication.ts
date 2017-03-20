@@ -6,7 +6,7 @@
     Dark,
     Nature,
     Earth
-}
+};
 
 class TowerType {
     constructor(public name: string,
@@ -16,12 +16,12 @@ class TowerType {
         public damage: number,
         public elementType: ElementType.Normal,
         public speed: number) { }
-}
+};
 
 enum WalkType {
     Ground = 0,
     Flying
-}
+};
 
 class UnitType {
     constructor(public name: string,
@@ -32,15 +32,16 @@ class UnitType {
         public elementType: ElementType,
         public speed: number,
         public armor: number,
-        public walkType: WalkType) { }
-}
+        public walkType: WalkType,
+        public mass: number) { }
+};
 
 class Communication {
     client: any;
     state: any;
     unitTypes: UnitType[];
     towerTypes: TowerType[];
-    
+
     constructor(client) {
         this.state = null;
         this.client = client;
@@ -57,7 +58,7 @@ class Communication {
             if (xy == 'x') {
                 obj.position.x = value;
             }
-            else if (xy == 'y'){
+            else if (xy == 'y') {
                 obj.position.y = value;
             }
         });
@@ -101,8 +102,8 @@ class Communication {
 
     sendMessage(message) {
         this.client.send(message);
-        
-        for(let i=0;i<10;i++){
+
+        for (let i = 0; i < 10; i++) {
             this.createUnit(0);
         }
     }

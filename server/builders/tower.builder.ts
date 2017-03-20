@@ -35,7 +35,7 @@ export class TowerBuilder extends Builder {
     create(type: number, owner_id: number, position: Point): number {
         let tower_type = TowerBuilder.types[type];
         let boxShape = this.physicsHandler.createBox(tower_type.radius, tower_type.radius);
-        let body_id = this.physicsHandler.createBody(boxShape, position, true);
+        let body_id = this.physicsHandler.createBody(boxShape, 0, position);
         let tower = new Tower(body_id, owner_id);
         tower.health = tower_type.health;
         tower.damage = tower_type.damage;

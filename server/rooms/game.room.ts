@@ -7,6 +7,7 @@ import { TowerBuilder } from "../builders/tower.builder";
 import { MapHandler } from "../controller/map.handler";
 
 export class GameRoom extends Room<StateHandler> {
+    static patch: number = 1000 / 10;
     static fps: number = 1000 / 30;
     static ms: number = 1 / 30;
     invervalId: number;
@@ -32,7 +33,7 @@ export class GameRoom extends Room<StateHandler> {
     constructor(options) {
         super(options);
         console.log("Room Created", options);
-        this.setPatchRate(GameRoom.fps);
+        this.setPatchRate(GameRoom.patch);
         this.setState(this.addBuilders(this.addHandlers(new StateHandler())));
         this.setSimulationInterval(function() {this.update()}.bind(this), GameRoom.fps);
     }

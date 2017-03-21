@@ -6,7 +6,7 @@ import { Builder } from './builder';
 
 export class TowerType {
     constructor(public name: string,
-        public texture: string,
+        public model: string,
         public radius: number,
         public health: number,
         public damage: number,
@@ -19,7 +19,7 @@ export class TowerBuilder extends Builder {
     public static types: TowerType[] = [
         new TowerType(
             'light_tower',
-            'light_tower.png',
+            'img/monster.json',
             10,
             10,
             15,

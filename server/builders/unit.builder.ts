@@ -6,7 +6,7 @@ import { Builder } from './builder';
 
 export class UnitType {
     constructor(public name: string,
-        public texture: string,
+        public model: string,
         public radius: number,
         public health: number,
         public damage: number,
@@ -20,7 +20,7 @@ export class UnitType {
 export class UnitBuilder extends Builder {
     public static types: UnitType[] = [
         new UnitType('light_creep',
-            'creep_texture.png',
+            'img/monster.json',
             1,
             10,
             15,

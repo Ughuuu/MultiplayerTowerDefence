@@ -13,6 +13,7 @@ class Main {
     private unitTypes: UnitType[];
     private towerTypes: TowerType[];
     private unitsCount: any;
+    private clock: THREE.Clock;
     static getInstance() {
         if (!Main.instance) {
             Main.instance = new Main();
@@ -61,7 +62,8 @@ class Main {
         }
     }
     public addUnit(id: number, modelName: string, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
-        this.unitsMap[id] = new GenericUnit(modelName, health, position, rotation, scale);
+        let newUnit = new GenericUnit(modelName, health, position, rotation, scale);
+        this.unitsMap[id] = newUnit;
         this.unitsMap[id].loadModel(this.renderer.scene, this.geometryMap[modelName][0], this.geometryMap[modelName][1]);
         this.unitsCount = this.unitsCount + 1;
         (<HTMLInputElement>document.getElementById("input")).value = this.unitsCount;
@@ -78,6 +80,7 @@ class Main {
         this.renderer = new Render();
 
         this.renderer.createScene(WIDTH, HEIGHT, container);
+        this.clock = new THREE.Clock();
 
     }
 
@@ -95,8 +98,13 @@ class Main {
         this.renderer.createLight(0xFFFFFF, 10, 20, 30);
     }
 
-    public update(){
+    public update() {
+        var delta = this.clock.getDelta();
+        for (var key in this.unitsMap) {
+            this.unitsMap[key].update(delta);
+        }
         this.renderer.update();
+        requestAnimationFrame(function () { this.update() }.bind(this));
     }
     
     constructor() {

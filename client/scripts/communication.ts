@@ -35,6 +35,7 @@ class Communication {
         });
         gameRoom.state.listen("bodies/:id", "add", (id, value) => {
             Main.getInstance().addUnit(id, "img/monster.json", 100, new THREE.Vector3(value.x, value.y, -300), new THREE.Vector3(0, 0, 0), 0.025);
+ 
         });
     }
 
@@ -71,16 +72,16 @@ class Communication {
 
     sendMessage(message) {
         this.client.send(message);
-
-        for (let i = 0; i < 10; i++) {
+     
+        for (let i = 0; i < 100; i++) {
             this.createUnit(0);
         }
+
     }
 
     init(state) {
         Main.getInstance().setUnitTypes(state.unit_types);
-       // this.unitTypes = state.unit_types;
-       // this.towerTypes = state.tower_types;
+        Main.getInstance().setTowerTypes(state.tower_types);
     }
 
     listen(number, message, value) {

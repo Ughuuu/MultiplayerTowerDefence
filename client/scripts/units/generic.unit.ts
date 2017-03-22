@@ -8,6 +8,7 @@ class GenericUnit {
     public mesh: THREE.Mesh;
     private animations: THREE.AnimationClip[];
     private materials: any;
+    private animationMixer: THREE.AnimationMixer;
     public isLoaded: boolean;
     constructor(modelName: string, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
         this.modelName = modelName;
@@ -24,7 +25,7 @@ class GenericUnit {
 
             //This is hardcoded for now
             material.color.setHex(0xffaaaa);
-            
+
             this.animations = geometry.animations;
 
             var faceMaterial = new THREE.MultiMaterial(materials);
@@ -33,16 +34,11 @@ class GenericUnit {
             
             this.mesh.position.set(this.position.x, this.position.y, this.position.z);
             this.mesh.rotation.set(this.rotation.x, this.rotation.y, this.rotation.z);
-
+            this.animationMixer = new THREE.AnimationMixer(scene);
             scene.add(this.mesh);
-
-            //TO DO 
-            //Decide how should these animatins look and move Main.getInstance() from here
-            Main.getInstance().getRenderer().animationMixer.clipAction(this.animations[0], this.mesh)
-                .setDuration(this.animations[0].duration)			// one second
-                .startAt(- Math.random())	// random phase (already running)
-               .play();
+          
             this.isLoaded = true;
+            this.playMoveAnimation();
     }
 
     public setPosition(position: THREE.Vector3) {
@@ -73,10 +69,21 @@ class GenericUnit {
         this.position = this.mesh.position;
     }
 
-    public playAnimation() {
-        Main.getInstance().getRenderer().animationMixer.clipAction(this.animations[0], this.mesh)
-            .setDuration(this.animations[0].duration)			// one second
+    public playMoveAnimation() {
+        //TO DO 
+        //Decide how should these animatins look and move Main.getInstance() from here
+        this.animationMixer.clipAction(this.animations[0], this.mesh)
+            .setDuration(3)			// one second
             .startAt(- Math.random())	// random phase (already running)
-            .play();		
+            .play()
+            .setLoop(THREE.LoopOnce,1)
+           
+    }
+
+    //Units handle their animations
+    public update(delta: number) {
+        if (this.animationMixer != null) {
+            this.animationMixer.update(delta);
+        }
     }
 }

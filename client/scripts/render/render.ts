@@ -78,6 +78,5 @@ class Render {
         var delta = this.clock.getDelta();
         if (this.animationMixer!=null)
         this.animationMixer.update(delta);
-        requestAnimationFrame(function() {this.update() }.bind(this));
     }
 }

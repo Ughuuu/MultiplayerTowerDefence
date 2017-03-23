@@ -1,9 +1,9 @@
 /// <reference path="../../../node_modules/@types/three/index.d.ts" />
 
 class Render {
-    scene: any;
-    renderer: any;
-    light: any;
+    scene: THREE.Scene;
+    renderer: THREE.WebGLRenderer;
+    light: THREE.PointLight;
     camera: any;
     clock: THREE.Clock;
     animationMixer: THREE.AnimationMixer;
@@ -18,7 +18,7 @@ class Render {
         this.clock = new THREE.Clock();
         container.appendChild(this.renderer.domElement);
     }
-    createCamera(viewAngle,aspect,near,far) { 
+    createCamera(viewAngle, aspect, near, far) { 
          this.camera =
             new THREE.PerspectiveCamera(
                 viewAngle,
@@ -26,43 +26,30 @@ class Render {
                 near,
                 far
             );
+         this.camera.position.set(0, 0, 100);
         this.scene.add(this.camera);
     }
     createLight(value,x,y,z) {
-        const pointLight =
+         this.light =
             new THREE.PointLight(0xFFFFFF);
 
         // set its position
-        pointLight.position.x = 10;
-        pointLight.position.y = 50;
-        pointLight.position.z = 130;
+         this.light.position.x = 10;
+         this.light.position.y = 50;
+         this.light.position.z = 130;
 
-        // add to the scene
-        this.scene.add(pointLight);
+         // add to the scene
+         this.scene.add(this.light);
+         var texture = THREE.ImageUtils.loadTexture("/img/map.jpg");
+         var material = new THREE.MeshLambertMaterial({ map: texture });
+         var geometry = new THREE.PlaneGeometry(1000, 1000, 200, 200);
+     
+         let plane = new THREE.Mesh(geometry, material);
+         plane.position.z = -400;
+         this.scene.add(plane);
     }
-    public create3DModel(id: any, position: THREE.Vector3, rotation: THREE.Vector3, scale: number, file: string) {
-        var loader = new THREE.JSONLoader();
-        loader.load(file, function (geometry:THREE.Geometry, materials:any) {
-            var material = materials[0];
-            material.morphTargets = true;
-            material.color.setHex(0xffaaaa);
 
-            var faceMaterial = new THREE.MultiMaterial(materials);
-            var mesh = new THREE.Mesh(geometry, faceMaterial);
-                mesh.scale.set(scale, scale, scale);
-
-                mesh.position.set(position.x, position.y, position.z);
-                mesh.rotation.set(rotation.x, rotation.y, rotation.z);
-
-                mesh.matrixAutoUpdate = false;
-                mesh.updateMatrix();
-                mesh.name = id;
-                this.scene.add(mesh);
-                this.animationMixer.clipAction(geometry.animations[0], mesh)
-                    .setDuration(geometry.animations[0].duration)			// one second
-                    .startAt(- Math.random())	// random phase (already running)
-                    .play();					// let's go
-        }.bind(this));
+    public loadJson(modelPath: string) {
 
     }
     public createSphere(radius: number, id: any, x: number, y: number) {
@@ -91,13 +78,5 @@ class Render {
         var delta = this.clock.getDelta();
         if (this.animationMixer!=null)
         this.animationMixer.update(delta);
-        requestAnimationFrame(function() {this.update() }.bind(this));
     }
-
-    // Schedule the first frame.
-   // requestAnimationFrame(function() { this.update() }.bind(this));
 }
-/*
-
-   
-*/

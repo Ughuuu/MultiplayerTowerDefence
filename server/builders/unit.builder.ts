@@ -21,8 +21,8 @@ export class UnitType {
 export class UnitBuilder extends Builder {
     public static types: UnitType[] = [
         new UnitType('light_creep',
-            'creep_texture.png',
-            0.1,
+            'img/fat_peasant_noTEXTURE_SK.json',
+            1,
             10,
             15,
             ElementType.Normal,

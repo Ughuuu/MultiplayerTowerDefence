@@ -1,41 +1,5 @@
 ﻿/// <reference path="./units/generic.unit.ts" />
-enum ElementType {
-    Normal = 0,
-    Fire,
-    Water,
-    Light,
-    Dark,
-    Nature,
-    Earth
-};
 
-class TowerType {
-    constructor(public name: string,
-        public texture: string,
-        public radius: number,
-        public health: number,
-        public damage: number,
-        public elementType: ElementType.Normal,
-        public speed: number) { }
-};
-
-enum WalkType {
-    Ground = 0,
-    Flying
-};
-
-class UnitType {
-    constructor(public name: string,
-        public texture: string,
-        public radius: number,
-        public health: number,
-        public damage: number,
-        public elementType: ElementType,
-        public speed: number,
-        public armor: number,
-        public walkType: WalkType,
-        public mass: number) { }
-};
 
 class Communication {
     client: any;
@@ -54,28 +18,30 @@ class Communication {
         gameRoom.onUpdate.addOnce(this.init);
         gameRoom.state.listen(this.listen);
         gameRoom.state.listen("bodies/:id/:attribute", "replace", (id, xy, value) => {
-            let obj = Main.getInstance().getUnit(id).mesh; //Main.getInstance().getRenderer().scene.getObjectByName(id);
-            switch (xy)
-                {
-                case 'x':
-                    obj.updateMatrix();
-                    obj.position.x = value;
-                    break;
-                case 'y':
-                    obj.updateMatrix();
-                    obj.position.y = value;
-                    break;
-                default:
-                    obj.updateMatrix();
-                    obj.rotation.y = value;
-            } 
+            let obj = Main.getInstance().getUnit(id);
+            if (obj != null && obj.isLoaded) {
+                switch (xy) {
+                    case 'x':
+                        obj.moveOnX(value);
+                        break;
+                    case 'y':
+                        obj.moveOnY(value);
+                        break;
+                    default:
+                        obj.mesh.updateMatrix();
+                    //  obj.mesh.rotation.x = value;
+                }
+        }
         });
         gameRoom.state.listen("bodies/:id", "add", (id, value) => {
-            //console.log(id);
-            //console.log(value); 
-            //Main.getInstance().createSphere(1, id, value.x, value.y);
-            Main.getInstance().addUnit(id, "img/monster.json", 100, new THREE.Vector3(value.x, value.y, -300), new THREE.Vector3(0, 0, 0), 0.025, );
-            //this.generic = new GenericUnit(id, "img/monster.json",100, new THREE.Vector3(value.x, value.y, -300), new THREE.Vector3(0, 0, 0), 0.025, );//Main.getInstance().getRenderer().create3DModel(id, new THREE.Vector3(value.x, value.y, -300), new THREE.Vector3(0, 0, 0), 0.025, "img/monster.json");
+            console.log(value);
+            if (value.isTower) {
+                Main.getInstance().addTower(id, value.type, 100, new THREE.Vector3(value.x, value.yf, -300), new THREE.Vector3(0, 0, 0), 0.025);
+            }
+            else {
+                Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(value.x, value.yf, -300), new THREE.Vector3(0, 0, 0), 2.5);
+            }
+ 
         });
     }
 
@@ -112,15 +78,16 @@ class Communication {
 
     sendMessage(message) {
         this.client.send(message);
-
+        //Main.getInstance().getUnit(0).state = false;
         for (let i = 0; i < 1; i++) {
             this.createUnit(0);
         }
+
     }
 
     init(state) {
-        this.unitTypes = state.unit_types;
-        this.towerTypes = state.tower_types;
+        Main.getInstance().setUnitTypes(state.unit_types);
+        Main.getInstance().setTowerTypes(state.tower_types);
     }
 
     listen(number, message, value) {

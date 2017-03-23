@@ -20,8 +20,8 @@ export class TowerBuilder extends Builder {
     public static types: TowerType[] = [
         new TowerType(
             'light_tower',
-            'light_tower.png',
-            2,
+            'img/monster.json',
+            10,
             10,
             15,
             ElementType.Normal,

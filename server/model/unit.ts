@@ -14,6 +14,7 @@ export class Unit {
     speed: number;
     armor: number;
     walkType: WalkType;
+    body: any;
 
     constructor(public id: number, public owner_id: number) { }
 }

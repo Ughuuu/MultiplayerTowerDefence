@@ -73,10 +73,10 @@ class GenericUnit {
         //TO DO 
         //Decide how should these animatins look and move Main.getInstance() from here
         this.animationMixer.clipAction(this.animations[0], this.mesh)
-            .setDuration(3)			// one second
+            .setDuration(this.animations[0].duration)			// one second
             .startAt(- Math.random())	// random phase (already running)
             .play()
-            .setLoop(THREE.LoopOnce,1)
+        
            
     }
 

@@ -34,7 +34,13 @@ class Communication {
         }
         });
         gameRoom.state.listen("bodies/:id", "add", (id, value) => {
-            Main.getInstance().addUnit(id, "img/monster.json", 100, new THREE.Vector3(value.x, value.y, -300), new THREE.Vector3(0, 0, 0), 0.025);
+            console.log(value);
+            if (value.isTower) {
+                Main.getInstance().addTower(id, value.type, 100, new THREE.Vector3(value.x, value.yf, -300), new THREE.Vector3(0, 0, 0), 0.025);
+            }
+            else {
+                Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(value.x, value.yf, -300), new THREE.Vector3(0, 0, 0), 2.5);
+            }
  
         });
     }
@@ -72,8 +78,8 @@ class Communication {
 
     sendMessage(message) {
         this.client.send(message);
-     
-        for (let i = 0; i < 100; i++) {
+        //Main.getInstance().getUnit(0).state = false;
+        for (let i = 0; i < 1; i++) {
             this.createUnit(0);
         }
 

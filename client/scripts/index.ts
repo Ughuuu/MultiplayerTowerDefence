@@ -10,9 +10,8 @@ class Main {
     private renderer: Render;
     private unitsMap = {};
     private geometryMap = {};
-    private unitTypes: UnitType[];
+    private creepTypes: UnitType[];
     private towerTypes: TowerType[];
-    private unitsCount: any;
     private clock: THREE.Clock;
     static getInstance() {
         if (!Main.instance) {
@@ -33,15 +32,14 @@ class Main {
         return this.renderer;
     }
     public setUnitTypes(unitTypes: UnitType[]) {
-        this.unitTypes = unitTypes;
-        for (let i = 0; i < this.unitTypes.length; i++) {
+        this.creepTypes = unitTypes;
+        for (let i = 0; i < this.creepTypes.length; i++) {
             {
                 var loader = new THREE.JSONLoader();
-                loader.load(this.unitTypes[i].model, function (icopy:number,geometry: THREE.Geometry, materials: any) {
+                loader.load(this.creepTypes[i].model, function (icopy:number,geometry: THREE.Geometry, materials: any) {
                     console.log(arguments);
                     let value: [THREE.Geometry, any] = [geometry, materials];
-                    this.geometryMap[this.unitTypes[icopy].model] = value;
-                    var material = materials[0];
+                    this.geometryMap[this.creepTypes[icopy].model] = value;
                 }.bind(this, i));
             }
         }
@@ -61,12 +59,17 @@ class Main {
             }
         }
     }
-    public addUnit(id: number, modelName: string, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
+    public addCreep(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
+        let modelName = this.creepTypes[type].model;
         let newUnit = new GenericUnit(modelName, health, position, rotation, scale);
         this.unitsMap[id] = newUnit;
         this.unitsMap[id].loadModel(this.renderer.scene, this.geometryMap[modelName][0], this.geometryMap[modelName][1]);
-        this.unitsCount = this.unitsCount + 1;
-        (<HTMLInputElement>document.getElementById("input")).value = this.unitsCount;
+    }
+    public addTower(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
+        let modelName = this.towerTypes[type].model;
+        let newUnit = new GenericUnit(modelName, health, position, rotation, scale);
+        this.unitsMap[id] = newUnit;
+        this.unitsMap[id].loadModel(this.renderer.scene, this.geometryMap[modelName][0], this.geometryMap[modelName][1]);
     }
     public getUnit(id: number) {
         let unit: GenericUnit = this.unitsMap[id];
@@ -74,8 +77,8 @@ class Main {
     }
     public createScene() {
 
-        const WIDTH = 1000;// window.innerWidth;
-        const HEIGHT = 800;//window.innerHeight;
+        const WIDTH = window.innerWidth;
+        const HEIGHT = window.innerHeight;
         const container = document.querySelector('#container');
         this.renderer = new Render();
 
@@ -108,7 +111,6 @@ class Main {
     }
     
     constructor() {
-        this.unitsCount = 0;
     }
 
 }

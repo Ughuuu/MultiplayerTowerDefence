@@ -31,17 +31,16 @@ class Communication {
                         obj.mesh.updateMatrix();
                     //  obj.mesh.rotation.x = value;
                 }
-        }
+            }
         });
         gameRoom.state.listen("bodies/:id", "add", (id, value) => {
-            console.log(value);
             if (value.isTower) {
-                Main.getInstance().addTower(id, value.type, 100, new THREE.Vector3(value.x, value.yf, -300), new THREE.Vector3(0, 0, 0), 0.025);
+                Main.getInstance().addTower(id, value.type, 100, new THREE.Vector3(value.x, value.y, -300), new THREE.Vector3(0, 0, 0), 0.025);
             }
             else {
-                Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(value.x, value.yf, -300), new THREE.Vector3(0, 0, 0), 2.5);
+                Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(value.x, value.y, -300), new THREE.Vector3(0, 0, 0), 2.5);
             }
- 
+
         });
     }
 
@@ -64,24 +63,23 @@ class Communication {
     }
 
     createUnit(type) {
-        this.client.send({
-            PhysicsHandler:
-            {
-                createUnit:
+        for (let i = 0; i < 5; i++) {
+            this.client.send({
+                PhysicsHandler:
                 {
-                    type: type
+                    createUnit:
+                    {
+                        type: type
+                    }
                 }
             }
+            );
         }
-        );
     }
 
     sendMessage(message) {
         this.client.send(message);
         //Main.getInstance().getUnit(0).state = false;
-        for (let i = 0; i < 1; i++) {
-            this.createUnit(0);
-        }
 
     }
 

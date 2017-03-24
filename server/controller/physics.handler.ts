@@ -115,8 +115,8 @@ export class PhysicsHandler extends Handler {
                 serialized_body = {
                     isTower: true,
                     type: tower.type,
-                    x: body.position[0],
-                    y: body.position[1],
+                    x: body.position[0] * 15,
+                    y: body.position[1] * 15,
                     angle: body.angle
                 };
             }
@@ -126,8 +126,8 @@ export class PhysicsHandler extends Handler {
                 serialized_body = {
                     isTower: false,
                     type: unit.type,
-                    x: body.position[0],
-                    y: body.position[1],
+                    x: body.position[0] * 15,
+                    y: body.position[1] * 15,
                     angle: body.angle
                 };
             }
@@ -141,7 +141,7 @@ export class PhysicsHandler extends Handler {
     }
 
     createBox(w: number, h: number) {
-        return new p2.Box({ width: w/2, height: h/2 });
+        return new p2.Box({ width: w, height: h });
     }
 
     createBody(shape: any, mass: number, position: Point) {

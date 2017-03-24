@@ -7,7 +7,14 @@ export class MapHandler extends Handler {
     public templates: {} = {};
     public vectorField: {} = {};
     public size: Point;
-    public directions: Point[] = [new Point(-1, 0), new Point(0, 1), new Point(1, 0), new Point(0, -1)];
+    public directions: Point[] = [new Point(-1, 0), 
+        new Point(-1, 1), 
+        new Point(0, 1), 
+        new Point(1, 1), 
+        new Point(1, 0),
+        new Point(1, -1),
+        new Point(0, -1),
+        new Point(-1, -1)];
 
     constructor(public template) {
         super('MapHandler');
@@ -55,7 +62,9 @@ export class MapHandler extends Handler {
         if (y >= this.size.y) {
             y = this.size.y - 1;
         }
-        return this.directions[this.vectorField[player.id][Math.floor(y)][Math.floor(x)]];
+        x = Math.floor(x);
+        y = Math.floor(y);
+        return this.directions[this.vectorField[player.id][y][x]];
     }
 
     computeDistances(player: Player) {
@@ -77,21 +86,15 @@ export class MapHandler extends Handler {
         for (let y = 0; y < this.size.y; y++) {
             for (let x = 0; x < this.size.x; x++) {
                 let dirs: {} = {};
-                if (x > 0) {
-                    dirs[0] = distance[y][x - 1];
-                }
-                if (y < this.size.y - 1) {
-                    dirs[1] = distance[y + 1][x];
-                }
-                if (x < this.size.x - 1) {
-                    dirs[2] = distance[y][x + 1];
-                }
-                if (y > 0) {
-                    dirs[3] = distance[y - 1][x];
+                for(let i=0;i<this.directions.length;i++){
+                    if (x + this.directions[i].x >= 0 && x + this.directions[i].x < this.size.x &&
+                    y + this.directions[i].y >= 0 && y + this.directions[i].y < this.size.y) {
+                        dirs[i] = distance[y + this.directions[i].y][x + this.directions[i].x];
+                    }
                 }
                 let dir: number = 0;
                 let min: number = Number.MAX_SAFE_INTEGER;
-                for (let i = 0; i < 4; i++) {
+                for (let i = 0; i < this.directions.length; i++) {
                     if (dirs[i] && min > dirs[i]) {
                         dir = i;
                         min = dirs[i];
@@ -127,8 +130,11 @@ export class MapHandler extends Handler {
 
     addTower(player: Player, position: Point, size: number) {
         let start = Math.floor(size / 2);
-        for (let i = -start; i <= start; i++) {
-            for (let j = -start; j <= start; j++) {
+        for (let i = 0; i <= start; i++) {
+            for (let j = 0; j <= start; j++) {
+                if (position.y + i < 0 || position.y + i >= this.size.y || position.x + i < 0 || position.x + i >= this.size.x) {
+                    continue;
+                }
                 this.templates[player.id][position.y + i][position.x + j] = Number.MAX_SAFE_INTEGER;
             }
         }

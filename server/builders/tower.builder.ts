@@ -21,7 +21,7 @@ export class TowerBuilder extends Builder {
         new TowerType(
             'light_tower',
             'img/monster.json',
-            10,
+            1,
             10,
             15,
             ElementType.Normal,
@@ -39,11 +39,11 @@ export class TowerBuilder extends Builder {
 
     create(type: number, player: Player, position: Point): number {
         let tower_type = TowerBuilder.types[type];
-        let boxShape = this.physicsHandler.createBox(tower_type.radius * 2, tower_type.radius * 2);
+        let boxShape = this.physicsHandler.createBox(tower_type.radius, tower_type.radius);
         boxShape.collisionGroup = this.collisionBits[player.location];
         boxShape.collisionMask = this.collisionBits[player.location];
-        position.x-=tower_type.radius;
-        position.y-=tower_type.radius;
+        position.x+=tower_type.radius/2;
+        position.y+=tower_type.radius/2;
         let body_id = this.physicsHandler.createBody(boxShape, 0, position);
         let tower = new Tower(body_id, player.id);
         tower.body = this.physicsHandler.world.bodies[this.physicsHandler.world.bodies - 1];

@@ -22,7 +22,7 @@ export class UnitBuilder extends Builder {
     public static types: UnitType[] = [
         new UnitType('light_creep',
             'img/fat_peasant_noTEXTURE_SK.json',
-            1,
+            0.2,
             10,
             15,
             ElementType.Normal,
@@ -46,8 +46,6 @@ export class UnitBuilder extends Builder {
         let circleShape = this.physicsHandler.createCircle(unit_type.radius);
         circleShape.collisionGroup = this.collisionBits[player.location];
         circleShape.collisionMask = this.collisionBits[player.location];
-        position.x-=unit_type.radius;
-        position.y-=unit_type.radius;
         let body_id = this.physicsHandler.createBody(circleShape, unit_type.mass, position);
         let unit = new Unit(body_id, player.id);
         unit.body = this.physicsHandler.world.bodies[this.physicsHandler.world.bodies.length - 1];

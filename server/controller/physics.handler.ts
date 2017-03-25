@@ -22,12 +22,25 @@ export class PhysicsHandler extends Handler {
     constructor() {
         super('PhysicsHandler');
         this.world = new p2.World({ gravity: PhysicsHandler.gravity, solver: new p2.GSSolver({ iterations: 6, tolerance: 1e-6 }) });
+        this.world.on("beginContact", this.onBeginContact);
         this.old_state['tower_types'] = TowerBuilder.types;
         this.old_state['unit_types'] = UnitBuilder.types;
         this.old_state['bodies'] = {};
         for (let i = 0; i < 5; i++) {
             this.time.push(false);
         }
+    }
+
+    onBeginContact(evt){
+        console.log(evt);
+    }
+
+    onJoin(player: Player, handlers, builders) {
+        let mapHandler: MapHandler = handlers['MapHandler'];
+        player.walls.push(this.createBody(this.createPlane(player.location), 0, new Point(0, 0), -Math.PI/2));
+        player.walls.push(this.createBody(this.createPlane(player.location), 0, new Point(mapHandler.size.x, 0), Math.PI/2));
+        player.walls.push(this.createBody(this.createPlane(player.location), 0, new Point(0, 0), 0));
+        player.walls.push(this.createBody(this.createPlane(player.location), 0, new Point(0, mapHandler.size.y), 3*Math.PI/2));
     }
 
     createUnit(type: number, player: Player, unitBuilder: UnitBuilder, width: number) {
@@ -118,7 +131,6 @@ export class PhysicsHandler extends Handler {
         let bodies_data = {};
         let towerBuilder: TowerBuilder = builders['TowerBuilder'];
         let unitBuilder: UnitBuilder = builders['UnitBuilder'];
-        console.log(this.world.bodies.length);
         for (let body of this.world.bodies) {
             if (this.time[this.getSpeedLevel(body.velocity[0], body.velocity[1])] == false)
                 continue;
@@ -158,16 +170,23 @@ export class PhysicsHandler extends Handler {
         return new p2.Particle();
     }
 
+    createPlane(collisionBit: number) {
+        let plane = new p2.Plane();
+        plane.collisionGroup = TowerBuilder.collisionBits[collisionBit];
+        plane.collisionMask = TowerBuilder.collisionBits[collisionBit];
+        return plane;
+    }
+
     createBox(w: number, h: number) {
         return new p2.Box({ width: w, height: h });
     }
 
-    createBody(shape: any, mass: number, position: Point) {
+    createBody(shape: any, mass: number, position: Point, angle: number) {
         // Define body
         let body = new p2.Body({
             mass: mass,
             position: [position.x, position.y],
-            angle: 0,
+            angle: angle,
             id: this.body_index
         });
         body.addShape(shape);

@@ -8,7 +8,7 @@ import { MapHandler } from "../controller/map.handler";
 import { RoomManager } from './index';
 
 export class GameRoom extends Room<StateHandler> {
-    static patch: number = 1000 / 10;
+    static patch: number = 1000 / 30;
     static fps: number = 1000 / 30;
     static ms: number = 1 / 30;
     private password: string;

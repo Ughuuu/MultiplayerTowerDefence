@@ -153,6 +153,6 @@ export class MapHandler extends Handler {
     }
 
     toJSON(): any {
-        return { map: this.template };
+        return { maps: this.templates };
     }
 }

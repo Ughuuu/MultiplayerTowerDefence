@@ -10,7 +10,7 @@ class Render {
     constructor() {
 
     }
-    createScene(width, height, container){
+    createScene(width, height, container) {
         this.renderer = new THREE.WebGLRenderer();
         this.scene = new THREE.Scene();
         this.renderer.setSize(width, height);
@@ -18,35 +18,35 @@ class Render {
         this.clock = new THREE.Clock();
         container.appendChild(this.renderer.domElement);
     }
-    createCamera(viewAngle, aspect, near, far) { 
-         this.camera =
+    createCamera(viewAngle, aspect, near, far) {
+        this.camera =
             new THREE.PerspectiveCamera(
                 viewAngle,
                 aspect,
                 near,
                 far
             );
-         this.camera.position.set(0, 0, 100);
+        this.camera.position.set(0, 0, 100);
         this.scene.add(this.camera);
     }
-    createLight(value,x,y,z) {
-         this.light =
+    createLight(value, x, y, z) {
+        this.light =
             new THREE.PointLight(0xFFFFFF);
 
         // set its position
-         this.light.position.x = 10;
-         this.light.position.y = 50;
-         this.light.position.z = 130;
+        this.light.position.x = 10;
+        this.light.position.y = 50;
+        this.light.position.z = 130;
 
-         // add to the scene
-         this.scene.add(this.light);
-         var texture = THREE.ImageUtils.loadTexture("/img/map.jpg");
-         var material = new THREE.MeshLambertMaterial({ map: texture });
-         var geometry = new THREE.PlaneGeometry(1000, 1000, 200, 200);
-     
-         let plane = new THREE.Mesh(geometry, material);
-         plane.position.z = -400;
-         this.scene.add(plane);
+        // add to the scene
+        this.scene.add(this.light);
+        var texture = new THREE.TextureLoader().load("/img/map.jpg");
+        var material = new THREE.MeshLambertMaterial({ map: texture });
+        var geometry = new THREE.PlaneGeometry(1000, 1000, 200, 200);
+
+        let plane = new THREE.Mesh(geometry, material);
+        plane.position.z = -400;
+        this.scene.add(plane);
     }
 
     public loadJson(modelPath: string) {
@@ -76,7 +76,7 @@ class Render {
     update() {
         this.renderer.render(this.scene, this.camera);
         var delta = this.clock.getDelta();
-        if (this.animationMixer!=null)
-        this.animationMixer.update(delta);
+        if (this.animationMixer != null)
+            this.animationMixer.update(delta);
     }
 }

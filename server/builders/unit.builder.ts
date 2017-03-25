@@ -21,7 +21,7 @@ export class UnitType {
 export class UnitBuilder extends Builder {
     public static types: UnitType[] = [
         new UnitType('light_creep',
-            'img/fat_peasant_noTEXTURE_SK.json',
+            '/img/fat_peasant_noTEXTURE_SK.json',
             0.2,
             10,
             15,
@@ -36,7 +36,7 @@ export class UnitBuilder extends Builder {
 
     constructor(public physicsHandler: PhysicsHandler) {
         super('UnitBuilder');
-        for(let i=0;i<16;i++){
+        for (let i = 0; i < 16; i++) {
             this.collisionBits[i] = Math.pow(2, i);
         }
     }

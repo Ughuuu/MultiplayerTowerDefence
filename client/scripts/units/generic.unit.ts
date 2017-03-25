@@ -57,15 +57,16 @@ class GenericUnit {
     }
 
     public moveOnX(x) {
-        this.mesh.translateX(x - this.getPosition().x);
+        this.mesh.position.x = x;
+        this.mesh.updateMatrix();
         this.position = this.mesh.position;
     }
     public moveOnY(y) {
-        this.mesh.translateY(y - this.getPosition().y);
+        this.mesh.position.y= y;
         this.position = this.mesh.position;
     }
     public moveOnZ(z) {
-        this.mesh.translateZ(z - this.getPosition().z);
+        this.mesh.position.z = z;
         this.position = this.mesh.position;
     }
 

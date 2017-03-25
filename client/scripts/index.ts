@@ -31,30 +31,30 @@ class Main {
     public getRenderer() {
         return this.renderer;
     }
-    public setUnitTypes(unitTypes: UnitType[]) {
+    public setUnitTypes(unitTypes: UnitType[], progress) {
         this.creepTypes = unitTypes;
         for (let i = 0; i < this.creepTypes.length; i++) {
             {
                 var loader = new THREE.JSONLoader();
                 loader.load(this.creepTypes[i].model, function (icopy:number,geometry: THREE.Geometry, materials: any) {
-                    console.log(arguments);
                     let value: [THREE.Geometry, any] = [geometry, materials];
                     this.geometryMap[this.creepTypes[icopy].model] = value;
+                    progress();
                 }.bind(this, i));
             }
         }
     }
 
-    public setTowerTypes(towerTypes: TowerType[]) {
+    public setTowerTypes(towerTypes: TowerType[], progress) {
         this.towerTypes = towerTypes;
         for (var i = 0; i < this.towerTypes.length; i++) {
             {
                 var loader = new THREE.JSONLoader();
                 loader.load(this.towerTypes[i].model, function (icopy: number, geometry: THREE.Geometry, materials: any) {
-                    console.log(arguments);
                     let value: [THREE.Geometry, any] = [geometry, materials];
                     this.geometryMap[this.towerTypes[icopy].model] = value;
                     var material = materials[0];
+                    progress();
                 }.bind(this, i));
             }
         }

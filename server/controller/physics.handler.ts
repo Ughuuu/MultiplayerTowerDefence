@@ -18,7 +18,7 @@ export class PhysicsHandler extends Handler {
 
     constructor() {
         super('PhysicsHandler');
-        this.world = new p2.World({ gravity: PhysicsHandler.gravity });
+        this.world = new p2.World({ gravity: PhysicsHandler.gravity, solver: new p2.GSSolver({ iterations: 6, tolerance: 1e-6 }) });
         this.old_state['tower_types'] = TowerBuilder.types;
         this.old_state['unit_types'] = UnitBuilder.types;
         this.old_state['bodies'] = {};
@@ -77,8 +77,15 @@ export class PhysicsHandler extends Handler {
                 let body = unit.body;
                 let position = new Point(body.position[0], body.position[1]);
                 let dir: Point = mapHandler.getNext(player, position);
-                body.velocity[0] = dir.x;
-                body.velocity[1] = dir.y;
+                body.velocity[0] += dir.x / 10;
+                body.velocity[1] += dir.y / 10;
+                for (let i = 0; i < 2; i++) {
+                    if (body.velocity[i] > 2) {
+                        body.velocity[i] = 2;
+                    } else if (body.velocity[i] < -2) {
+                        body.velocity[i] = -2;
+                    }
+                }
             }
         }
     }
@@ -115,8 +122,8 @@ export class PhysicsHandler extends Handler {
                 serialized_body = {
                     isTower: true,
                     type: tower.type,
-                    x: body.position[0] * 15,
-                    y: body.position[1] * 15,
+                    x: body.position[0],
+                    y: body.position[1],
                     angle: body.angle
                 };
             }
@@ -126,8 +133,8 @@ export class PhysicsHandler extends Handler {
                 serialized_body = {
                     isTower: false,
                     type: unit.type,
-                    x: body.position[0] * 15,
-                    y: body.position[1] * 15,
+                    x: body.position[0],
+                    y: body.position[1],
                     angle: body.angle
                 };
             }
@@ -138,6 +145,10 @@ export class PhysicsHandler extends Handler {
 
     createCircle(radius: number) {
         return new p2.Circle({ radius: radius });
+    }
+
+    createParticle(radius: number) {
+        return new p2.Particle();
     }
 
     createBox(w: number, h: number) {

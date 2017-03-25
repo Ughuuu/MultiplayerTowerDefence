@@ -21,7 +21,7 @@ export class UnitType {
 export class UnitBuilder extends Builder {
     public static types: UnitType[] = [
         new UnitType('light_creep',
-            '/img/fat_peasant_noTEXTURE_SK.json',
+            '/assets/fat_peasant_noTEXTURE_SK.json',
             0.2,
             10,
             15,

@@ -77,8 +77,8 @@ class Main {
     }
     public createScene() {
 
-        const WIDTH = window.innerWidth;
-        const HEIGHT = window.innerHeight;
+        const WIDTH = 1400;// window.innerWidth;
+        const HEIGHT = 800;// window.innerHeight;
         const container = document.querySelector('#container');
         this.renderer = new Render();
 
@@ -95,6 +95,33 @@ class Main {
         const NEAR = 0.1;
         const FAR = 10000;
         this.renderer.createCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+        let map: number[][] = [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [30, 30, 30, 30, 30, 30, 30, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 30, 30, 30, 30, 30, 30, 30],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 30],
+        ];
+        this.renderer.initMap(map, map[0].length, map.length);
     }
 
     public createLight() {

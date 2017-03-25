@@ -26,7 +26,6 @@ class Communication {
     }
 
     getXYA(xya: number) {
-        console.log(xya);
         let x = Math.round(xya % this.precision1) / this.decimals;
         let y = Math.round((xya / this.precision1) % this.precision1) / this.decimals;
         let a = Math.round((xya / this.precision2) % this.precision1) / this.decimals;

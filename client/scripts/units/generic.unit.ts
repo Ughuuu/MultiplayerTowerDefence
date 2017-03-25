@@ -20,21 +20,22 @@ class GenericUnit {
     }
 
     public loadModel(scene: THREE.Scene, geometry: THREE.Geometry, materials: any) {
-        var material = materials[0];
-        material.morphTargets = true;
+        materials.forEach(function (material) {
 
-        //This is hardcoded for now
-        material.color.setHex(0xffaaaa);
+            material.skinning = true;
+
+        });
+
 
         this.animations = geometry.animations;
 
         var faceMaterial = new THREE.MultiMaterial(materials);
-        this.mesh = new THREE.Mesh(geometry, faceMaterial);
+        this.mesh = new THREE.SkinnedMesh(geometry, faceMaterial);
         this.mesh.scale.set(this.scale, this.scale, this.scale);
 
         this.mesh.position.set(this.position.x, this.position.y, this.position.z);
         this.mesh.rotation.set(this.rotation.x, this.rotation.y, this.rotation.z);
-        this.animationMixer = new THREE.AnimationMixer(scene);
+        this.animationMixer = new THREE.AnimationMixer(this.mesh);
         scene.add(this.mesh);
 
         this.isLoaded = true;

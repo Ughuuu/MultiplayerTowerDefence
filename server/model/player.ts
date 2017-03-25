@@ -6,6 +6,7 @@ export class Player {
     tower_ids= [];
     unit_ids= [];
     creep_location: number = 0;
+    walls = [];
 
     constructor(public id: number, public name: string, public location: number) { }
 }

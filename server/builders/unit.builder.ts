@@ -26,27 +26,27 @@ export class UnitBuilder extends Builder {
             10,
             15,
             ElementType.Normal,
-            10,
+            2,
             0,
             WalkType.Ground,
             1)
     ];
-    private collisionBits: number[] = [];
+    public static collisionBits: number[] = [];
     units = {};
 
     constructor(public physicsHandler: PhysicsHandler, public players: {}) {
         super('UnitBuilder');
         for (let i = 0; i < 16; i++) {
-            this.collisionBits[i] = Math.pow(2, i);
+            UnitBuilder.collisionBits[i] = Math.pow(2, i);
         }
     }
 
     create(type: number, player: Player, position: Point): number {
         let unit_type = UnitBuilder.types[type];
         let circleShape = this.physicsHandler.createCircle(unit_type.radius);
-        circleShape.collisionGroup = this.collisionBits[player.location];
-        circleShape.collisionMask = this.collisionBits[player.location];
-        let body_id = this.physicsHandler.createBody(circleShape, unit_type.mass, position);
+        circleShape.collisionGroup = UnitBuilder.collisionBits[player.location];
+        circleShape.collisionMask = UnitBuilder.collisionBits[player.location];
+        let body_id = this.physicsHandler.createBody(circleShape, unit_type.mass, position, 0);
         let unit = new Unit(body_id, player.id);
         unit.body = this.physicsHandler.world.bodies[this.physicsHandler.world.bodies.length - 1];
         unit.health = unit_type.health;

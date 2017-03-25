@@ -53,6 +53,10 @@ class Communication {
             obj.mesh.updateMatrix();
         });
         this.gameRoom.state.listen("bodies/:id", "add", (id, value) => {
+            if(value == null){
+                console.log(id);
+                return;
+            }
             let com = Main.getInstance().getCommunication();
             let xya = this.getXYA(value.xya);
             let x = xya.x;

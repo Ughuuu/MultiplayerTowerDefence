@@ -71,7 +71,6 @@ class Render {
                     plane.position.x = j * cellWidth + initialX;
                     plane.position.y = i * cellHeight - initialY;
                     plane.position.z = -400;
-                    console.log(plane.position);
                     this.scene.add(plane);
                 }
                 if (matrix[i][j] == 30) {
@@ -80,7 +79,6 @@ class Render {
                     plane.position.x = j * cellWidth + initialX;
                     plane.position.y = i * cellHeight - initialY;//- this.height / 2;
                     plane.position.z = -400;
-                    console.log(plane.position);
                     this.scene.add(plane);
                 }
             }

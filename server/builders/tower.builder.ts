@@ -12,7 +12,8 @@ export class TowerType {
         public health: number,
         public damage: number,
         public elementType: ElementType.Normal,
-        public speed: number) { }
+        public speed: number,
+        ) { }
 }
 
 export class TowerBuilder extends Builder {
@@ -27,24 +28,24 @@ export class TowerBuilder extends Builder {
             ElementType.Normal,
             1)
     ];
-    private collisionBits: number[] = [];
+    public static collisionBits: number[] = [];
     towers = {};
 
     constructor(public physicsHandler: PhysicsHandler) {
         super('TowerBuilder');
         for (let i = 0; i < 16; i++) {
-            this.collisionBits[i] = Math.pow(2, i);
+            TowerBuilder.collisionBits[i] = Math.pow(2, i);
         }
     }
 
     create(type: number, player: Player, position: Point): number {
         let tower_type = TowerBuilder.types[type];
         let boxShape = this.physicsHandler.createBox(tower_type.radius, tower_type.radius);
-        boxShape.collisionGroup = this.collisionBits[player.location];
-        boxShape.collisionMask = this.collisionBits[player.location];
+        boxShape.collisionGroup = TowerBuilder.collisionBits[player.location];
+        boxShape.collisionMask = TowerBuilder.collisionBits[player.location];
         position.x+=tower_type.radius/2;
         position.y+=tower_type.radius/2;
-        let body_id = this.physicsHandler.createBody(boxShape, 0, position);
+        let body_id = this.physicsHandler.createBody(boxShape, 0, position, 0);
         let tower = new Tower(body_id, player.id);
         tower.body = this.physicsHandler.world.bodies[this.physicsHandler.world.bodies - 1];
         tower.health = tower_type.health;

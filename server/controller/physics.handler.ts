@@ -15,6 +15,9 @@ export class PhysicsHandler extends Handler {
     private old_state = {};
     private time: boolean[] = [];
     private iteration: number = 0;
+    private decimals: number = Math.pow(10, 3);
+    private precision1: number = Math.pow(10, 6);
+    private precision2: number = Math.pow(10, 12);
 
     constructor() {
         super('PhysicsHandler');
@@ -72,27 +75,27 @@ export class PhysicsHandler extends Handler {
         for (let id in players) {
             let player = players[id];
             let units: number[] = player.unit_ids;
+            let toRemove: number[] = [];
             for (let unit_id of units) {
                 let unit = unitBuilder.get(unit_id);
                 let body = unit.body;
                 let position = new Point(body.position[0], body.position[1]);
-                let dir: Point = mapHandler.getNext(player, position);
-                body.velocity[0] += dir.x / 10;
-                body.velocity[1] += dir.y / 10;
-                for (let i = 0; i < 2; i++) {
-                    if (body.velocity[i] > 2) {
-                        body.velocity[i] = 2;
-                    } else if (body.velocity[i] < -2) {
-                        body.velocity[i] = -2;
-                    }
+                let dir: Point = mapHandler.getNext(player, position, unit.speed);
+                body.velocity[0] = dir.x;
+                body.velocity[1] = dir.y;
+                if (mapHandler.isDone(player, position)) {
+                    toRemove.push(unit.id);
                 }
+            }
+            for (let unit_id of toRemove) {
+                unitBuilder.remove(unit_id);
             }
         }
     }
 
     getSpeedLevel(velx: number, vely: number): number {
         let vel = Math.abs(velx) + Math.abs(vely);
-        if (vel > 4) {
+        if (vel > 1) {
             return 0;
         }
         if (vel > 0.5) {
@@ -101,30 +104,36 @@ export class PhysicsHandler extends Handler {
         if (vel > 0.05) {
             return 2;
         }
-        if (vel > 0.001) {
+        if (vel > 0.005) {
             return 3;
         }
         return 4;
+    }
+
+    static getNumberWithPrecision(x: number, decimals: number, padding: number) {
+        return Math.abs(Math.round(x * decimals)) * padding;
     }
 
     toJSON(players, handlers, builders): any {
         let bodies_data = {};
         let towerBuilder: TowerBuilder = builders['TowerBuilder'];
         let unitBuilder: UnitBuilder = builders['UnitBuilder'];
+        console.log(this.world.bodies.length);
         for (let body of this.world.bodies) {
-            //if (this.time[this.getSpeedLevel(body.velocity[0], body.velocity[1])] == false)
-            //    continue;
+            if (this.time[this.getSpeedLevel(body.velocity[0], body.velocity[1])] == false)
+                continue;
             let body_id: number = body.id;
             var serialized_body;
             let tower = towerBuilder.get(body_id);
+            let xya = PhysicsHandler.getNumberWithPrecision(body.position[0], this.decimals, 1) +
+                PhysicsHandler.getNumberWithPrecision(body.position[1], this.decimals, this.precision1) +
+                PhysicsHandler.getNumberWithPrecision(body.angle, this.decimals, this.precision2);
             if (tower != null) {
                 let towerType = TowerBuilder.types[tower.type];
                 serialized_body = {
                     isTower: true,
                     type: tower.type,
-                    x: body.position[0],
-                    y: body.position[1],
-                    angle: body.angle
+                    xya: xya
                 };
             }
             let unit = unitBuilder.get(body_id);
@@ -133,9 +142,7 @@ export class PhysicsHandler extends Handler {
                 serialized_body = {
                     isTower: false,
                     type: unit.type,
-                    x: body.position[0],
-                    y: body.position[1],
-                    angle: body.angle
+                    xya: xya
                 };
             }
             this.old_state['bodies'][body_id] = serialized_body;

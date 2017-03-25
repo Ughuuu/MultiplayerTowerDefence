@@ -21,7 +21,7 @@ export class GameRoom extends Room<StateHandler> {
     }
 
     addBuilders(stateHandler: StateHandler): StateHandler {
-        stateHandler.addBuilder(new UnitBuilder(stateHandler.handlers['PhysicsHandler']));
+        stateHandler.addBuilder(new UnitBuilder(stateHandler.handlers['PhysicsHandler'], stateHandler.players));
         stateHandler.addBuilder(new TowerBuilder(stateHandler.handlers['PhysicsHandler']));
         stateHandler.addHandler(new MapHandler(this.options.map));
         return stateHandler;
@@ -31,7 +31,7 @@ export class GameRoom extends Room<StateHandler> {
         super(options);
         this.setPatchRate(GameRoom.patch);
         this.setState(this.addBuilders(this.addHandlers(new StateHandler())));
-                    this.setSimulationInterval(function () { this.update() }.bind(this), GameRoom.fps);
+        this.setSimulationInterval(function () { this.update() }.bind(this), GameRoom.fps);
         RoomManager.rooms++;
     }
 

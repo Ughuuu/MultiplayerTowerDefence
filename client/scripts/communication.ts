@@ -8,6 +8,9 @@ class Communication {
     towerTypes: TowerType[];
     modelCount: number = 0;
     gameRoom;
+    precision1: number = Math.pow(10, 6);
+    precision2: number = Math.pow(10, 12);
+    decimals: number = Math.pow(10, 3);
 
     constructor(client) {
         this.state = null;
@@ -15,42 +18,53 @@ class Communication {
     }
 
     joinRoom(room) {
-        this.gameRoom = this.client.join(room);     
+        this.gameRoom = this.client.join(room);
         this.gameRoom.onJoin.add(this.onJoin);
 
         this.gameRoom.onUpdate.addOnce(this.init);
         this.gameRoom.state.listen(this.listen);
     }
 
-    addCallbacks(){   
+    getXYA(xya: number) {
+        console.log(xya);
+        let x = Math.round(xya % this.precision1) / this.decimals;
+        let y = Math.round((xya / this.precision1) % this.precision1) / this.decimals;
+        let a = Math.round((xya / this.precision2) % this.precision1) / this.decimals;
+        x *= 10;
+        y *= 10;
+        y-=100;
+        return { x: x, y: y, a: a };
+    }
+
+    addCallbacks() {
         this.gameRoom.state.listen("bodies/:id/:attribute", "replace", (id, xy, value) => {
-            value*=20;
-            let obj = Main.getInstance().getUnit(id);
-            if (obj != null && obj.isLoaded) {
-                switch (xy) {
-                    case 'x':
-                        obj.moveOnX(value);
-                        break;
-                    case 'y':
-                        obj.moveOnY(value);
-                        break;
-                    default:
-                        obj.mesh.updateMatrix();
-                    //  obj.mesh.rotation.x = value;
-                }
+            if (xy != 'xya') {
+                return;
             }
+            let xya = this.getXYA(value);
+            let x = xya.x;
+            let y = xya.y;
+            let obj = Main.getInstance().getUnit(id);
+            if (!obj.isLoaded) {
+                return;
+            }
+            obj.setRotationY(x, y);
+            obj.moveOnX(x);
+            obj.moveOnY(y);
+            obj.mesh.updateMatrix();
         });
         this.gameRoom.state.listen("bodies/:id", "add", (id, value) => {
-        let com = Main.getInstance().getCommunication();
-            value.x*=20;
-            value.y*=20;
+            let com = Main.getInstance().getCommunication();
+            let xya = this.getXYA(value.xya);
+            let x = xya.x;
+            let y = xya.y;
             if (value.isTower) {
-                Main.getInstance().addTower(id, value.type, 100, new THREE.Vector3(value.x, value.y, -300), new THREE.Vector3(Math.PI/2, 0, 0), 4 * com.towerTypes[value.type].radius);
+                Main.getInstance().addTower(id, value.type, 100, new THREE.Vector3(x, y, -300), new THREE.Vector3(Math.PI / 2, 0, 0), 5 * com.towerTypes[value.type].radius);
             }
             else {
-                Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(value.x, value.y, -300), new THREE.Vector3(Math.PI/2, 0, 0), 4 * com.unitTypes[value.type].radius);
+                Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(x, y, -300), new THREE.Vector3(Math.PI / 2, 0, 0), 10 * com.unitTypes[value.type].radius);
             }
-
+            let obj = Main.getInstance().getUnit(id);
         });
     }
 
@@ -73,18 +87,17 @@ class Communication {
     }
 
     createUnit(type) {
-        for (let i = 0; i < 5; i++) {
-            this.client.send({
-                PhysicsHandler:
+        for(let i=0;i<10;i++)
+        this.client.send({
+            PhysicsHandler:
+            {
+                createUnit:
                 {
-                    createUnit:
-                    {
-                        type: type
-                    }
+                    type: type
                 }
             }
-            );
         }
+        );
     }
 
     sendMessage(message) {

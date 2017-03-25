@@ -26,7 +26,7 @@ export class UnitBuilder extends Builder {
             10,
             15,
             ElementType.Normal,
-            1,
+            10,
             0,
             WalkType.Ground,
             1)
@@ -34,7 +34,7 @@ export class UnitBuilder extends Builder {
     private collisionBits: number[] = [];
     units = {};
 
-    constructor(public physicsHandler: PhysicsHandler) {
+    constructor(public physicsHandler: PhysicsHandler, public players: {}) {
         super('UnitBuilder');
         for (let i = 0; i < 16; i++) {
             this.collisionBits[i] = Math.pow(2, i);
@@ -66,6 +66,9 @@ export class UnitBuilder extends Builder {
     }
 
     remove(id): void {
+        let unit: Unit = this.units[id];
+        let player: Player = this.players[unit.owner_id];
+        player.unit_ids.splice(player.unit_ids.indexOf(unit.id), 1);
         this.physicsHandler.destroyBody(id);
         delete this.units[id];
     }

@@ -4,7 +4,7 @@ class GenericUnit {
     private scale: number;
     private position: THREE.Vector3;
     private rotation: THREE.Vector3;
- 
+
     public mesh: THREE.Mesh;
     private animations: THREE.AnimationClip[];
     private materials: any;
@@ -20,25 +20,25 @@ class GenericUnit {
     }
 
     public loadModel(scene: THREE.Scene, geometry: THREE.Geometry, materials: any) {
-            var material = materials[0];
-            material.morphTargets = true;
+        var material = materials[0];
+        material.morphTargets = true;
 
-            //This is hardcoded for now
-            material.color.setHex(0xffaaaa);
+        //This is hardcoded for now
+        material.color.setHex(0xffaaaa);
 
-            this.animations = geometry.animations;
+        this.animations = geometry.animations;
 
-            var faceMaterial = new THREE.MultiMaterial(materials);
-            this.mesh = new THREE.Mesh(geometry, faceMaterial);
-            this.mesh.scale.set(this.scale, this.scale, this.scale);
-            
-            this.mesh.position.set(this.position.x, this.position.y, this.position.z);
-            this.mesh.rotation.set(this.rotation.x, this.rotation.y, this.rotation.z);
-            this.animationMixer = new THREE.AnimationMixer(scene);
-            scene.add(this.mesh);
-          
-            this.isLoaded = true;
-            this.playMoveAnimation();
+        var faceMaterial = new THREE.MultiMaterial(materials);
+        this.mesh = new THREE.Mesh(geometry, faceMaterial);
+        this.mesh.scale.set(this.scale, this.scale, this.scale);
+
+        this.mesh.position.set(this.position.x, this.position.y, this.position.z);
+        this.mesh.rotation.set(this.rotation.x, this.rotation.y, this.rotation.z);
+        this.animationMixer = new THREE.AnimationMixer(scene);
+        scene.add(this.mesh);
+
+        this.isLoaded = true;
+        this.playMoveAnimation();
     }
 
     public setPosition(position: THREE.Vector3) {
@@ -52,17 +52,21 @@ class GenericUnit {
     }
     public setRotation(rotation: THREE.Vector3) {
         this.rotation = rotation;
-        this.mesh.updateMatrix();
+        this.mesh.rotation.set(this.rotation.x, this.rotation.y, this.rotation.z);
+    }
+
+    public setRotationY(x: number, y: number) {
+        let ang: number = Math.atan2(this.position.y - y, this.position.x - x);
+        this.rotation.y = ang - Math.PI / 2;
         this.mesh.rotation.set(this.rotation.x, this.rotation.y, this.rotation.z);
     }
 
     public moveOnX(x) {
         this.mesh.position.x = x;
-        this.mesh.updateMatrix();
         this.position = this.mesh.position;
     }
     public moveOnY(y) {
-        this.mesh.position.y= y;
+        this.mesh.position.y = y;
         this.position = this.mesh.position;
     }
     public moveOnZ(z) {
@@ -77,8 +81,8 @@ class GenericUnit {
             .setDuration(this.animations[0].duration)			// one second
             .startAt(- Math.random())	// random phase (already running)
             .play()
-        
-           
+
+
     }
 
     //Units handle their animations

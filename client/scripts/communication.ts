@@ -23,6 +23,15 @@ class Communication {
 
         this.gameRoom.onUpdate.addOnce(this.init);
         this.gameRoom.state.listen(this.listen);
+        this.gameRoom.state.listen("maps/:id", "remove", (id, attribute) => {
+            console.log(attribute);
+        });
+        this.gameRoom.state.listen("maps/:id", "add", (id, attribute) => {
+            console.log(attribute);
+        });
+        this.gameRoom.state.listen("maps/:id/:y/:x", "replace", (id, y, x, value) => {
+            console.log(id + ' ' + x + ' ' + y + ' ' + value);
+        });
     }
 
     getXYA(xya: number) {
@@ -160,6 +169,7 @@ class Communication {
     }
 
     listen(number, message, value) {
+        console.log(number, message, value);
     }
 
     onJoin(client, room) {

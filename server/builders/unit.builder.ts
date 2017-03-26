@@ -25,7 +25,7 @@ export class UnitBuilder extends Builder {
         new UnitType('light_creep',
             '/assets/fat_peasant_noTEXTURE_SK.json',
             0.2,
-            10,
+            30,
             15,
             ElementType.Normal,
             2,

@@ -108,7 +108,10 @@ export class PhysicsHandler extends Handler {
         if (unit == null) {
             return;
         }
-        unitBuilder.remove(unit.id);
+        unit.health -= projectile.damage;
+        if (unit.health <= 0) {
+            unitBuilder.remove(unit.id);
+        }
         projectileBuilder.remove(projectile.id);
     }
 
@@ -240,7 +243,7 @@ export class PhysicsHandler extends Handler {
                 PhysicsHandler.getNumberWithPrecision(body.angle, this.decimals, this.precision2);
             if (tower != null) {
                 serialized_body = {
-                    isTower: true,
+                    classType: 0,
                     type: tower.type,
                     xya: xya
                 };
@@ -248,7 +251,7 @@ export class PhysicsHandler extends Handler {
             let unit = unitBuilder.get(body_id);
             if (unit != null) {
                 serialized_body = {
-                    isTower: false,
+                    classType: 1,
                     type: unit.type,
                     xya: xya
                 };
@@ -256,7 +259,7 @@ export class PhysicsHandler extends Handler {
             let projectile = projectileBuilder.get(body_id);
             if (projectile != null) {
                 serialized_body = {
-                    isTower: false,
+                    classType: 2,
                     type: projectile.type,
                     xya: xya
                 };

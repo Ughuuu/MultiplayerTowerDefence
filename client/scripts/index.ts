@@ -13,11 +13,25 @@ class Main {
     private creepTypes: UnitType[];
     private towerTypes: TowerType[];
     private clock: THREE.Clock;
+    private mouse: THREE.Vector2;
+    private offset: { x: number, y: number };
+    private raycaster: THREE.Raycaster;
+    private windowHalfX: number;
+    private windowHalfY: number;
+    private INTERSECTED: any;
     static getInstance() {
         if (!Main.instance) {
             Main.instance = new Main();
         }
         return Main.instance;
+    }
+
+    constructor() {
+        this.windowHalfX = 0;
+        this.windowHalfY = 0;
+        this.raycaster = new THREE.Raycaster();
+        this.mouse = new THREE.Vector2();
+        window.addEventListener('resize', this.onWindowResize.bind(this), false);
     }
 
     public createCommunication(client) {
@@ -27,6 +41,16 @@ class Main {
     public getCommunication() {
         return this.communication;
     }
+
+    public onWindowResize() {
+        this.windowHalfX = window.innerWidth / 2;
+        this.windowHalfY = window.innerHeight / 2;
+        this.renderer.camera.aspect = window.innerWidth / window.innerHeight;
+        this.renderer.camera.updateProjectionMatrix();
+
+        this.renderer.renderer.setSize(window.innerWidth, window.innerHeight);
+
+}
 
     public getRenderer() {
         return this.renderer;
@@ -59,27 +83,74 @@ class Main {
             }
         }
     }
+
+    public setMouse(event: any) {
+        this.mouse.x = ((event.clientX - this.offset.x) / window.innerWidth) * 2 - 1;;
+        this.mouse.y = - ((event.clientY - this.offset.y) / window.innerHeight) * 2 + 1;
+        
+    }
+
+    public onmousedown(event) {
+        this.raycaster.setFromCamera(this.mouse.clone(), this.renderer.camera);
+
+        // calculate objects intersecting the picking ray
+        let intersects: any = this.raycaster.intersectObjects(this.renderer.scene.children);
+
+        if (intersects.length > 0) {
+            console.log(intersects[0].object.position);
+            var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
+            console.log(x);
+        
+            this.communication.createTower(0, x.x, x.y);
+            
+        }
+        if (intersects.length > 0) {
+            if (this.INTERSECTED != intersects[0].object) {
+                if (this.INTERSECTED) this.INTERSECTED.material.emissive.setHex(this.INTERSECTED.currentHex);
+                this.INTERSECTED = intersects[0].object;
+                this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
+                this.INTERSECTED.material.emissive.setHex(0xff0000);
+            }
+        } else {
+            if (this.INTERSECTED) this.INTERSECTED.material.emissive.setHex(this.INTERSECTED.currentHex);
+            this.INTERSECTED = null;
+        }
+    }
+
     public addCreep(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
         let modelName = this.creepTypes[type].model;
         let newUnit = new GenericUnit(modelName, health, position, rotation, scale);
         this.unitsMap[id] = newUnit;
         this.unitsMap[id].loadModel(this.renderer.scene, this.geometryMap[modelName][0], this.geometryMap[modelName][1]);
     }
+
     public addTower(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
         let modelName = this.towerTypes[type].model;
         let newUnit = new GenericUnit(modelName, health, position, rotation, scale);
         this.unitsMap[id] = newUnit;
         this.unitsMap[id].loadModel(this.renderer.scene, this.geometryMap[modelName][0], this.geometryMap[modelName][1]);
     }
+
+    public getElementOffset(el) {
+        for (var lx = 0, ly = 0;
+        el != null;
+        lx += el.offsetLeft, ly += el.offsetTop, el = el.offsetParent);
+        return { x: lx, y: ly };
+
+    }
+
     public getUnit(id: number) {
         let unit: GenericUnit = this.unitsMap[id];
         return unit;
     }
+
     public createScene() {
 
-        const WIDTH = 1400;// window.innerWidth;
-        const HEIGHT = 800;// window.innerHeight;
+        const WIDTH =  window.innerWidth;
+        const HEIGHT = window.innerHeight;
+
         const container = document.querySelector('#container');
+        this.offset = this.getElementOffset(container);
         this.renderer = new Render();
 
         this.renderer.createScene(WIDTH, HEIGHT, container);
@@ -121,7 +192,7 @@ class Main {
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 30],
         ];
-        this.renderer.initMap(map, map[0].length, map.length);
+        this.renderer.initMap(map, map[0].length, map.length,20,20);
     }
 
     public createLight() {
@@ -136,8 +207,4 @@ class Main {
         this.renderer.update();
         requestAnimationFrame(function () { this.update() }.bind(this));
     }
-    
-    constructor() {
-    }
-
 }

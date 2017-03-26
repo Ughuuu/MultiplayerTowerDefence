@@ -22,6 +22,21 @@ class Communication {
         this.gameRoom.onJoin.add(this.onJoin);
 
         this.gameRoom.onUpdate.addOnce(this.init);
+
+        // remove on a map, a player left
+        this.gameRoom.state.listen("maps/:id", "remove", (id, attribute) => {
+            console.log(attribute);
+        });
+
+        // add on a whole map
+        this.gameRoom.state.listen("maps/:id", "add", (id, map) => {
+            console.log(map);
+        });
+
+        // change on a map
+        this.gameRoom.state.listen("maps/:id/:y/:x", "replace", (id, y, x, value) => {
+            console.log(id + ' ' + x + ' ' + y + ' ' + value);
+        });
         this.gameRoom.state.listen(this.listen);
     }
 
@@ -52,6 +67,8 @@ class Communication {
             obj.moveOnY(y);
             obj.mesh.updateMatrix();
         });
+        this.gameRoom.state.listen("bodies/:id", "remove", (id, value) => {
+        });
         this.gameRoom.state.listen("bodies/:id", "add", (id, value) => {
             if(value == null){
                 console.log(id);
@@ -68,6 +85,15 @@ class Communication {
                 Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(x, y, -300), new THREE.Vector3(Math.PI / 2, 0, 0), 10 * com.unitTypes[value.type].radius);
             }
             let obj = Main.getInstance().getUnit(id);
+        });
+        this.gameRoom.state.listen("maps", "add", (id, value) => {
+            console.log(id);
+        });
+        this.gameRoom.state.listen("maps/:attribute/:id", "add", (id, value) => {
+            console.log(id);
+        });
+        this.gameRoom.state.listen("maps/:attribute/:id/:id", "add", (id, value) => {
+            console.log(id);
         });
     }
 
@@ -135,7 +161,7 @@ class Communication {
 
     setTowerTest() {
         let com = Main.getInstance().getCommunication();
-        com.createTower(0, 0, 3);
+       com.createTower(0, 0, 3);
         com.createTower(0, 1, 3);
         com.createTower(0, 2, 3);
         com.createTower(0, 3, 3);
@@ -157,6 +183,7 @@ class Communication {
     }
 
     listen(number, message, value) {
+        console.log("listen", number, message, value);
     }
 
     onJoin(client, room) {

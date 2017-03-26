@@ -82,8 +82,6 @@ class GenericUnit {
             .setDuration(this.animations[0].duration)			// one second
             .startAt(- Math.random())	// random phase (already running)
             .play()
-
-
     }
 
     //Units handle their animations

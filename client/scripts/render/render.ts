@@ -10,8 +10,14 @@ class Render {
     planes: THREE.Geometry[][];
     width: number;
     height: number;
+    cellWidth: number;
+    cellHeight: number;
+    mouse: THREE.Vector2;
+    initialX: number;
+    initialY: number;
     constructor() {
         this.planes = [];
+
     }
     createScene(width, height, container) {
         this.width = 800;
@@ -45,46 +51,53 @@ class Render {
 
         // add to the scene
         this.scene.add(this.light);
-       
+
     }
 
-    public initMap(matrix: number[][], width: number, height: number) {
-        var textureGrass = new THREE.TextureLoader().load("/assets/tiles/grass.png");
-        var textureRock = new THREE.TextureLoader().load("/assets/tiles/rock.jpg");
-        var textureSwamp = new THREE.TextureLoader().load("/assets/tiles/swamp.jpg");
-        var materialGrass = new THREE.MeshLambertMaterial({ map: textureGrass });
-        var materialRock = new THREE.MeshBasicMaterial({ map: textureRock, side: THREE.DoubleSide });
-        var materialSwamp = new THREE.MeshBasicMaterial({ map: textureSwamp, side: THREE.DoubleSide });
+    public initMap(matrix: number[][], width: number, height: number, cellWidth: number, cellHeight :number) {
+        let textureGrass = new THREE.TextureLoader().load("/assets/tiles/grass.png");
+        let textureRock = new THREE.TextureLoader().load("/assets/tiles/rock.jpg");
+        let textureSwamp = new THREE.TextureLoader().load("/assets/tiles/swamp.jpg");
+       
 
-        let initialX: number = 12;
-        let initialY: number = this.height/2-60;
-        let cellWidth: number = 20;
-        let cellHeight: number = 20;
-        var materials = [materialGrass, materialRock, materialSwamp];
+        this.initialX = 12;
+        this.initialY = this.height / 2 - 60;
+        this.cellWidth = cellWidth;
+        this.cellHeight = cellHeight;
      
+
         for (let i: number = 0; i < height; i++) {
             this.planes[i] = [];
             for (let j: number = 0; j < width; j++) {
+                let materialGrass = new THREE.MeshLambertMaterial({ map: textureGrass });
+                let materialRock = new THREE.MeshLambertMaterial({ map: textureRock, side: THREE.DoubleSide });
+                let materialSwamp = new THREE.MeshLambertMaterial({ map: textureSwamp, side: THREE.DoubleSide });
+
                 this.planes[i][j] = new THREE.PlaneGeometry(cellWidth, cellHeight, width, height);
+                let plane;
                 if (matrix[i][j] == 0) {
-                    let plane = new THREE.Mesh(this.planes[i][j], materialGrass);
-                    plane.position.x = j * cellWidth + initialX;
-                    plane.position.y = i * cellHeight - initialY;
-                    plane.position.z = -400;
-                    this.scene.add(plane);
+                    plane = new THREE.Mesh(this.planes[i][j], materialGrass);
                 }
                 if (matrix[i][j] == 30) {
-
-                    let plane = new THREE.Mesh(this.planes[i][j], materialSwamp);
-                    plane.position.x = j * cellWidth + initialX;
-                    plane.position.y = i * cellHeight - initialY;//- this.height / 2;
-                    plane.position.z = -400;
-                    this.scene.add(plane);
+                    plane = new THREE.Mesh(this.planes[i][j], materialSwamp);
                 }
+                plane.position.x = j * cellWidth + this.initialX;
+                plane.position.y = i * cellHeight - this.initialY;
+                plane.position.z = -300;
+                this.scene.add(plane);
             }
         }
 
     }
+
+    public convertGameCoorToMapCoord(position: THREE.Vector3) {
+        let x = (position.x - this.initialX)/ this.cellWidth
+        let y = (position.y + this.initialY) / this.cellWidth
+        console.log(x + ' ' + y);
+        return { x: x, y: y };
+
+    }
+
     public loadJson(modelPath: string) {
 
     }
@@ -109,7 +122,9 @@ class Render {
         sphere.position.z = -300;
         sphere.name = id;
     }
-    update() {
+
+    public update() {
+        // update the picking ray with the camera and mouse position
         this.renderer.render(this.scene, this.camera);
         var delta = this.clock.getDelta();
         if (this.animationMixer != null)

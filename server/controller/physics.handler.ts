@@ -194,9 +194,11 @@ export class PhysicsHandler extends Handler {
             }
             for (let unit_id of toRemoveUnit) {
                 unitBuilder.remove(unit_id);
+                delete this.old_state['bodies'][unit_id];
             }
             for (let projectile_id of toRemoveProjectile) {
                 projectileBuilder.remove(projectile_id);
+                delete this.old_state['bodies'][projectile_id];
             }
         }
     }

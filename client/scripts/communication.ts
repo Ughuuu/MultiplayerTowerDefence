@@ -77,10 +77,13 @@ class Communication {
             let xya = this.getXYA(value.xya);
             let x = xya.x;
             let y = xya.y;
-            if (value.isTower) {
+            if (value.classType==0) {
                 Main.getInstance().addTower(id, value.type, 100, new THREE.Vector3(x, y, -300), new THREE.Vector3(Math.PI / 2, 0, 0), 5 * com.towerTypes[value.type].radius);
             }
-            else {
+            if (value.classType == 1){
+                Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(x, y, -300), new THREE.Vector3(Math.PI / 2, 0, 0), 10 * com.unitTypes[value.type].radius);
+            }
+            if (value.classType == 2) {
                 Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(x, y, -300), new THREE.Vector3(Math.PI / 2, 0, 0), 10 * com.unitTypes[value.type].radius);
             }
             let obj = Main.getInstance().getUnit(id);

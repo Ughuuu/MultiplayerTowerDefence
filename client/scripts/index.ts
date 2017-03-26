@@ -32,6 +32,7 @@ class Main {
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
+        document.addEventListener('keydown', this.onKeyPress.bind(this));
     }
 
     public createCommunication(client) {
@@ -122,6 +123,12 @@ class Main {
         }
         let position = this.renderer.convertGameCoorToMapCoord(new THREE.Vector3(this.mouse.x, this.mouse.y, 0));
 
+    }
+
+    public onKeyPress(event) {
+        if (event.code == "Space") {
+            this.communication.createUnit(0);
+        }
     }
 
     public addCreep(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {

@@ -25,17 +25,17 @@ class Communication {
 
         // remove on a map, a player left
         this.gameRoom.state.listen("maps/:id", "remove", (id, attribute) => {
-            console.log(attribute);
+            
         });
 
         // add on a whole map
         this.gameRoom.state.listen("maps/:id", "add", (id, map) => {
-            console.log(map);
+            Main.getInstance().setMap(map);
         });
 
         // change on a map
         this.gameRoom.state.listen("maps/:id/:y/:x", "replace", (id, y, x, value) => {
-            console.log(id + ' ' + x + ' ' + y + ' ' + value);
+           
         });
         this.gameRoom.state.listen(this.listen);
     }
@@ -44,9 +44,8 @@ class Communication {
         let x = Math.round(xya % this.precision1) / this.decimals;
         let y = Math.round((xya / this.precision1) % this.precision1) / this.decimals;
         let a = Math.round((xya / this.precision2) % this.precision1) / this.decimals;
-        x *= 10;
-        y *= 10;
-        y-=100;
+        x =x* 20;
+        y =y* 20;
         return { x: x, y: y, a: a };
     }
 
@@ -85,15 +84,6 @@ class Communication {
                 Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(x, y, -300), new THREE.Vector3(Math.PI / 2, 0, 0), 10 * com.unitTypes[value.type].radius);
             }
             let obj = Main.getInstance().getUnit(id);
-        });
-        this.gameRoom.state.listen("maps", "add", (id, value) => {
-            console.log(id);
-        });
-        this.gameRoom.state.listen("maps/:attribute/:id", "add", (id, value) => {
-            console.log(id);
-        });
-        this.gameRoom.state.listen("maps/:attribute/:id/:id", "add", (id, value) => {
-            console.log(id);
         });
     }
 
@@ -161,7 +151,7 @@ class Communication {
 
     setTowerTest() {
         let com = Main.getInstance().getCommunication();
-       com.createTower(0, 0, 3);
+        com.createTower(0, 0, 3);
         com.createTower(0, 1, 3);
         com.createTower(0, 2, 3);
         com.createTower(0, 3, 3);

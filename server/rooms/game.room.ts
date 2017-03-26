@@ -4,6 +4,7 @@ import { PhysicsHandler } from "../controller/physics.handler";
 import { ChatHandler } from "../controller/chat.handler";
 import { UnitBuilder } from "../builders/unit.builder";
 import { TowerBuilder } from "../builders/tower.builder";
+import { ProjectileBuilder } from "../builders/projectile.builder";
 import { MapHandler } from "../controller/map.handler";
 import { RoomManager } from './index';
 
@@ -23,6 +24,7 @@ export class GameRoom extends Room<StateHandler> {
     addBuilders(stateHandler: StateHandler): StateHandler {
         stateHandler.addBuilder(new UnitBuilder(stateHandler.handlers['PhysicsHandler'], stateHandler.players));
         stateHandler.addBuilder(new TowerBuilder(stateHandler.handlers['PhysicsHandler']));
+        stateHandler.addBuilder(new ProjectileBuilder(stateHandler.handlers['PhysicsHandler'],stateHandler.builders['TowerBuilder']))
         stateHandler.addHandler(new MapHandler(this.options.map));
         return stateHandler;
     }

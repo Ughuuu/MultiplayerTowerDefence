@@ -149,6 +149,8 @@ export class MapHandler extends Handler {
 
     addTower(player: Player, position: Point, size: number) {
         let start = Math.round(size / 2);
+        position.x = Math.floor(position.x);
+        position.y = Math.floor(position.y);
         for (let i = 0; i <= start; i++) {
             for (let j = 0; j <= start; j++) {
                 if (position.y + i < 0 || position.y + i >= this.size.y || position.x + i < 0 || position.x + i >= this.size.x) {

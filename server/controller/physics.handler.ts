@@ -4,25 +4,35 @@ import { GameRoom } from '../rooms/game.room';
 import { Player } from '../model/player';
 import { Point } from '../model/point';
 import { Unit } from '../model/unit';
+import { Tower } from '../model/tower';
+import { Projectile } from '../model/projectile';
 import { UnitBuilder, UnitType } from '../builders/unit.builder';
+import { ProjectileBuilder, ProjectileType } from '../builders/projectile.builder';
 import { TowerBuilder, TowerType } from '../builders/tower.builder';
 var p2 = require('p2');
 
 export class PhysicsHandler extends Handler {
     private static gravity = [0, 0];
     public world;
-    private body_index: number = 0;
+    private body_index: number = 1;
     private old_state = {};
     private time: boolean[] = [];
     private iteration: number = 0;
     private decimals: number = Math.pow(10, 3);
     private precision1: number = Math.pow(10, 6);
     private precision2: number = Math.pow(10, 12);
+    public static collisionBits: number[] = [];
+    private events = {};
+    private unitFollower = {};
 
     constructor() {
         super('PhysicsHandler');
-        this.world = new p2.World({ gravity: PhysicsHandler.gravity, solver: new p2.GSSolver({ iterations: 6, tolerance: 1e-6 }) });
-        this.world.on("beginContact", this.onBeginContact);
+        for (let i = 0; i < 16; i++) {
+            PhysicsHandler.collisionBits[i] = Math.pow(2, i);
+        }
+        this.world = new p2.World({ gravity: PhysicsHandler.gravity, solver: new p2.GSSolver({ iterations: 5, tolerance: 1e-3 }) });
+        this.world.on("beginContact", function (evt) { this.onBeginContact(evt) }.bind(this));
+        this.world.on("endContact", function (evt) { this.onEndContact(evt) }.bind(this));
         this.old_state['tower_types'] = TowerBuilder.types;
         this.old_state['unit_types'] = UnitBuilder.types;
         this.old_state['bodies'] = {};
@@ -31,16 +41,27 @@ export class PhysicsHandler extends Handler {
         }
     }
 
-    onBeginContact(evt){
-        console.log(evt);
+    onBeginContact(evt) {
+        if (this.events[evt.bodyA.id + ',' + evt.bodyB.id] == null && this.events[evt.bodyB.id + ',' + evt.bodyA.id] == null) {
+            this.events[evt.bodyA.id + ',' + evt.bodyB.id] = { bodyA: evt.bodyA, bodyB: evt.bodyB };
+        }
     }
 
-    onJoin(player: Player, handlers, builders) {
+    onEndContact(evt) {
+        if (this.events[evt.bodyA.id + ',' + evt.bodyB.id] != null) {
+            delete this.events[evt.bodyA.id + ',' + evt.bodyB.id];
+        }
+        if (this.events[evt.bodyB.id + ',' + evt.bodyA.id] != null) {
+            delete this.events[evt.bodyB.id + ',' + evt.bodyA.id];
+        }
+    }
+
+    onJoin(player: Player, handlers) {
         let mapHandler: MapHandler = handlers['MapHandler'];
-        player.walls.push(this.createBody(this.createPlane(player.location), 0, new Point(0, 0), -Math.PI/2));
-        player.walls.push(this.createBody(this.createPlane(player.location), 0, new Point(mapHandler.size.x, 0), Math.PI/2));
-        player.walls.push(this.createBody(this.createPlane(player.location), 0, new Point(0, 0), 0));
-        player.walls.push(this.createBody(this.createPlane(player.location), 0, new Point(0, mapHandler.size.y), 3*Math.PI/2));
+        player.walls.push(this.createBody(this.createPlane(player.location), 0, new Point(0, 0), -Math.PI / 2).id);
+        player.walls.push(this.createBody(this.createPlane(player.location), 0, new Point(mapHandler.size.x, 0), Math.PI / 2).id);
+        player.walls.push(this.createBody(this.createPlane(player.location), 0, new Point(0, 0), 0).id);
+        player.walls.push(this.createBody(this.createPlane(player.location), 0, new Point(0, mapHandler.size.y), 3 * Math.PI / 2).id);
     }
 
     createUnit(type: number, player: Player, unitBuilder: UnitBuilder, width: number) {
@@ -75,8 +96,53 @@ export class PhysicsHandler extends Handler {
         }
     }
 
+    towerInRange(tower: Tower, other, time: number, projectileBuilder: ProjectileBuilder) {
+        if (time - tower.lastTimeShot > tower.speed) {
+            tower.lastTimeShot = time;
+            projectileBuilder.create(tower, new Point(tower.body.position[0], tower.body.position[1]), other.id);
+        }
+    }
+
+    projectileHit(projectile: Projectile, other, projectileBuilder: ProjectileBuilder, unitBuilder: UnitBuilder) {
+        let unit = unitBuilder.get(other.id);
+        if (unit == null) {
+            return;
+        }
+        unitBuilder.remove(unit.id);
+        projectileBuilder.remove(projectile.id);
+    }
+
     update(players, gameRoom: GameRoom, handlers, builders) {
         this.world.step(GameRoom.ms);
+        let unitBuilder: UnitBuilder = builders['UnitBuilder'];
+        let towerBuilder: TowerBuilder = builders['TowerBuilder'];
+        let projectileBuilder: ProjectileBuilder = builders['ProjectileBuilder'];
+
+        for (let event in this.events) {
+            let bodyA = this.events[event].bodyA;
+            let bodyB = this.events[event].bodyB;
+            let tower = towerBuilder.get(bodyA.id);
+            if (tower != null) {
+                this.towerInRange(tower, bodyB, gameRoom.clock.currentTime, projectileBuilder);
+                continue;
+            }
+            tower = towerBuilder.get(bodyB.id);
+            if (tower != null) {
+                this.towerInRange(tower, bodyA, gameRoom.clock.currentTime, projectileBuilder);
+                continue;
+            }
+            let projectile = projectileBuilder.get(bodyA.id);
+            if (projectile != null) {
+                this.projectileHit(projectile, bodyB, projectileBuilder, unitBuilder);
+                continue;
+            }
+            projectile = projectileBuilder.get(bodyB.id);
+            if (projectile != null) {
+                this.projectileHit(projectile, bodyA, projectileBuilder, unitBuilder);
+                continue;
+            }
+        }
+
         this.iteration++;
         this.time[0] = true;
         this.time[1] = this.iteration % 3 == 0;
@@ -84,11 +150,12 @@ export class PhysicsHandler extends Handler {
         this.time[3] = this.iteration % 7 == 0;
         this.time[4] = this.iteration % 13 == 0;
         let mapHandler: MapHandler = handlers['MapHandler'];
-        let unitBuilder: UnitBuilder = builders['UnitBuilder'];
         for (let id in players) {
-            let player = players[id];
+            let player: Player = players[id];
             let units: number[] = player.unit_ids;
-            let toRemove: number[] = [];
+            let towers: number[] = player.tower_ids;
+            let toRemoveUnit: number[] = [];
+            let toRemoveProjectile: number[] = [];
             for (let unit_id of units) {
                 let unit = unitBuilder.get(unit_id);
                 let body = unit.body;
@@ -97,11 +164,41 @@ export class PhysicsHandler extends Handler {
                 body.velocity[0] = dir.x;
                 body.velocity[1] = dir.y;
                 if (mapHandler.isDone(player, position)) {
-                    toRemove.push(unit.id);
+                    toRemoveUnit.push(unit.id);
                 }
             }
-            for (let unit_id of toRemove) {
+            for (let tower_id of towers) {
+                let tower = towerBuilder.get(tower_id);
+                for (let projectile_id of tower.projectile_ids) {
+                    let projectile = projectileBuilder.get(projectile_id);
+                    if (projectile.isDead()) {
+                        toRemoveProjectile.push(projectile_id);
+                        continue;
+                    }
+                    let unit = unitBuilder.get(projectile.unitId);
+                    if (unit == null) {
+                        if (projectile.oldSpeed != null) {
+                            projectile.body.velocity = projectile.oldSpeed;
+                        } else {
+                            toRemoveProjectile.push(projectile_id);
+                        }
+                        continue;
+                    }
+                    let x = unit.body.position[0] - projectile.body.position[0];
+                    let y = unit.body.position[1] - projectile.body.position[1];
+                    let mod = Math.sqrt(x * x + y * y);
+                    let dir = new Point(x / mod, y / mod);
+                    projectile.body.velocity = [dir.x * projectile.speed, dir.y * projectile.speed];
+                    projectile.oldSpeed = projectile.body.velocity;
+                }
+            }
+            for (let unit_id of toRemoveUnit) {
                 unitBuilder.remove(unit_id);
+                delete this.old_state['bodies'][unit_id];
+            }
+            for (let projectile_id of toRemoveProjectile) {
+                projectileBuilder.remove(projectile_id);
+                delete this.old_state['bodies'][projectile_id];
             }
         }
     }
@@ -131,6 +228,7 @@ export class PhysicsHandler extends Handler {
         let bodies_data = {};
         let towerBuilder: TowerBuilder = builders['TowerBuilder'];
         let unitBuilder: UnitBuilder = builders['UnitBuilder'];
+        let projectileBuilder: ProjectileBuilder = builders['ProjectileBuilder'];
         for (let body of this.world.bodies) {
             if (this.time[this.getSpeedLevel(body.velocity[0], body.velocity[1])] == false)
                 continue;
@@ -141,7 +239,6 @@ export class PhysicsHandler extends Handler {
                 PhysicsHandler.getNumberWithPrecision(body.position[1], this.decimals, this.precision1) +
                 PhysicsHandler.getNumberWithPrecision(body.angle, this.decimals, this.precision2);
             if (tower != null) {
-                let towerType = TowerBuilder.types[tower.type];
                 serialized_body = {
                     isTower: true,
                     type: tower.type,
@@ -150,10 +247,17 @@ export class PhysicsHandler extends Handler {
             }
             let unit = unitBuilder.get(body_id);
             if (unit != null) {
-                let unitType = UnitBuilder.types[unit.type];
                 serialized_body = {
                     isTower: false,
                     type: unit.type,
+                    xya: xya
+                };
+            }
+            let projectile = projectileBuilder.get(body_id);
+            if (projectile != null) {
+                serialized_body = {
+                    isTower: false,
+                    type: projectile.type,
                     xya: xya
                 };
             }
@@ -166,14 +270,14 @@ export class PhysicsHandler extends Handler {
         return new p2.Circle({ radius: radius });
     }
 
-    createParticle(radius: number) {
+    createParticle() {
         return new p2.Particle();
     }
 
     createPlane(collisionBit: number) {
         let plane = new p2.Plane();
-        plane.collisionGroup = TowerBuilder.collisionBits[collisionBit];
-        plane.collisionMask = TowerBuilder.collisionBits[collisionBit];
+        plane.collisionGroup = TowerBuilder.collisionBit;
+        plane.collisionMask = UnitBuilder.collisionBit;
         return plane;
     }
 
@@ -182,7 +286,6 @@ export class PhysicsHandler extends Handler {
     }
 
     createBody(shape: any, mass: number, position: Point, angle: number) {
-        // Define body
         let body = new p2.Body({
             mass: mass,
             position: [position.x, position.y],
@@ -193,7 +296,24 @@ export class PhysicsHandler extends Handler {
 
         this.world.addBody(body);
         this.body_index++;
-        return this.body_index - 1;
+        return body;
+    }
+
+    createBodyWithSensor(shape1: any, shape2: any, mass: number, position: Point, angle: number) {
+        // Define body
+        let body = new p2.Body({
+            mass: mass,
+            position: [position.x, position.y],
+            angle: angle,
+            id: this.body_index
+        });
+        shape2.sensor = true;
+        body.addShape(shape1);
+        body.addShape(shape2);
+
+        this.world.addBody(body);
+        this.body_index++;
+        return body;
     }
 
     destroyBody(body_index) {

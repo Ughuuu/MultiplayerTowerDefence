@@ -37,7 +37,7 @@ class Render {
                 near,
                 far
             );
-        this.camera.position.set(0, 0, 100);
+        this.camera.position.set(0, 200, 300);
         this.scene.add(this.camera);
     }
     createLight(value, x, y, z) {
@@ -60,8 +60,8 @@ class Render {
         let textureSwamp = new THREE.TextureLoader().load("/assets/tiles/swamp.jpg");
        
 
-        this.initialX = 12;
-        this.initialY = this.height / 2 - 60;
+        this.initialX = 0;
+        this.initialY = 0;
         this.cellWidth = cellWidth;
         this.cellHeight = cellHeight;
      
@@ -81,8 +81,9 @@ class Render {
                 if (matrix[i][j] == 30) {
                     plane = new THREE.Mesh(this.planes[i][j], materialSwamp);
                 }
-                plane.position.x = j * cellWidth + this.initialX;
-                plane.position.y = i * cellHeight - this.initialY;
+                plane.name = "cell";
+                plane.position.x = (j+0.5) * cellWidth + this.initialX;
+                plane.position.y = (i+0.5) * cellHeight - this.initialY;
                 plane.position.z = -300;
                 this.scene.add(plane);
             }

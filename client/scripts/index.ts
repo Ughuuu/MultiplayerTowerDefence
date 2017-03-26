@@ -50,7 +50,7 @@ class Main {
 
         this.renderer.renderer.setSize(window.innerWidth, window.innerHeight);
 
-}
+    }
 
     public getRenderer() {
         return this.renderer;
@@ -60,7 +60,7 @@ class Main {
         for (let i = 0; i < this.creepTypes.length; i++) {
             {
                 var loader = new THREE.JSONLoader();
-                loader.load(this.creepTypes[i].model, function (icopy:number,geometry: THREE.Geometry, materials: any) {
+                loader.load(this.creepTypes[i].model, function (icopy: number, geometry: THREE.Geometry, materials: any) {
                     let value: [THREE.Geometry, any] = [geometry, materials];
                     this.geometryMap[this.creepTypes[icopy].model] = value;
                     progress();
@@ -87,34 +87,41 @@ class Main {
     public setMouse(event: any) {
         this.mouse.x = ((event.clientX - this.offset.x) / window.innerWidth) * 2 - 1;;
         this.mouse.y = - ((event.clientY - this.offset.y) / window.innerHeight) * 2 + 1;
-        
+        this.raycaster.setFromCamera(this.mouse.clone(), this.renderer.camera);
+
+        // calculate objects intersecting the picking ray
+        let intersects: any = this.raycaster.intersectObjects(this.renderer.scene.children);
+        let object: any;
+
+        if (intersects.length > 0) {
+            for (let i: number = 0; i < intersects.length; i++) {
+                if (intersects[i].object.name == "cell") {
+                    object = intersects[i].object;
+                    break;
+                }
+            }
+            if (this.INTERSECTED != object) {
+                if (this.INTERSECTED) this.INTERSECTED.material.emissive.setHex(this.INTERSECTED.currentHex);
+                this.INTERSECTED = object;
+                this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
+                this.INTERSECTED.material.emissive.setHex(0xff0000);
+            }
+        } 
     }
 
-    public onmousedown(event) {
+    public onMouseDown(event) {
         this.raycaster.setFromCamera(this.mouse.clone(), this.renderer.camera);
 
         // calculate objects intersecting the picking ray
         let intersects: any = this.raycaster.intersectObjects(this.renderer.scene.children);
 
         if (intersects.length > 0) {
-            console.log(intersects[0].object.position);
             var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
             console.log(x);
-        
             this.communication.createTower(0, x.x, x.y);
-            
         }
-        if (intersects.length > 0) {
-            if (this.INTERSECTED != intersects[0].object) {
-                if (this.INTERSECTED) this.INTERSECTED.material.emissive.setHex(this.INTERSECTED.currentHex);
-                this.INTERSECTED = intersects[0].object;
-                this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
-                this.INTERSECTED.material.emissive.setHex(0xff0000);
-            }
-        } else {
-            if (this.INTERSECTED) this.INTERSECTED.material.emissive.setHex(this.INTERSECTED.currentHex);
-            this.INTERSECTED = null;
-        }
+        let position = this.renderer.convertGameCoorToMapCoord(new THREE.Vector3(this.mouse.x, this.mouse.y, 0));
+
     }
 
     public addCreep(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
@@ -133,8 +140,8 @@ class Main {
 
     public getElementOffset(el) {
         for (var lx = 0, ly = 0;
-        el != null;
-        lx += el.offsetLeft, ly += el.offsetTop, el = el.offsetParent);
+            el != null;
+            lx += el.offsetLeft, ly += el.offsetTop, el = el.offsetParent);
         return { x: lx, y: ly };
 
     }
@@ -146,7 +153,7 @@ class Main {
 
     public createScene() {
 
-        const WIDTH =  window.innerWidth;
+        const WIDTH = window.innerWidth;
         const HEIGHT = window.innerHeight;
 
         const container = document.querySelector('#container');
@@ -158,6 +165,9 @@ class Main {
 
     }
 
+    public setMap(map: number[][]) {
+        this.renderer.initMap(map, map[0].length, map.length, 20, 20);
+    }
     public createCamera() {
         const WIDTH = window.innerWidth;
         const HEIGHT = window.innerHeight;
@@ -166,33 +176,6 @@ class Main {
         const NEAR = 0.1;
         const FAR = 10000;
         this.renderer.createCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-        let map: number[][] = [
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [30, 30, 30, 30, 30, 30, 30, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 30, 30, 30, 30, 30, 30, 30],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 30],
-        ];
-        this.renderer.initMap(map, map[0].length, map.length,20,20);
     }
 
     public createLight() {

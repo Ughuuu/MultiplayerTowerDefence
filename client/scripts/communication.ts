@@ -90,7 +90,7 @@ class Communication {
     }
 
     createUnit(type) {
-        for(let i=0;i<10;i++)
+        for(let i=0;i<1;i++)
         this.client.send({
             PhysicsHandler:
             {
@@ -136,6 +136,8 @@ class Communication {
     setTowerTest() {
         let com = Main.getInstance().getCommunication();
         com.createTower(0, 0, 3);
+        com.createTower(0, 7, 8);
+        /*
         com.createTower(0, 1, 3);
         com.createTower(0, 2, 3);
         com.createTower(0, 3, 3);
@@ -154,6 +156,7 @@ class Communication {
         com.createTower(0, 3, 9);
         com.createTower(0, 4, 9);
         com.createTower(0, 5, 9);
+        */
     }
 
     listen(number, message, value) {

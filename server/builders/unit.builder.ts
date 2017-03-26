@@ -4,6 +4,8 @@ import { Point } from '../model/point';
 import { Player } from '../model/player';
 import { PhysicsHandler } from '../controller/physics.handler';
 import { Builder } from './builder';
+import { TowerBuilder } from './tower.builder';
+import { ProjectileBuilder } from './projectile.builder';
 
 export class UnitType {
     constructor(public name: string,
@@ -31,24 +33,23 @@ export class UnitBuilder extends Builder {
             WalkType.Ground,
             1)
     ];
-    public static collisionBits: number[] = [];
+    public static collisionBit: number = Math.pow(2, 1);
     units = {};
 
     constructor(public physicsHandler: PhysicsHandler, public players: {}) {
         super('UnitBuilder');
-        for (let i = 0; i < 16; i++) {
-            UnitBuilder.collisionBits[i] = Math.pow(2, i);
-        }
     }
 
     create(type: number, player: Player, position: Point): number {
         let unit_type = UnitBuilder.types[type];
         let circleShape = this.physicsHandler.createCircle(unit_type.radius);
-        circleShape.collisionGroup = UnitBuilder.collisionBits[player.location];
-        circleShape.collisionMask = UnitBuilder.collisionBits[player.location];
-        let body_id = this.physicsHandler.createBody(circleShape, unit_type.mass, position, 0);
-        let unit = new Unit(body_id, player.id);
-        unit.body = this.physicsHandler.world.bodies[this.physicsHandler.world.bodies.length - 1];
+        circleShape.collisionGroup = UnitBuilder.collisionBit;
+        circleShape.collisionMask = TowerBuilder.collisionBit
+            | UnitBuilder.collisionBit
+            | ProjectileBuilder.collisionBit;
+        let body = this.physicsHandler.createBody(circleShape, unit_type.mass, position, 0);
+        let unit = new Unit(body.id, player.id);
+        unit.body = body;
         unit.health = unit_type.health;
         unit.damage = unit_type.damage;
         unit.elementType = unit_type.elementType;

@@ -1,11 +1,13 @@
 ﻿import { Handler } from './handler';
 import { Player } from '../model/player';
+import { Unit } from '../model/unit';
 import { Point } from '../model/point';
-var PF = require('pathfinding');
+import { UnitBuilder } from '../builders/unit.builder';
 
 export class MapHandler extends Handler {
     public templates: {} = {};
     public vectorField: {} = {};
+    public distances: {} = {};
     public size: Point;
     public directions: Point[] = [new Point(-1, 0),
     new Point(-1, 1),
@@ -16,6 +18,7 @@ export class MapHandler extends Handler {
     new Point(0, -1),
     new Point(-1, -1)
     ];
+    private static towerNumber: number = 1e+5;
 
     constructor(public template: number[][]) {
         super('MapHandler');
@@ -25,7 +28,7 @@ export class MapHandler extends Handler {
     private static clearMap(matrix: number[][], w: number, h: number) {
         for (let y = 0; y < h; y++) {
             for (let x = 0; x < w; x++) {
-                matrix[y][x] = Number.MAX_SAFE_INTEGER;
+                matrix[y][x] = MapHandler.towerNumber;
             }
         }
     }
@@ -49,10 +52,10 @@ export class MapHandler extends Handler {
         }
     }
 
-    getCell(player: Player, pos: Point) {
+    getCell(player: Player, pos: Point, unit: Unit) {
         let x = pos.x, y = pos.y;
-        x = Math.round(x);
-        y = Math.round(y);
+        x = Math.floor(x);
+        y = Math.floor(y);
         if (x < 0) {
             x = 0;
         }
@@ -65,25 +68,51 @@ export class MapHandler extends Handler {
         if (y >= this.size.y) {
             y = this.size.y - 1;
         }
+        let value = this.templates[player.id][y][x];
+        if (value == MapHandler.towerNumber) {
+            return { x: unit.lastCell.x, y: unit.lastCell.y };
+        }
+        let radius: number = UnitBuilder.types[unit.type].radius;
+        if((pos.x%1 < radius || 1 - pos.x%1 < radius) && (pos.y%1 < radius || 1 - pos.y%1 < radius)){
+            return { x: unit.lastCell.x, y: unit.lastCell.y };
+        }
+        unit.lastCell.x = x;
+        unit.lastCell.y = y;
         return { x: x, y: y };
     }
 
-    isDone(player: Player, pos: Point) {
-        let cell = this.getCell(player, pos);
+    isDone(player: Player, pos: Point, unit: Unit) {
+        let cell = this.getCell(player, pos, unit);
         if (cell.y == this.template.length - 1) {
             return true;
         }
         return false;
     }
 
-    public getNext(player: Player, pos: Point, speed: number): Point {
-        let cell = this.getCell(player, pos);
+    public getNext(player: Player, pos: Point, speed: number, unit: Unit, clock: number): Point {
+        let cell = this.getCell(player, pos, unit);
         let value = this.templates[player.id][cell.y][cell.x];
-        if (value == Number.MAX_SAFE_INTEGER) {
+        if (value == MapHandler.towerNumber) {
             value = 0;
         }
         let dir = this.directions[this.vectorField[player.id][cell.y][cell.x]];
-        return { x: dir.x * speed / (value + 1), y: dir.y * speed / (value + 1) };
+        let extraDir = new Point(0, 0);
+        let radius = UnitBuilder.types[unit.type].radius;
+        if((pos.x%1 < radius || 1 - pos.x%1 < radius) && (pos.y%1 < radius || 1 - pos.y%1 < radius)){
+            if(unit.stuck != null && unit.stuck == 0){
+                unit.stuck = clock;
+            }
+            if(clock - unit.stuck < 1000){
+                return { x: (dir.x + extraDir.x) * speed / (value + 1), y: (dir.y + extraDir.y) * speed / (value + 1) };
+            }
+            // return to the cell you belong to
+            extraDir.x=(-pos.x + cell.x);
+            extraDir.y=(-pos.y + cell.y);
+            return { x: (extraDir.x) * speed / (value + 1), y: (extraDir.y) * speed / (value + 1) };
+        }else{
+            unit.stuck = 0;
+        }
+        return { x: (dir.x + extraDir.x) * speed / (value + 1), y: (dir.y + extraDir.y) * speed / (value + 1) };
     }
 
     computeDistances(player: Player) {
@@ -106,9 +135,16 @@ export class MapHandler extends Handler {
             for (let x = 0; x < this.size.x; x++) {
                 let dirs: {} = {};
                 for (let i = 0; i < this.directions.length; i++) {
-                    if (x + this.directions[i].x >= 0 && x + this.directions[i].x < this.size.x &&
-                        y + this.directions[i].y >= 0 && y + this.directions[i].y < this.size.y) {
-                        dirs[i] = distance[y + this.directions[i].y][x + this.directions[i].x];
+                    let dirx: number = this.directions[i].x;
+                    let diry: number = this.directions[i].y;
+                    if (x + dirx >= 0 && x + dirx < this.size.x &&
+                        y + diry >= 0 && y + diry < this.size.y) {
+                        if (Math.abs(diry) == Math.abs(dirx)) {
+                            dirs[i] = distance[y + diry][x]/3 + distance[y][x + dirx]/3 + distance[y + diry][x + dirx]/3 ;
+                        }
+                        else {
+                            dirs[i] = distance[y + diry][x + dirx];
+                        }
                     }
                 }
                 let dir: number = 0;
@@ -122,6 +158,8 @@ export class MapHandler extends Handler {
                 vectorField[y][x] = dir;
             }
         }
+        this.distances[player.id] = MapHandler.initMap(this.size.x, this.size.y);
+        MapHandler.copyMap(this.distances[player.id], distance);
     }
 
     private neighbourCheck(matrix: number[][], template: number[][], x: number, y: number, toX: number, toY: number, toVisit: number[][]) {
@@ -151,12 +189,12 @@ export class MapHandler extends Handler {
         let start = Math.round(size / 2);
         position.x = Math.floor(position.x);
         position.y = Math.floor(position.y);
-        for (let i = 0; i <= start; i++) {
-            for (let j = 0; j <= start; j++) {
+        for (let i = 0; i < start; i++) {
+            for (let j = 0; j < start; j++) {
                 if (position.y + i < 0 || position.y + i >= this.size.y || position.x + i < 0 || position.x + i >= this.size.x) {
                     continue;
                 }
-                this.templates[player.id][position.y + i][position.x + j] = Number.MAX_SAFE_INTEGER;
+                this.templates[player.id][position.y + i][position.x + j] = MapHandler.towerNumber;
             }
         }
         this.computeDistances(player);
@@ -174,6 +212,6 @@ export class MapHandler extends Handler {
     }
 
     toJSON(): any {
-        return { maps: this.templates };
+        return { maps: this.distances };
     }
 }

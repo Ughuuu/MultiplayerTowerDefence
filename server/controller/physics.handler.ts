@@ -163,10 +163,10 @@ export class PhysicsHandler extends Handler {
                 let unit = unitBuilder.get(unit_id);
                 let body = unit.body;
                 let position = new Point(body.position[0], body.position[1]);
-                let dir: Point = mapHandler.getNext(player, position, unit.speed);
+                let dir: Point = mapHandler.getNext(player, position, unit.speed, unit, gameRoom.clock.currentTime);
                 body.velocity[0] = dir.x;
                 body.velocity[1] = dir.y;
-                if (mapHandler.isDone(player, position)) {
+                if (mapHandler.isDone(player, position, unit)) {
                     toRemoveUnit.push(unit.id);
                 }
             }

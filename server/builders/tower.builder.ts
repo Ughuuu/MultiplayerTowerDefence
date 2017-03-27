@@ -32,7 +32,7 @@ export class TowerBuilder extends Builder {
             15,
             ElementType.Normal,
             500,
-            7,
+            0,
             ProjectileType.Arrow,
             0,
             6)

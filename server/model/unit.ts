@@ -15,6 +15,8 @@ export class Unit {
     armor: number;
     walkType: WalkType;
     body: any;
+    lastCell: Point = new Point(0, 0);
+    stuck: number;
 
     constructor(public id: number, public owner_id: number) { }
 }

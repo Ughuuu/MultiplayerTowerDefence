@@ -54,17 +54,17 @@ class Render {
 
     }
 
-    public initMap(matrix: number[][], width: number, height: number, cellWidth: number, cellHeight :number) {
+    public initMap(matrix: number[][], width: number, height: number, cellWidth: number, cellHeight: number) {
         let textureGrass = new THREE.TextureLoader().load("/assets/tiles/grass.png");
         let textureRock = new THREE.TextureLoader().load("/assets/tiles/rock.jpg");
         let textureSwamp = new THREE.TextureLoader().load("/assets/tiles/swamp.jpg");
-       
+
 
         this.initialX = 0;
         this.initialY = 0;
         this.cellWidth = cellWidth;
         this.cellHeight = cellHeight;
-     
+
 
         for (let i: number = 0; i < height; i++) {
             this.planes[i] = [];
@@ -75,15 +75,11 @@ class Render {
 
                 this.planes[i][j] = new THREE.PlaneGeometry(cellWidth, cellHeight, width, height);
                 let plane;
-                if (matrix[i][j] == 0) {
-                    plane = new THREE.Mesh(this.planes[i][j], materialGrass);
-                }
-                if (matrix[i][j] == 30) {
-                    plane = new THREE.Mesh(this.planes[i][j], materialSwamp);
-                }
-                plane.name = "cell";
-                plane.position.x = (j+0.5) * cellWidth + this.initialX;
-                plane.position.y = (i+0.5) * cellHeight - this.initialY;
+                plane = new THREE.Mesh(this.planes[i][j], materialGrass);
+                plane.material.color = new THREE.Color(matrix[i][j] * 10);
+                plane.name = "cell[" + i + "][" + j + "]";
+                plane.position.x = (j + 0.5) * cellWidth + this.initialX;
+                plane.position.y = (i + 0.5) * cellHeight - this.initialY;
                 plane.position.z = -300;
                 this.scene.add(plane);
             }
@@ -92,9 +88,8 @@ class Render {
     }
 
     public convertGameCoorToMapCoord(position: THREE.Vector3) {
-        let x = (position.x - this.initialX)/ this.cellWidth
-        let y = (position.y + this.initialY) / this.cellWidth
-        console.log(x + ' ' + y);
+        let x = (position.x - this.initialX) / this.cellWidth;
+        let y = (position.y + this.initialY) / this.cellWidth;
         return { x: x, y: y };
 
     }

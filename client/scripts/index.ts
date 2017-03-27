@@ -19,6 +19,7 @@ class Main {
     private windowHalfX: number;
     private windowHalfY: number;
     private INTERSECTED: any;
+
     static getInstance() {
         if (!Main.instance) {
             Main.instance = new Main();
@@ -48,14 +49,13 @@ class Main {
         this.windowHalfY = window.innerHeight / 2;
         this.renderer.camera.aspect = window.innerWidth / window.innerHeight;
         this.renderer.camera.updateProjectionMatrix();
-
         this.renderer.renderer.setSize(window.innerWidth, window.innerHeight);
-
     }
 
     public getRenderer() {
         return this.renderer;
     }
+
     public setUnitTypes(unitTypes: UnitType[], progress) {
         this.creepTypes = unitTypes;
         for (let i = 0; i < this.creepTypes.length; i++) {
@@ -112,10 +112,8 @@ class Main {
 
     public onMouseDown(event) {
         this.raycaster.setFromCamera(this.mouse.clone(), this.renderer.camera);
-
         // calculate objects intersecting the picking ray
         let intersects: any = this.raycaster.intersectObjects(this.renderer.scene.children);
-
         if (intersects.length > 0) {
             var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
             console.log(x);

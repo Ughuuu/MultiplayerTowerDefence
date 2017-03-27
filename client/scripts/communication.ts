@@ -35,7 +35,8 @@ class Communication {
 
         // change on a map
         this.gameRoom.state.listen("maps/:id/:y/:x", "replace", (id, y, x, value) => {
-           
+            let mesh: any = Main.getInstance().getRenderer().scene.getObjectByName( "cell["+y+"]["+x+"]");
+            mesh.material.color = new THREE.Color(value*10);
         });
         this.gameRoom.state.listen(this.listen);
     }
@@ -70,7 +71,6 @@ class Communication {
         });
         this.gameRoom.state.listen("bodies/:id", "add", (id, value) => {
             if(value == null){
-                console.log(id);
                 return;
             }
             let com = Main.getInstance().getCommunication();
@@ -109,7 +109,7 @@ class Communication {
     }
 
     createUnit(type) {
-        for(let i=0;i<10;i++)
+        for(let i=0;i<1;i++)
         this.client.send({
             PhysicsHandler:
             {
@@ -154,25 +154,6 @@ class Communication {
 
     setTowerTest() {
         let com = Main.getInstance().getCommunication();
-        com.createTower(0, 0, 3);
-        com.createTower(0, 1, 3);
-        com.createTower(0, 2, 3);
-        com.createTower(0, 3, 3);
-        com.createTower(0, 4, 3);
-        com.createTower(0, 5, 3);
-
-        com.createTower(0, 7, 6);
-        com.createTower(0, 6, 6);
-        com.createTower(0, 5, 6);
-        com.createTower(0, 4, 6);
-        com.createTower(0, 3, 6);
-
-        com.createTower(0, 0, 9);
-        com.createTower(0, 1, 9);
-        com.createTower(0, 2, 9);
-        com.createTower(0, 3, 9);
-        com.createTower(0, 4, 9);
-        com.createTower(0, 5, 9);
     }
 
     listen(number, message, value) {

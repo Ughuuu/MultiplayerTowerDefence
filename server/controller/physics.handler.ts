@@ -66,7 +66,7 @@ export class PhysicsHandler extends Handler {
     }
 
     createUnit(type: number, player: Player, unitBuilder: UnitBuilder, width: number) {
-        unitBuilder.create(type, player, new Point(width, 0));
+        unitBuilder.create(type, player, new Point(width, 0.3));
     }
 
     createTower(type: number, position: Point, player: Player, towerBuilder: TowerBuilder) {
@@ -157,6 +157,8 @@ export class PhysicsHandler extends Handler {
             unitBuilder.remove(unit.id);
         }
         projectileBuilder.remove(projectile.id);
+        delete this.old_state['bodies'][unit.id];
+        delete this.old_state['bodies'][projectile.id];
     }
 
     update(players, gameRoom: GameRoom, handlers, builders) {

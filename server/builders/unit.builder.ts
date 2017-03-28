@@ -17,12 +17,15 @@ export class UnitType {
         public speed: number,
         public armor: number,
         public walkType: WalkType,
-        public mass: number) { }
+        public mass: number,
+        public price: number,
+        public income: number,
+        public bounty: number) { }
 }
 
 export class UnitBuilder extends Builder {
     public static types: UnitType[] = [
-        new UnitType('light_creep',
+        new UnitType('peasant',
             '/assets/fat_peasant_noTEXTURE_SK.json',
             0.2,
             30,
@@ -31,7 +34,10 @@ export class UnitBuilder extends Builder {
             2,
             0,
             WalkType.Ground,
-            1)
+            1,
+            1,
+            0.1,
+            0.5)
     ];
     public static collisionBit: number = Math.pow(2, 1);
     units = {};

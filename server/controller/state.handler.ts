@@ -12,7 +12,7 @@ export class StateHandler {
 
     onJoin(client, options) {
         this.player_size++;
-        let player = new Player(client.id, options.name, this.player_size);
+        let player = new Player(client.id, client, options.name, this.player_size);
         this.players[client.id] = player;
         for (let key in this.handlers) {
             this.handlers[key].onJoin(player, this.handlers, this.builders);
@@ -28,13 +28,13 @@ export class StateHandler {
         delete this.players[client.id];
     }
 
-    onMessage(client, data) {
+    onMessage(client, data, gameRoom: GameRoom) {
         let player = this.players[client.id];
         for (let key in this.handlers) {
             let handler = this.handlers[key];
             let handlerData = data[handler.name];
-            if(handlerData != null)
-            handler.onMessage(player, handlerData, this.handlers, this.builders);
+            if (handlerData != null)
+                handler.onMessage(player, handlerData, this.handlers, this.builders, gameRoom);
         }
     }
 
@@ -56,7 +56,7 @@ export class StateHandler {
     }
 
     onDispose() {
-        this.player_size=0;
+        this.player_size = 0;
         for (let key in this.handlers) {
             this.handlers[key].onDispose(this.players, this.handlers, this.builders);
         }

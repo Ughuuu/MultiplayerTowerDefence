@@ -6,7 +6,7 @@ export abstract class Handler {
 
     onJoin(player: Player, handlers, builders) { }
     onLeave(player: Player, handlers, builders) { }
-    onMessage(player: Player, data, handlers, builders) { }
+    onMessage(player: Player, data, handlers, builders, gameRoom: GameRoom) { }
     onDispose(players, handlers, builders) { }
     update(players, gameRoom: GameRoom, handlers, builders) { }
 

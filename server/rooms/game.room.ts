@@ -1,4 +1,4 @@
-import { Room } from "colyseus";
+import { Room, Client } from "colyseus";
 import { StateHandler } from "../controller/state.handler";
 import { PhysicsHandler } from "../controller/physics.handler";
 import { ChatHandler } from "../controller/chat.handler";
@@ -6,6 +6,7 @@ import { UnitBuilder } from "../builders/unit.builder";
 import { TowerBuilder } from "../builders/tower.builder";
 import { ProjectileBuilder } from "../builders/projectile.builder";
 import { MapHandler } from "../controller/map.handler";
+import { MoneyHandler } from "../controller/money.handler";
 import { RoomManager } from './index';
 
 export class GameRoom extends Room<StateHandler> {
@@ -18,14 +19,15 @@ export class GameRoom extends Room<StateHandler> {
     addHandlers(stateHandler: StateHandler): StateHandler {
         stateHandler.addHandler(new PhysicsHandler());
         stateHandler.addHandler(new ChatHandler());
+        stateHandler.addHandler(new MoneyHandler());
+        stateHandler.addHandler(new MapHandler(this.options.map));
         return stateHandler;
     }
 
     addBuilders(stateHandler: StateHandler): StateHandler {
         stateHandler.addBuilder(new UnitBuilder(stateHandler.handlers['PhysicsHandler'], stateHandler.players));
-        stateHandler.addBuilder(new TowerBuilder(stateHandler.handlers['PhysicsHandler']));
-        stateHandler.addBuilder(new ProjectileBuilder(stateHandler.handlers['PhysicsHandler'],stateHandler.builders['TowerBuilder']))
-        stateHandler.addHandler(new MapHandler(this.options.map));
+        stateHandler.addBuilder(new TowerBuilder(stateHandler.handlers['PhysicsHandler'], stateHandler.players));
+        stateHandler.addBuilder(new ProjectileBuilder(stateHandler.handlers['PhysicsHandler'], stateHandler.builders['TowerBuilder']))
         return stateHandler;
     }
 
@@ -42,7 +44,7 @@ export class GameRoom extends Room<StateHandler> {
         this.state.update(gameRoom);
     }
 
-    onJoin(client, options) {
+    onJoin(client: Client, options) {
         RoomManager.players++;
         if (options.name == null) {
             options.name = client.id;
@@ -50,13 +52,13 @@ export class GameRoom extends Room<StateHandler> {
         this.state.onJoin(client, options);
     }
 
-    onLeave(client) {
+    onLeave(client: Client) {
         RoomManager.players--;
         this.state.onLeave(client);
     }
 
-    onMessage(client, data) {
-        this.state.onMessage(client, data)
+    onMessage(client: Client, data) {
+        this.state.onMessage(client, data, this)
     }
 
     onDispose() {

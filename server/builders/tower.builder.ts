@@ -18,6 +18,8 @@ export class TowerType {
         public projectileType: ProjectileType,
         public explosionRadius: number,
         public projectileSpeed: number,
+        public price: number,
+        public upgradeFrom: string
     ) { }
 }
 
@@ -35,14 +37,16 @@ export class TowerBuilder extends Builder {
             0,
             ProjectileType.Arrow,
             0,
-            6)
+            6,
+            3,
+            "null")
     ];
     private static collisionBitTower: number = Math.pow(2, 2);
     private static collisionBitSensor: number = Math.pow(2, 3);
     public static collisionBit: number = TowerBuilder.collisionBitTower | TowerBuilder.collisionBitSensor;
     towers = {};
 
-    constructor(public physicsHandler: PhysicsHandler) {
+    constructor(public physicsHandler: PhysicsHandler, public players) {
         super('TowerBuilder');
     }
 
@@ -78,6 +82,9 @@ export class TowerBuilder extends Builder {
     }
 
     remove(id): void {
+        let tower: Tower = this.towers[id];
+        let player: Player = this.players[tower.owner_id];
+        player.tower_ids.splice(player.tower_ids.indexOf(tower.id), 1);
         this.physicsHandler.destroyBody(id);
         delete this.towers[id];
     }

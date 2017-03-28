@@ -128,6 +128,11 @@ class Main {
         }
     }
 
+    public removeUnit(id: number) {
+        this.renderer.scene.remove(this.unitsMap[id].mesh);
+        delete this.unitsMap[id];
+    }
+
     public addCreep(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
         let modelName = this.creepTypes[type].model;
         let newUnit = new GenericUnit(modelName, health, position, rotation, scale);

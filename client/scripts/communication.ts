@@ -29,7 +29,12 @@ class Communication {
         });
 
         // remove on a map, a player left
-        this.gameRoom.state.listen("directions/:id", "add", (id, attribute) => {
+        this.gameRoom.state.listen("directions/:id", "add", (id, value) => {
+            for (let i: number = 0; i < value.length ; i++) {
+                for (let j: number = 0; j < value[0].length ; j++) {
+                    Main.getInstance().updateArrows(i, j, value[i][j]);
+                }
+             }
 
         });
 
@@ -73,6 +78,7 @@ class Communication {
             obj.mesh.updateMatrix();
         });
         this.gameRoom.state.listen("bodies/:id", "remove", (id, value) => {
+            Main.getInstance().removeUnit(id);
         });
         this.gameRoom.state.listen("bodies/:id", "add", (id, value) => {
             if(value == null){

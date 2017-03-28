@@ -91,11 +91,11 @@ export class PhysicsHandler extends Handler {
             if (!moneyHandler.hasGold(player, tower_type.price)) {
                 return;
             }
-            if (beforeTowerId != 0 && tower_type.upgradeFrom == 'null') {
+            if (!(beforeTowerId == 0 && tower_type.upgradeFrom == 'null')) {
                 return;
             } else {
                 let beforeTower: Tower = towerBuilder.get(beforeTowerId);
-                if (tower_type.upgradeFrom == null || TowerBuilder.types[beforeTower.type].name != tower_type.upgradeFrom) {
+                if (beforeTower == null || tower_type.upgradeFrom == null || TowerBuilder.types[beforeTower.type].name != tower_type.upgradeFrom) {
                     return;
                 }
                 towerBuilder.remove(beforeTower);

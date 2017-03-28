@@ -121,8 +121,11 @@ export class MapHandler extends Handler {
         let template = this.templates[player.id];
         let distance = MapHandler.initMap(this.size.x, this.size.y);
         MapHandler.clearMap(distance, this.template[0].length, this.template.length);
-        var toVisit = [[Math.round(this.size.x / 2), this.size.y - 1]]; // Initialise at the start square
-        distance[toVisit[0][1]][toVisit[0][0]] = 0;
+        var toVisit = [];
+        for (let i = 0; i < this.size.x; i++) {
+            toVisit.push([i, this.size.y - 1]);
+            distance[toVisit[i][1]][toVisit[i][0]] = 0;
+        }
         while (toVisit.length) { // While there are still squares to visit
             let x = toVisit[0][0];
             let y = toVisit[0][1];

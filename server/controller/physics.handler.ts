@@ -93,7 +93,7 @@ export class PhysicsHandler extends Handler {
             }
             if (!(beforeTowerId == 0 && tower_type.upgradeFrom == 'null')) {
                 return;
-            } else {
+            } else if (tower_type.upgradeFrom != 'null') {
                 let beforeTower: Tower = towerBuilder.get(beforeTowerId);
                 if (beforeTower == null || tower_type.upgradeFrom == null || TowerBuilder.types[beforeTower.type].name != tower_type.upgradeFrom) {
                     return;

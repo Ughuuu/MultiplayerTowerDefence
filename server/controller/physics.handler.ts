@@ -9,6 +9,7 @@ import { Projectile } from '../model/projectile';
 import { UnitBuilder, UnitType } from '../builders/unit.builder';
 import { ProjectileBuilder, ProjectileType } from '../builders/projectile.builder';
 import { TowerBuilder, TowerType } from '../builders/tower.builder';
+import { MoneyHandler } from '../controller/money.handler';
 var p2 = require('p2');
 
 export class PhysicsHandler extends Handler {
@@ -75,34 +76,56 @@ export class PhysicsHandler extends Handler {
     destroyTower(player: Player, tower_id: number) {
     }
 
-    onMessage(player: Player, data: any, handlers, builders) {
+    onMessage(player: Player, data: any, handlers, builders, gameRoom: GameRoom) {
         let mapHandler: MapHandler = handlers['MapHandler'];
         let towerBuilder: TowerBuilder = builders['TowerBuilder'];
         let unitBuilder: UnitBuilder = builders['UnitBuilder'];
+        let moneyHandler: MoneyHandler = handlers['MoneyHandler'];
         if (data['createTower'] != null) {
             let type: number = data['createTower']['type'];
             let position: Point = data['createTower']['position'];
             if (type == null || position == null)
                 return;
             let tower_type = TowerBuilder.types[type];
-            if(mapHandler.checkTower(player, position, tower_type.radius) != 0){
+            let beforeTowerId = mapHandler.checkTower(player, position, tower_type.radius);
+            if (!moneyHandler.hasGold(player, tower_type.price)) {
                 return;
             }
+            if (beforeTowerId != 0 && tower_type.upgradeFrom == 'null') {
+                return;
+            } else {
+                let beforeTower: Tower = towerBuilder.get(beforeTowerId);
+                if (tower_type.upgradeFrom == null || TowerBuilder.types[beforeTower.type].name != tower_type.upgradeFrom) {
+                    return;
+                }
+                towerBuilder.remove(beforeTower);
+            }
+            moneyHandler.buy(player, tower_type.price, gameRoom);
             let id = this.createTower(type, position, player, towerBuilder);
             mapHandler.addTower(player, position, tower_type.radius, id);
         }
         if (data['destroyTower'] != null) {
-            let position: Point = data['createTower']['position'];
+            let position: Point = data['destroyTower']['position'];
             if (position == null)
                 return;
             let id = mapHandler.checkTower(player, position, 1);
-            mapHandler.clearTower(player, position, TowerBuilder.types[towerBuilder.get(id).type].radius);
+            if (id == 0) {
+                return;
+            }
+            let towerType = TowerBuilder.types[towerBuilder.get(id).type];
+            mapHandler.clearTower(player, position, towerType.radius);
+            moneyHandler.sell(player, towerType.price, gameRoom);
             this.destroyBody(id);
         }
         if (data['createUnit'] != null) {
             let type: number = data['createUnit']['type'];
             if (type == null)
                 return;
+            let unitType = UnitBuilder.types[type];
+            if (!moneyHandler.hasGold(player, unitType.price)) {
+                return;
+            }
+            moneyHandler.spawn(player, unitType.price, unitType.income, gameRoom);
             player.creep_location++;
             player.creep_location %= mapHandler.size.x;
             this.createUnit(type, player, unitBuilder, player.creep_location);
@@ -116,11 +139,19 @@ export class PhysicsHandler extends Handler {
         }
     }
 
-    projectileHit(projectile: Projectile, other, projectileBuilder: ProjectileBuilder, unitBuilder: UnitBuilder) {
+    projectileHit(projectile: Projectile,
+        other,
+        projectileBuilder: ProjectileBuilder,
+        unitBuilder: UnitBuilder,
+        towerBuilder: TowerBuilder,
+        moneyHandler: MoneyHandler,
+        players,
+        gameRoom: GameRoom) {
         let unit = unitBuilder.get(other.id);
         if (unit == null) {
             return;
         }
+        moneyHandler.bounty(players[towerBuilder.get(projectile.tower_id).owner_id], UnitBuilder.types[unit.type].bounty, gameRoom);
         unit.health -= projectile.damage;
         if (unit.health <= 0) {
             unitBuilder.remove(unit.id);
@@ -133,6 +164,7 @@ export class PhysicsHandler extends Handler {
         let unitBuilder: UnitBuilder = builders['UnitBuilder'];
         let towerBuilder: TowerBuilder = builders['TowerBuilder'];
         let projectileBuilder: ProjectileBuilder = builders['ProjectileBuilder'];
+        let moneyHandler: MoneyHandler = handlers['MoneyHandler'];
 
         for (let event in this.events) {
             let bodyA = this.events[event].bodyA;
@@ -149,12 +181,12 @@ export class PhysicsHandler extends Handler {
             }
             let projectile = projectileBuilder.get(bodyA.id);
             if (projectile != null) {
-                this.projectileHit(projectile, bodyB, projectileBuilder, unitBuilder);
+                this.projectileHit(projectile, bodyB, projectileBuilder, unitBuilder, towerBuilder, moneyHandler, players, gameRoom);
                 continue;
             }
             projectile = projectileBuilder.get(bodyB.id);
             if (projectile != null) {
-                this.projectileHit(projectile, bodyA, projectileBuilder, unitBuilder);
+                this.projectileHit(projectile, bodyA, projectileBuilder, unitBuilder, towerBuilder, moneyHandler, players, gameRoom);
                 continue;
             }
         }

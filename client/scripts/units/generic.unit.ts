@@ -19,25 +19,22 @@ class GenericUnit {
         this.isLoaded = false;
     }
 
-    public loadModel(scene: THREE.Scene, geometry: THREE.Geometry, materials: any) {
-        materials.forEach(function (material) {
-            material.skinning = true;
-        });
-
+    public loadModel(scene: THREE.Scene, geometry: THREE.Geometry, mesh: THREE.Mesh) {
 
         this.animations = geometry.animations;
-
-        var faceMaterial = new THREE.MultiMaterial(materials);
-        this.mesh = new THREE.SkinnedMesh(geometry, faceMaterial);
+        this.mesh = mesh.clone();
         this.mesh.scale.set(this.scale, this.scale, this.scale);
 
         this.mesh.position.set(this.position.x, this.position.y, this.position.z);
         this.mesh.rotation.set(this.rotation.x, this.rotation.y, this.rotation.z);
         this.animationMixer = new THREE.AnimationMixer(this.mesh);
-        scene.add(this.mesh);
 
         this.isLoaded = true;
         this.playMoveAnimation();
+
+        scene.add(this.mesh);
+
+
     }
 
     public setPosition(position: THREE.Vector3) {

@@ -62,7 +62,11 @@ class Main {
             {
                 var loader = new THREE.JSONLoader();
                 loader.load(this.creepTypes[i].model, function (icopy: number, geometry: THREE.Geometry, materials: any) {
-                    let value: [THREE.Geometry, any] = [geometry, materials];
+                    materials.forEach(function (material) {
+                        material.skinning = true;
+                    });
+                    var faceMaterial = new THREE.MultiMaterial(materials);
+                    let value: [THREE.Geometry, THREE.Mesh] = [geometry, new THREE.SkinnedMesh(geometry, faceMaterial)];
                     this.geometryMap[this.creepTypes[icopy].model] = value;
                     progress();
                 }.bind(this, i));
@@ -76,9 +80,12 @@ class Main {
             {
                 var loader = new THREE.JSONLoader();
                 loader.load(this.towerTypes[i].model, function (icopy: number, geometry: THREE.Geometry, materials: any) {
-                    let value: [THREE.Geometry, any] = [geometry, materials];
+                    materials.forEach(function (material) {
+                        material.skinning = true;
+                    });
+                    var faceMaterial = new THREE.MultiMaterial(materials);
+                    let value: [THREE.Geometry, THREE.Mesh] = [geometry, new THREE.SkinnedMesh(geometry, faceMaterial)];
                     this.geometryMap[this.towerTypes[icopy].model] = value;
-                    var material = materials[0];
                     progress();
                 }.bind(this, i));
             }

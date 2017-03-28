@@ -36,7 +36,7 @@ class Communication {
         // change on a map
         this.gameRoom.state.listen("maps/:id/:y/:x", "replace", (id, y, x, value) => {
             let mesh: any = Main.getInstance().getRenderer().scene.getObjectByName( "cell["+y+"]["+x+"]");
-            mesh.material.color = new THREE.Color(value*10);
+            mesh.material.color = new THREE.Color(value*50);
         });
         this.gameRoom.state.listen(this.listen);
     }

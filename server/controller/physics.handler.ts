@@ -69,30 +69,43 @@ export class PhysicsHandler extends Handler {
     }
 
     createTower(type: number, position: Point, player: Player, towerBuilder: TowerBuilder) {
-        towerBuilder.create(type, player, position);
+        return towerBuilder.create(type, player, position);
     }
 
     destroyTower(player: Player, tower_id: number) {
     }
 
     onMessage(player: Player, data: any, handlers, builders) {
+        let mapHandler: MapHandler = handlers['MapHandler'];
+        let towerBuilder: TowerBuilder = builders['TowerBuilder'];
+        let unitBuilder: UnitBuilder = builders['UnitBuilder'];
         if (data['createTower'] != null) {
             let type: number = data['createTower']['type'];
             let position: Point = data['createTower']['position'];
             if (type == null || position == null)
                 return;
-            let mapHandler: MapHandler = handlers['MapHandler'];
             let tower_type = TowerBuilder.types[type];
-            mapHandler.addTower(player, position, tower_type.radius);
-            this.createTower(type, position, player, builders['TowerBuilder']);
+            if(mapHandler.checkTower(player, position, tower_type.radius) != 0){
+                return;
+            }
+            let id = this.createTower(type, position, player, towerBuilder);
+            mapHandler.addTower(player, position, tower_type.radius, id);
+        }
+        if (data['destroyTower'] != null) {
+            let position: Point = data['createTower']['position'];
+            if (position == null)
+                return;
+            let id = mapHandler.checkTower(player, position, 1);
+            mapHandler.clearTower(player, position, TowerBuilder.types[towerBuilder.get(id).type].radius);
+            this.destroyBody(id);
         }
         if (data['createUnit'] != null) {
             let type: number = data['createUnit']['type'];
             if (type == null)
                 return;
             player.creep_location++;
-            player.creep_location %= handlers['MapHandler'].size.x;
-            this.createUnit(type, player, builders['UnitBuilder'], player.creep_location);
+            player.creep_location %= mapHandler.size.x;
+            this.createUnit(type, player, unitBuilder, player.creep_location);
         }
     }
 

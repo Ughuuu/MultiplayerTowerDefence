@@ -8,6 +8,7 @@ export class MapHandler extends Handler {
     public templates: {} = {};
     public vectorField: {} = {};
     public distances: {} = {};
+    public towers: {} = {};
     public size: Point;
     public directions: Point[] = [new Point(-1, 0),
     new Point(-1, 1),
@@ -73,7 +74,7 @@ export class MapHandler extends Handler {
             return { x: unit.lastCell.x, y: unit.lastCell.y };
         }
         let radius: number = UnitBuilder.types[unit.type].radius;
-        if((pos.x%1 < radius || 1 - pos.x%1 < radius) && (pos.y%1 < radius || 1 - pos.y%1 < radius)){
+        if ((pos.x % 1 < radius || 1 - pos.x % 1 < radius) && (pos.y % 1 < radius || 1 - pos.y % 1 < radius)) {
             return { x: unit.lastCell.x, y: unit.lastCell.y };
         }
         unit.lastCell.x = x;
@@ -98,18 +99,18 @@ export class MapHandler extends Handler {
         let dir = this.directions[this.vectorField[player.id][cell.y][cell.x]];
         let extraDir = new Point(0, 0);
         let radius = UnitBuilder.types[unit.type].radius;
-        if((pos.x%1 < radius || 1 - pos.x%1 < radius) && (pos.y%1 < radius || 1 - pos.y%1 < radius)){
-            if(unit.stuck != null && unit.stuck == 0){
+        if ((pos.x % 1 < radius || 1 - pos.x % 1 < radius) && (pos.y % 1 < radius || 1 - pos.y % 1 < radius)) {
+            if (unit.stuck != null && unit.stuck == 0) {
                 unit.stuck = clock;
             }
-            if(clock - unit.stuck < 1000){
+            if (clock - unit.stuck < 1000) {
                 return { x: (dir.x + extraDir.x) * speed / (value + 1), y: (dir.y + extraDir.y) * speed / (value + 1) };
             }
             // return to the cell you belong to
-            extraDir.x=(-pos.x + cell.x);
-            extraDir.y=(-pos.y + cell.y);
+            extraDir.x = (-pos.x + cell.x);
+            extraDir.y = (-pos.y + cell.y);
             return { x: (extraDir.x) * speed / (value + 1), y: (extraDir.y) * speed / (value + 1) };
-        }else{
+        } else {
             unit.stuck = 0;
         }
         return { x: (dir.x + extraDir.x) * speed / (value + 1), y: (dir.y + extraDir.y) * speed / (value + 1) };
@@ -140,7 +141,7 @@ export class MapHandler extends Handler {
                     if (x + dirx >= 0 && x + dirx < this.size.x &&
                         y + diry >= 0 && y + diry < this.size.y) {
                         if (Math.abs(diry) == Math.abs(dirx)) {
-                            dirs[i] = distance[y + diry][x]/3 + distance[y][x + dirx]/3 + distance[y + diry][x + dirx]/3 ;
+                            dirs[i] = distance[y + diry][x] / 3 + distance[y][x + dirx] / 3 + distance[y + diry][x + dirx] / 3;
                         }
                         else {
                             dirs[i] = distance[y + diry][x + dirx];
@@ -177,15 +178,17 @@ export class MapHandler extends Handler {
         this.templates[player.id] = MapHandler.initMap(this.size.x, this.size.y);
         MapHandler.copyMap(this.templates[player.id], this.template);
         this.vectorField[player.id] = MapHandler.initMap(this.size.x, this.size.y);
+        this.towers[player.id] = MapHandler.initMap(this.size.x, this.size.y);
         this.computeDistances(player);
     }
 
     onLeave(player: Player) {
         delete this.templates[player.id];
         delete this.vectorField[player.id];
+        delete this.towers[player.id];
     }
 
-    addTower(player: Player, position: Point, size: number) {
+    checkTower(player: Player, position: Point, size: number) {
         let start = Math.round(size / 2);
         position.x = Math.floor(position.x);
         position.y = Math.floor(position.y);
@@ -194,6 +197,24 @@ export class MapHandler extends Handler {
                 if (position.y + i < 0 || position.y + i >= this.size.y || position.x + i < 0 || position.x + i >= this.size.x) {
                     continue;
                 }
+                if (this.towers[player.id][position.y + i][position.x + j] != 0) {
+                    return this.towers[player.id][position.y + i][position.x + j];
+                }
+            }
+        }
+        return 0;
+    }
+
+    addTower(player: Player, position: Point, size: number, id: number) {
+        let start = Math.round(size / 2);
+        position.x = Math.floor(position.x);
+        position.y = Math.floor(position.y);
+        for (let i = 0; i < start; i++) {
+            for (let j = 0; j < start; j++) {
+                if (position.y + i < 0 || position.y + i >= this.size.y || position.x + i < 0 || position.x + i >= this.size.x) {
+                    continue;
+                }
+                this.towers[player.id][position.y + i][position.x + j] = id;
                 this.templates[player.id][position.y + i][position.x + j] = MapHandler.towerNumber;
             }
         }
@@ -201,17 +222,25 @@ export class MapHandler extends Handler {
     }
 
     clearTower(player: Player, position: Point, size: number) {
-        for (let i = 0; i < size; i++) {
-            for (let j = 0; j < size; j++) {
+        let start = Math.round(size / 2);
+        position.x = Math.floor(position.x);
+        position.y = Math.floor(position.y);
+        for (let i = 0; i < start; i++) {
+            for (let j = 0; j < start; j++) {
+                if (position.y + i < 0 || position.y + i >= this.size.y || position.x + i < 0 || position.x + i >= this.size.x) {
+                    continue;
+                }
+                this.towers[player.id][position.y + i][position.x + j] = 0;
                 this.templates[player.id][position.y + i][position.x + j] = this.template[position.y + i][position.x + j];
             }
         }
+        this.computeDistances(player);
     }
 
     update(players) {
     }
 
     toJSON(): any {
-        return { maps: this.distances };
+        return { directions: this.vectorField, template: this.template };
     }
 }

@@ -59,6 +59,8 @@ class Render {
         let textureRock = new THREE.TextureLoader().load("/assets/tiles/rock.jpg");
         let textureSwamp = new THREE.TextureLoader().load("/assets/tiles/swamp.jpg");
 
+        let textureArrow = new THREE.TextureLoader().load("/assets/arrow.png");
+
 
         this.initialX = 0;
         this.initialY = 0;
@@ -73,18 +75,58 @@ class Render {
                 let materialRock = new THREE.MeshLambertMaterial({ map: textureRock, side: THREE.DoubleSide });
                 let materialSwamp = new THREE.MeshLambertMaterial({ map: textureSwamp, side: THREE.DoubleSide });
 
+                let materialArrow = new THREE.MeshLambertMaterial({ map: textureArrow, side: THREE.DoubleSide });
+
                 this.planes[i][j] = new THREE.PlaneGeometry(cellWidth, cellHeight, width, height);
-                let plane;
+                let plane: any;
+                let arrowMesh: THREE.Mesh;
+
                 plane = new THREE.Mesh(this.planes[i][j], materialGrass);
-                plane.material.color = new THREE.Color(matrix[i][j] * 10);
+                plane.material.color = new THREE.Color(0, 160, 0);
                 plane.name = "cell[" + i + "][" + j + "]";
                 plane.position.x = (j + 0.5) * cellWidth + this.initialX;
                 plane.position.y = (i + 0.5) * cellHeight - this.initialY;
                 plane.position.z = -300;
                 this.scene.add(plane);
+
+                arrowMesh = new THREE.Mesh(this.planes[i][j], materialArrow);
+                arrowMesh.position.x = (j + 0.5) * cellWidth + this.initialX;
+                arrowMesh.position.y = (i + 0.5) * cellHeight - this.initialY;
+                arrowMesh.position.z = -300;
+                arrowMesh.name = "arrowMesh[" + i + "][" + j + "]";
+                arrowMesh.rotation.set(0, 0, Math.PI / 2);
+                this.scene.add(arrowMesh);
             }
         }
 
+    }
+
+    public updateArrows(x: number, y: number, value: number) {
+        let object = this.scene.getObjectByName("arrowMesh[" + x + "][" + y + "]");
+        switch (value) {
+            case 0:
+                object.rotation.set(0, 0, 3 * Math.PI/2);
+                break;
+            case 1:
+                object.rotation.set(0, 0, 3 * Math.PI / 2);
+                break;
+            case 2:
+                object.rotation.set(0, 0, 3 * Math.PI / 2);
+                break;
+            case 3:
+                object.rotation.set(0, 0, 3 * Math.PI / 2);
+                break;
+            case 4:
+                object.rotation.set(0, 0, 3 * Math.PI / 2);
+                break;
+            case 5:
+                object.rotation.set(0, 0, 3 * Math.PI / 2);
+                break;
+            case 6:
+                object.rotation.set(0, 0, 3 * Math.PI / 2);
+                break;
+        }
+       
     }
 
     public convertGameCoorToMapCoord(position: THREE.Vector3) {

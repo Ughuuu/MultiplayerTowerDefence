@@ -24,17 +24,22 @@ class Communication {
         this.gameRoom.onUpdate.addOnce(this.init);
 
         // remove on a map, a player left
-        this.gameRoom.state.listen("maps/:id", "remove", (id, attribute) => {
-            
+        this.gameRoom.state.listen("directions/:id/:y/:x:", "replace", (id, x, y, value) => {
+            Main.getInstance().updateArrows(x, y, value);
+        });
+
+        // remove on a map, a player left
+        this.gameRoom.state.listen("directions/:id", "add", (id, attribute) => {
+
         });
 
         // add on a whole map
-        this.gameRoom.state.listen("maps/:id", "add", (id, map) => {
+        this.gameRoom.state.listen("template", "add", (map) => {
             Main.getInstance().setMap(map);
         });
 
         // change on a map
-        this.gameRoom.state.listen("maps/:id/:y/:x", "replace", (id, y, x, value) => {
+        this.gameRoom.state.listen("template/:y/:x", "replace", (id, y, x, value) => {
             let mesh: any = Main.getInstance().getRenderer().scene.getObjectByName( "cell["+y+"]["+x+"]");
             mesh.material.color = new THREE.Color(value*50);
         });
@@ -157,7 +162,6 @@ class Communication {
     }
 
     listen(number, message, value) {
-        console.log("listen", number, message, value);
     }
 
     onJoin(client, room) {

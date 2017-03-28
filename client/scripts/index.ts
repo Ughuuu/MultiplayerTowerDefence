@@ -116,7 +116,6 @@ class Main {
         let intersects: any = this.raycaster.intersectObjects(this.renderer.scene.children);
         if (intersects.length > 0) {
             var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
-            console.log(x);
             this.communication.createTower(0, x.x, x.y);
         }
         let position = this.renderer.convertGameCoorToMapCoord(new THREE.Vector3(this.mouse.x, this.mouse.y, 0));
@@ -172,6 +171,9 @@ class Main {
 
     public setMap(map: number[][]) {
         this.renderer.initMap(map, map[0].length, map.length, 20, 20);
+    }
+    public updateArrows(x: number, y: number, value: number) {
+        this.renderer.updateArrows(x, y, value);
     }
     public createCamera() {
         const WIDTH = window.innerWidth;

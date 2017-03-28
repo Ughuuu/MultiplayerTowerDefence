@@ -40,7 +40,7 @@ export class MoneyHandler extends Handler {
     }
 
     buy(player, price, gameRoom: GameRoom) {
-        this.money[player.id] += price;
+        this.money[player.id] -= price;
         this.send(player, gameRoom);
     }
 

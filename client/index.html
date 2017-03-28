@@ -41,8 +41,12 @@
 </head>
 
 <body>
-  <div style="display: block; border: 0px; margin:0px; padding:0px;" id="container" onmousemove="Main.getInstance().setMouse(event)" onmousedown="Main.getInstance().onMouseDown(event)"></div>
+  <div style="display: block; border: 0px; margin:0px; padding:0px;" id="container" onmousemove="Main.getInstance().setMouse(event)" onmousedown="Main.getInstance().onMouseDown(event)">
+      
+  </div>
+  <div  style="position:absolute; background-color:orangered; top: 100px; left: 200px; width:200px;height:50px;" id="money"> </div>
   <button style="position:absolute; top: 100px; left: 100px; width:50px;height:50px;" value="unit" onclick="main.getCommunication().createUnit(0)"></button>
+    
   <script>
       var host = window.location.href;
       let httpLocation = host.indexOf('//') + 2;

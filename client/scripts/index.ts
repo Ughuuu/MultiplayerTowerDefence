@@ -169,12 +169,20 @@ class Main {
 
     }
 
+    public onData(data) {
+        const container = document.querySelector('#money');
+        
+        container.innerHTML ="Money:" + data.money +"<br> Income:" +data.income; 
+    }
+
     public setMap(map: number[][]) {
         this.renderer.initMap(map, map[0].length, map.length, 20, 20);
     }
+
     public updateArrows(x: number, y: number, value: number) {
         this.renderer.updateArrows(x, y, value);
     }
+
     public createCamera() {
         const WIDTH = window.innerWidth;
         const HEIGHT = window.innerHeight;

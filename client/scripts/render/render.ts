@@ -82,7 +82,7 @@ class Render {
                 let arrowMesh: THREE.Mesh;
 
                 plane = new THREE.Mesh(this.planes[i][j], materialGrass);
-                plane.material.color = new THREE.Color(0, 160, 0);
+               // plane.material.color = new THREE.Color(0, 160, 0);
                 plane.name = "cell[" + i + "][" + j + "]";
                 plane.position.x = (j + 0.5) * cellWidth + this.initialX;
                 plane.position.y = (i + 0.5) * cellHeight - this.initialY;
@@ -94,7 +94,11 @@ class Render {
                 arrowMesh.position.y = (i + 0.5) * cellHeight - this.initialY;
                 arrowMesh.position.z = -300;
                 arrowMesh.name = "arrowMesh[" + i + "][" + j + "]";
+                arrowMesh.rotation.set(0, 0, Math.PI - Math.PI / 4);
                 arrowMesh.rotation.set(0, 0, Math.PI / 2);
+                arrowMesh.material.transparent = true;
+               // arrowMesh.material.color = new THREE.Color(0, 0, 0);
+                arrowMesh.material.opacity = 0.3;
                 this.scene.add(arrowMesh);
             }
         }
@@ -105,25 +109,28 @@ class Render {
         let object = this.scene.getObjectByName("arrowMesh[" + x + "][" + y + "]");
         switch (value) {
             case 0:
-                object.rotation.set(0, 0, 3 * Math.PI/2);
+                object.rotation.set(0, 0, Math.PI);
                 break;
             case 1:
-                object.rotation.set(0, 0, 3 * Math.PI / 2);
+                object.rotation.set(0, 0, Math.PI - Math.PI / 4);
                 break;
             case 2:
-                object.rotation.set(0, 0, 3 * Math.PI / 2);
+                object.rotation.set(0, 0, Math.PI/2);
                 break;
             case 3:
-                object.rotation.set(0, 0, 3 * Math.PI / 2);
+                object.rotation.set(0, 0, Math.PI / 4);
                 break;
             case 4:
-                object.rotation.set(0, 0, 3 * Math.PI / 2);
+                object.rotation.set(0, 0, 2 * Math.PI);
                 break;
             case 5:
-                object.rotation.set(0, 0, 3 * Math.PI / 2);
+                object.rotation.set(0, 0, 2 * Math.PI - Math.PI/4);
                 break;
             case 6:
                 object.rotation.set(0, 0, 3 * Math.PI / 2);
+                break;
+            case 7:
+                object.rotation.set(0, 0, 3 * Math.PI / 2 - Math.PI / 4);
                 break;
         }
        

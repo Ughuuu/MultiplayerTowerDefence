@@ -21,9 +21,7 @@ class GenericUnit {
 
     public loadModel(scene: THREE.Scene, geometry: THREE.Geometry, materials: any) {
         materials.forEach(function (material) {
-
             material.skinning = true;
-
         });
 
 

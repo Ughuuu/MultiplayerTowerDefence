@@ -22,7 +22,7 @@ class Communication {
         this.gameRoom.onJoin.add(this.onJoin);
 
         this.gameRoom.onUpdate.addOnce(this.init);
-
+        this.gameRoom.onData.add(this.onData);
         // remove on a map, a player left
         this.gameRoom.state.listen("directions/:id/:y/:x:", "replace", (id, x, y, value) => {
             Main.getInstance().updateArrows(x, y, value);
@@ -141,6 +141,9 @@ class Communication {
         com.towerTypes = state.tower_types;
         Main.getInstance().setUnitTypes(state.unit_types, com.progress);
         Main.getInstance().setTowerTypes(state.tower_types, com.progress);
+    }
+    onData(data) {
+        Main.getInstance().onData(data);
     }
 
     progress() {

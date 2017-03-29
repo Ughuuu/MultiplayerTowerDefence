@@ -28,7 +28,7 @@ export class TowerBuilder extends Builder {
     public static types: TowerType[] = [
         new TowerType(
             'light_tower',
-            '/assets/fat_peasant_noTEXTURE_SK.json',
+            '/assets/towers/normal/normal.json',
             1,
             10,
             15,

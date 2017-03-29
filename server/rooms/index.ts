@@ -31,7 +31,7 @@ export class RoomManager {
       [0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0],
     ];
-    gameServer.register("ffa_2_public", GameRoom, { maxPlayers: 2, isPasswordRequired: false, map: map });
-    gameServer.register("ffa_2_private", GameRoom, { maxPlayers: 2, isPasswordRequired: true, map: map });
+    gameServer.register("ffa_2_public", GameRoom, { maxPlayers: 1, isPasswordRequired: false, map: map });
+    gameServer.register("ffa_2_private", GameRoom, { maxPlayers: 1, isPasswordRequired: true, map: map });
   }
 }

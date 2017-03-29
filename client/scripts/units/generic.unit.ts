@@ -73,10 +73,12 @@ class GenericUnit {
     public playMoveAnimation() {
         //TO DO 
         //Decide how should these animatins look and move Main.getInstance() from here
-        this.animationMixer.clipAction(this.animations[0], this.mesh)
-            .setDuration(this.animations[0].duration)			// one second
-            .startAt(- Math.random())	// random phase (already running)
-            .play()
+        if (this.animations != null) {
+            this.animationMixer.clipAction(this.animations[0], this.mesh)
+                .setDuration(this.animations[0].duration)			// one second
+                .startAt(- Math.random())	// random phase (already running)
+                .play()
+        }
     }
 
     //Units handle their animations

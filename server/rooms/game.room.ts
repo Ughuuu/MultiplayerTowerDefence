@@ -58,8 +58,8 @@ export class GameRoom extends Room<StateHandler> {
     }
 
     onMessage(client: Client, data) {
-        if(this.started == true)
-        this.state.onMessage(client, data, this)
+        if (this.started == true)
+            this.state.onMessage(client, data, this)
     }
 
     onDispose() {

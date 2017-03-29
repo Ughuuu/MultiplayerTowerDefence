@@ -97,23 +97,20 @@ export class MapHandler extends Handler {
             value = 0;
         }
         let dir = this.directions[this.vectorField[player.id][cell.y][cell.x]];
-        let extraDir = new Point(0, 0);
         let radius = UnitBuilder.types[unit.type].radius;
         if ((pos.x % 1 < radius || 1 - pos.x % 1 < radius) && (pos.y % 1 < radius || 1 - pos.y % 1 < radius)) {
             if (unit.stuck != null && unit.stuck == 0) {
                 unit.stuck = clock;
             }
             if (clock - unit.stuck < 1000) {
-                return { x: (dir.x + extraDir.x) * speed / (value + 1), y: (dir.y + extraDir.y) * speed / (value + 1) };
+                return { x: (dir.x) * speed / (value + 1), y: (dir.y) * speed / (value + 1) };
             }
             // return to the cell you belong to
-            extraDir.x = (-pos.x + cell.x);
-            extraDir.y = (-pos.y + cell.y);
-            return { x: (extraDir.x) * speed / (value + 1), y: (extraDir.y) * speed / (value + 1) };
+            return { x: (-pos.x + cell.x) * speed / (value + 1), y: (-pos.y + cell.y) * speed / (value + 1) };
         } else {
             unit.stuck = 0;
         }
-        return { x: (dir.x + extraDir.x) * speed / (value + 1), y: (dir.y + extraDir.y) * speed / (value + 1) };
+        return { x: (dir.x) * speed / (value + 1), y: (dir.y) * speed / (value + 1) };
     }
 
     computeDistances(player: Player) {

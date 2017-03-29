@@ -35,7 +35,7 @@ export class UnitBuilder extends Builder {
             0,
             WalkType.Ground,
             1,
-            1,
+            2,
             0.1,
             0.5)
     ];
@@ -53,7 +53,7 @@ export class UnitBuilder extends Builder {
         circleShape.collisionMask = TowerBuilder.collisionBit
             | UnitBuilder.collisionBit
             | ProjectileBuilder.collisionBit;
-        let body = this.physicsHandler.createBody(circleShape, unit_type.mass, position, 0);
+        let body = this.physicsHandler.createBody(player, circleShape, unit_type.mass, position, 0);
         let unit = new Unit(body.id, player.id);
         unit.body = body;
         unit.health = unit_type.health;
@@ -76,7 +76,7 @@ export class UnitBuilder extends Builder {
         let unit: Unit = this.units[id];
         let player: Player = this.players[unit.owner_id];
         player.unit_ids.splice(player.unit_ids.indexOf(unit.id), 1);
-        this.physicsHandler.destroyBody(id);
+        this.physicsHandler.destroyBody(player, id);
         delete this.units[id];
     }
 }

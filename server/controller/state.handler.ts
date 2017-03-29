@@ -9,14 +9,37 @@ export class StateHandler {
     builders = {};
     players = {};
     player_size: number = 0;
+    locations = {};
+
+    public constructor(public maxPlayers) {
+
+    }
+
+    getPlayerByLocation(location: number) {
+        return this.locations[location];
+    }
 
     onJoin(client, options) {
+        let positions: boolean[] = [];
+        for (let i = 0; i < this.maxPlayers; i++) {
+            positions.push(false);
+        }
+        for (let key in this.players) {
+            positions[this.players[key].location] = true;
+        }
+        let i = 0;
+        for (; i < this.maxPlayers; i++) {
+            if (positions[i] == false) {
+                break;
+            }
+        }
         this.player_size++;
-        let player = new Player(client.id, client, options.name, this.player_size);
+        let player = new Player(client.id, client, options.name, i);
         this.players[client.id] = player;
         for (let key in this.handlers) {
             this.handlers[key].onJoin(player, this.handlers, this.builders);
         }
+        this.locations[player.location] = player;
     }
 
     onLeave(client) {
@@ -25,6 +48,7 @@ export class StateHandler {
         for (let key in this.handlers) {
             this.handlers[key].onLeave(player, this.handlers, this.builders);
         }
+        delete this.locations[player.location];
         delete this.players[client.id];
     }
 
@@ -51,6 +75,10 @@ export class StateHandler {
             for (let key in handlerJSON) {
                 result[key] = handlerJSON[key];
             }
+        }
+        result['players'] = {};
+        for (let key in this.locations) {
+            result['players'][this.locations[key].id] = { location: this.locations[key].location, life: this.locations[key].life };
         }
         return result;
     }

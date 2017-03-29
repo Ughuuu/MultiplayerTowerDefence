@@ -19,12 +19,23 @@ class Main {
     private windowHalfX: number;
     private windowHalfY: number;
     private INTERSECTED: any;
+    private players: {} = {};
 
     static getInstance() {
         if (!Main.instance) {
             Main.instance = new Main();
         }
         return Main.instance;
+    }
+
+    setLife(id, life) {
+        this.players[id] = life;
+        const container = document.querySelector('#life');
+        let str = "";
+        for (let id in this.players) {
+            str += 'Hp of ' + id + ': ' + this.players[id];
+        }
+        container.innerHTML = str;
     }
 
     constructor() {
@@ -114,7 +125,7 @@ class Main {
                 this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
                 this.INTERSECTED.material.emissive.setHex(0xff0000);
             }
-        } 
+        }
     }
 
     public onMouseDown(event) {
@@ -183,8 +194,8 @@ class Main {
 
     public onData(data) {
         const container = document.querySelector('#money');
-        
-        container.innerHTML ="Money:" + data.money +"<br> Income:" +data.income; 
+
+        container.innerHTML = "Money:" + data.money + "<br> Income:" + data.income;
     }
 
     public setMap(map: number[][]) {

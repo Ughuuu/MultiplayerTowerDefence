@@ -22,7 +22,7 @@ export class ProjectileBuilder extends Builder {
     public static collisionBit: number = Math.pow(2, 4);
     projectiles = {};
 
-    constructor(public physicsHandler: PhysicsHandler, public towerBuilder: TowerBuilder) {
+    constructor(public physicsHandler: PhysicsHandler, public towerBuilder: TowerBuilder, public players) {
         super('ProjectileBuilder');
     }
 
@@ -31,7 +31,7 @@ export class ProjectileBuilder extends Builder {
         let particleShape = this.physicsHandler.createParticle();
         particleShape.collisionGroup = ProjectileBuilder.collisionBit;
         particleShape.collisionMask = UnitBuilder.collisionBit;
-        let body = this.physicsHandler.createBody(particleShape, 1, position, 0);
+        let body = this.physicsHandler.createBody(this.players[tower.owner_id], particleShape, 1, position, 0);
         let projectile = new Projectile(body.id, tower.id);
         tower.projectile_ids.push(projectile.id);
         this.projectiles[projectile.id] = projectile;
@@ -56,7 +56,7 @@ export class ProjectileBuilder extends Builder {
         let projectile: Projectile = this.projectiles[id];
         let tower: Tower = this.towerBuilder.towers[projectile.tower_id];
         tower.projectile_ids.splice(tower.projectile_ids.indexOf(projectile.id), 1);
-        this.physicsHandler.destroyBody(id);
+        this.physicsHandler.destroyBody(this.players[tower.owner_id], id);
         delete this.projectiles[id];
     }
 }

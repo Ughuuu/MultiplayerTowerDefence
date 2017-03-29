@@ -10,11 +10,12 @@ import { MoneyHandler } from "../controller/money.handler";
 import { RoomManager } from './index';
 
 export class GameRoom extends Room<StateHandler> {
-    static patch: number = 1000 / 30;
+    static patch: number = 1000 / 60;
     static fps: number = 1000 / 30;
     static ms: number = 1 / 30;
     private password: string;
     invervalId: number;
+    started: boolean = false;
 
     addHandlers(stateHandler: StateHandler): StateHandler {
         stateHandler.addHandler(new PhysicsHandler());
@@ -27,15 +28,14 @@ export class GameRoom extends Room<StateHandler> {
     addBuilders(stateHandler: StateHandler): StateHandler {
         stateHandler.addBuilder(new UnitBuilder(stateHandler.handlers['PhysicsHandler'], stateHandler.players));
         stateHandler.addBuilder(new TowerBuilder(stateHandler.handlers['PhysicsHandler'], stateHandler.players));
-        stateHandler.addBuilder(new ProjectileBuilder(stateHandler.handlers['PhysicsHandler'], stateHandler.builders['TowerBuilder']))
+        stateHandler.addBuilder(new ProjectileBuilder(stateHandler.handlers['PhysicsHandler'], stateHandler.builders['TowerBuilder'], stateHandler.players))
         return stateHandler;
     }
 
     constructor(options) {
         super(options);
         this.setPatchRate(GameRoom.patch);
-        this.setState(this.addBuilders(this.addHandlers(new StateHandler())));
-        this.setSimulationInterval(function () { this.update() }.bind(this), GameRoom.fps);
+        this.setState(this.addBuilders(this.addHandlers(new StateHandler(options.maxPlayers))));
         RoomManager.rooms++;
     }
 
@@ -58,6 +58,7 @@ export class GameRoom extends Room<StateHandler> {
     }
 
     onMessage(client: Client, data) {
+        if(this.started == true)
         this.state.onMessage(client, data, this)
     }
 
@@ -78,6 +79,7 @@ export class GameRoom extends Room<StateHandler> {
             if (options.password != null && options.password == this.password && this.clients.length < this.options.maxPlayers) {
                 // start server if all players joined
                 if (this.clients.length == this.options.maxPlayers - 1) {
+                    this.started = true;
                     this.setSimulationInterval(function () { this.update() }.bind(this), GameRoom.fps);
                 }
                 return true;
@@ -86,6 +88,7 @@ export class GameRoom extends Room<StateHandler> {
         }
         // start server if all players joined
         if (this.clients.length == this.options.maxPlayers - 1) {
+            this.started = true;
             this.setSimulationInterval(function () { this.update() }.bind(this), GameRoom.fps);
         }
         return this.clients.length < this.options.maxPlayers;

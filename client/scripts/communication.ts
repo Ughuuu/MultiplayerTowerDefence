@@ -25,16 +25,20 @@ class Communication {
         this.gameRoom.onData.add(this.onData);
         // remove on a map, a player left
         this.gameRoom.state.listen("directions/:id/:y/:x:", "replace", (id, x, y, value) => {
+            if (id != this.client.id)
+                return;
             Main.getInstance().updateArrows(x, y, value);
         });
 
         // remove on a map, a player left
         this.gameRoom.state.listen("directions/:id", "add", (id, value) => {
-            for (let i: number = 0; i < value.length ; i++) {
-                for (let j: number = 0; j < value[0].length ; j++) {
+            if (id != this.client.id)
+                return;
+            for (let i: number = 0; i < value.length; i++) {
+                for (let j: number = 0; j < value[0].length; j++) {
                     Main.getInstance().updateArrows(i, j, value[i][j]);
                 }
-             }
+            }
 
         });
 
@@ -45,8 +49,12 @@ class Communication {
 
         // change on a map
         this.gameRoom.state.listen("template/:y/:x", "replace", (id, y, x, value) => {
-            let mesh: any = Main.getInstance().getRenderer().scene.getObjectByName( "cell["+y+"]["+x+"]");
-            mesh.material.color = new THREE.Color(value*50);
+            let mesh: any = Main.getInstance().getRenderer().scene.getObjectByName("cell[" + y + "][" + x + "]");
+            mesh.material.color = new THREE.Color(value * 50);
+        });
+        // change on a map
+        this.gameRoom.state.listen("players/:id/life", "replace", (id, value) => {
+            Main.getInstance().setLife(id, value);
         });
         this.gameRoom.state.listen(this.listen);
     }
@@ -55,8 +63,8 @@ class Communication {
         let x = Math.round(xya % this.precision1) / this.decimals;
         let y = Math.round((xya / this.precision1) % this.precision1) / this.decimals;
         let a = Math.round((xya / this.precision2) % this.precision1) / this.decimals;
-        x =x* 20;
-        y =y* 20;
+        x = x * 20;
+        y = y * 20;
         return { x: x, y: y, a: a };
     }
 
@@ -69,7 +77,7 @@ class Communication {
             let x = xya.x;
             let y = xya.y;
             let obj = Main.getInstance().getUnit(id);
-            if (!obj.isLoaded) {
+            if (obj == null || !obj.isLoaded) {
                 return;
             }
             obj.setRotationY(x, y);
@@ -81,17 +89,17 @@ class Communication {
             Main.getInstance().removeUnit(id);
         });
         this.gameRoom.state.listen("bodies/:id", "add", (id, value) => {
-            if(value == null){
+            if (value == null) {
                 return;
             }
             let com = Main.getInstance().getCommunication();
             let xya = this.getXYA(value.xya);
             let x = xya.x;
             let y = xya.y;
-            if (value.classType==0) {
+            if (value.classType == 0) {
                 Main.getInstance().addTower(id, value.type, 100, new THREE.Vector3(x, y, -300), new THREE.Vector3(Math.PI / 2, 0, 0), 5 * com.towerTypes[value.type].radius);
             }
-            if (value.classType == 1){
+            if (value.classType == 1) {
                 Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(x, y, -300), new THREE.Vector3(Math.PI / 2, 0, 0), 10 * com.unitTypes[value.type].radius);
             }
             if (value.classType == 2) {
@@ -120,17 +128,17 @@ class Communication {
     }
 
     createUnit(type) {
-        for(let i=0;i<1;i++)
-        this.client.send({
-            PhysicsHandler:
-            {
-                createUnit:
+        for (let i = 0; i < 1; i++)
+            this.client.send({
+                PhysicsHandler:
                 {
-                    type: type
+                    createUnit:
+                    {
+                        type: type
+                    }
                 }
             }
-        }
-        );
+            );
     }
 
     sendMessage(message) {
@@ -141,6 +149,9 @@ class Communication {
 
     init(state) {
         let com = Main.getInstance().getCommunication();
+        const container = document.querySelector('#name');
+        container.innerHTML = "Id:" + com.client.id;
+
         com.modelCount += state.unit_types.length;
         com.modelCount += state.tower_types.length;
         com.unitTypes = state.unit_types;
@@ -171,6 +182,7 @@ class Communication {
     }
 
     listen(number, message, value) {
+        //console.log(number, message, value);
     }
 
     onJoin(client, room) {

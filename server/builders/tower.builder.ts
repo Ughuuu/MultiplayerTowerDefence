@@ -33,8 +33,8 @@ export class TowerBuilder extends Builder {
             10,
             15,
             ElementType.Normal,
-            2000,
-            6,
+            1000,
+            4,
             ProjectileType.Arrow,
             0,
             6,
@@ -60,7 +60,7 @@ export class TowerBuilder extends Builder {
         circleShape.collisionMask = UnitBuilder.collisionBit;
         position.x += tower_type.radius / 2;
         position.y += tower_type.radius / 2;
-        let body = this.physicsHandler.createBodyWithSensor(boxShape, circleShape, 0, position, 0);
+        let body = this.physicsHandler.createBodyWithSensor(player, boxShape, circleShape, 0, position, 0);
         let tower = new Tower(body.id, player.id);
         tower.body = body;
         tower.health = tower_type.health;
@@ -85,7 +85,7 @@ export class TowerBuilder extends Builder {
         let tower: Tower = this.towers[id];
         let player: Player = this.players[tower.owner_id];
         player.tower_ids.splice(player.tower_ids.indexOf(tower.id), 1);
-        this.physicsHandler.destroyBody(id);
+        this.physicsHandler.destroyBody(player, id);
         delete this.towers[id];
     }
 }

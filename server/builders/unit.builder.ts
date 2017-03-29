@@ -25,8 +25,21 @@ export class UnitType {
 
 export class UnitBuilder extends Builder {
     public static types: UnitType[] = [
+        new UnitType('dragon',
+            '/assets/units/dragon/dragon.json',
+            0.2,
+            70,
+            15,
+            ElementType.Normal,
+            3,
+            0,
+            WalkType.Flying,
+            1,
+            10,
+            0.5,
+            2),
         new UnitType('peasant',
-            '/assets/fat_peasant_noTEXTURE_SK.json',
+            '/assets/units/peasant/peasant.json',
             0.2,
             30,
             15,
@@ -39,7 +52,8 @@ export class UnitBuilder extends Builder {
             0.1,
             0.5)
     ];
-    public static collisionBit: number = Math.pow(2, 1);
+    public static collisionBitGround: number = Math.pow(2, 1);
+    public static collisionBitFlying: number = Math.pow(2, 2);
     units = {};
 
     constructor(public physicsHandler: PhysicsHandler, public players: {}) {
@@ -49,10 +63,17 @@ export class UnitBuilder extends Builder {
     create(type: number, player: Player, position: Point): number {
         let unit_type = UnitBuilder.types[type];
         let circleShape = this.physicsHandler.createCircle(unit_type.radius);
-        circleShape.collisionGroup = UnitBuilder.collisionBit;
-        circleShape.collisionMask = TowerBuilder.collisionBit
-            | UnitBuilder.collisionBit
-            | ProjectileBuilder.collisionBit;
+        if (unit_type.walkType == WalkType.Ground) {
+            circleShape.collisionGroup = UnitBuilder.collisionBitGround;
+            circleShape.collisionMask = TowerBuilder.collisionBit
+                | UnitBuilder.collisionBitGround
+                | ProjectileBuilder.collisionBit;
+        } else {
+            circleShape.collisionGroup = UnitBuilder.collisionBitFlying;
+            circleShape.collisionMask = TowerBuilder.collisionBitSensor
+                | UnitBuilder.collisionBitFlying
+                | ProjectileBuilder.collisionBit;
+        }
         let body = this.physicsHandler.createBody(player, circleShape, unit_type.mass, position, 0);
         let unit = new Unit(body.id, player.id);
         unit.body = body;

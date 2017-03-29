@@ -97,13 +97,14 @@ class Communication {
             let x = xya.x;
             let y = xya.y;
             if (value.classType == 0) {
-                Main.getInstance().addTower(id, value.type, 100, new THREE.Vector3(x, y, -300), new THREE.Vector3(Math.PI / 2, 0, 0), 5 * com.towerTypes[value.type].radius);
+                Main.getInstance().addTower(id, value.type, 100, new THREE.Vector3(x, y, -300), new THREE.Vector3(Math.PI / 2, 0, 0), 
+                2);
             }
             if (value.classType == 1) {
-                Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(x, y, -300), new THREE.Vector3(Math.PI / 2, 0, 0), 10 * com.unitTypes[value.type].radius);
+                Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(x, y, -300), new THREE.Vector3(Math.PI / 2, 0, 0), 4);
             }
             if (value.classType == 2) {
-                Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(x, y, -300), new THREE.Vector3(Math.PI / 2, 0, 0), 10 * com.unitTypes[value.type].radius);
+                Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(x, y, -300), new THREE.Vector3(Math.PI / 2, 0, 0), 1);
             }
             let obj = Main.getInstance().getUnit(id);
         });
@@ -159,6 +160,7 @@ class Communication {
         Main.getInstance().setUnitTypes(state.unit_types, com.progress);
         Main.getInstance().setTowerTypes(state.tower_types, com.progress);
     }
+
     onData(data) {
         Main.getInstance().onData(data);
     }

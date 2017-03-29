@@ -17,9 +17,9 @@ export class ProjectileType {
 export class ProjectileBuilder extends Builder {
     public static types: ProjectileType[] = [
         new ProjectileType('arrow',
-            '/assets/fat_peasant_noTEXTURE_SK.json')
+            '/projectile/boulder/boulder.json')
     ];
-    public static collisionBit: number = Math.pow(2, 4);
+    public static collisionBit: number = Math.pow(2, 5);
     projectiles = {};
 
     constructor(public physicsHandler: PhysicsHandler, public towerBuilder: TowerBuilder, public players) {
@@ -30,7 +30,7 @@ export class ProjectileBuilder extends Builder {
         let projectile_type = ProjectileBuilder.types[tower.projectileType];
         let particleShape = this.physicsHandler.createParticle();
         particleShape.collisionGroup = ProjectileBuilder.collisionBit;
-        particleShape.collisionMask = UnitBuilder.collisionBit;
+        particleShape.collisionMask = UnitBuilder.collisionBitGround | UnitBuilder.collisionBitFlying;
         let body = this.physicsHandler.createBody(this.players[tower.owner_id], particleShape, 1, position, 0);
         let projectile = new Projectile(body.id, tower.id);
         tower.projectile_ids.push(projectile.id);

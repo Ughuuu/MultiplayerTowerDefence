@@ -41,8 +41,8 @@ export class TowerBuilder extends Builder {
             3,
             "null")
     ];
-    private static collisionBitTower: number = Math.pow(2, 2);
-    private static collisionBitSensor: number = Math.pow(2, 3);
+    public static collisionBitTower: number = Math.pow(2, 4);
+    public static collisionBitSensor: number = Math.pow(2, 3);
     public static collisionBit: number = TowerBuilder.collisionBitTower | TowerBuilder.collisionBitSensor;
     towers = {};
 
@@ -54,10 +54,10 @@ export class TowerBuilder extends Builder {
         let tower_type = TowerBuilder.types[type];
         let boxShape = this.physicsHandler.createBox(tower_type.radius, tower_type.radius);
         boxShape.collisionGroup = TowerBuilder.collisionBitTower;
-        boxShape.collisionMask = UnitBuilder.collisionBit;
+        boxShape.collisionMask = UnitBuilder.collisionBitGround;
         let circleShape = this.physicsHandler.createCircle(tower_type.range);
         circleShape.collisionGroup = TowerBuilder.collisionBitSensor;
-        circleShape.collisionMask = UnitBuilder.collisionBit;
+        circleShape.collisionMask = UnitBuilder.collisionBitGround | UnitBuilder.collisionBitFlying;
         position.x += tower_type.radius / 2;
         position.y += tower_type.radius / 2;
         let body = this.physicsHandler.createBodyWithSensor(player, boxShape, circleShape, 0, position, 0);

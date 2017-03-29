@@ -73,12 +73,16 @@ class Main {
             {
                 var loader = new THREE.JSONLoader();
                 loader.load(this.creepTypes[i].model, function (icopy: number, geometry: THREE.Geometry, materials: any) {
+                    try{
                     materials.forEach(function (material) {
-                        material.skinning = true;
+                        material.side = THREE.DoubleSide;
+                        //material.skinning = true;
                     });
-                    var faceMaterial = new THREE.MultiMaterial(materials);
-                    let value: [THREE.Geometry, THREE.Mesh] = [geometry, new THREE.SkinnedMesh(geometry, faceMaterial)];
+                    var material = new THREE.MultiMaterial( materials );
+		            var object = new THREE.SkinnedMesh ( geometry, material );
+                    let value: [THREE.Geometry, THREE.Mesh] = [geometry, object];
                     this.geometryMap[this.creepTypes[icopy].model] = value;
+                    }catch(e){}
                     progress();
                 }.bind(this, i));
             }
@@ -91,12 +95,16 @@ class Main {
             {
                 var loader = new THREE.JSONLoader();
                 loader.load(this.towerTypes[i].model, function (icopy: number, geometry: THREE.Geometry, materials: any) {
+                    try{
                     materials.forEach(function (material) {
-                        material.skinning = true;
+                        material.skinning = false;
+                        material.side = THREE.DoubleSide;
                     });
-                    var faceMaterial = new THREE.MultiMaterial(materials);
-                    let value: [THREE.Geometry, THREE.Mesh] = [geometry, new THREE.SkinnedMesh(geometry, faceMaterial)];
+                    var material = new THREE.MultiMaterial( materials );
+		            var object = new THREE.Mesh( geometry, material );
+                    let value: [THREE.Geometry, THREE.Mesh] = [geometry, object];
                     this.geometryMap[this.towerTypes[icopy].model] = value;
+                    }catch(e){}
                     progress();
                 }.bind(this, i));
             }

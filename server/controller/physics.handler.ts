@@ -129,7 +129,7 @@ export class PhysicsHandler extends Handler {
     }
 
     createUnitCall(player: Player, data: any, handlers, builders, gameRoom: GameRoom) {
-        if (data['createUnit'] != null && player.lastSend > 200) {
+        if (data['createUnit'] != null && player.lastSend > 50) {
             player.lastSend = 0;
             let moneyHandler: MoneyHandler = handlers['MoneyHandler'];
             let mapHandler: MapHandler = handlers['MapHandler'];
@@ -393,7 +393,7 @@ export class PhysicsHandler extends Handler {
     createPlane(player: Player) {
         let plane = new p2.Plane();
         plane.collisionGroup = TowerBuilder.collisionBit;
-        plane.collisionMask = UnitBuilder.collisionBit;
+        plane.collisionMask = UnitBuilder.collisionBitGround | UnitBuilder.collisionBitFlying;
         return plane;
     }
 

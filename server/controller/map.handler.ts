@@ -1,6 +1,6 @@
 ﻿import { Handler } from './handler';
 import { Player } from '../model/player';
-import { Unit } from '../model/unit';
+import { Unit, WalkType } from '../model/unit';
 import { Point } from '../model/point';
 import { UnitBuilder } from '../builders/unit.builder';
 
@@ -92,6 +92,9 @@ export class MapHandler extends Handler {
 
     public getNext(player: Player, pos: Point, speed: number, unit: Unit, clock: number): Point {
         let cell = this.getCell(player, pos, unit);
+        if (UnitBuilder.types[unit.type].walkType == WalkType.Flying) {
+            return { x: this.directions[2].x * speed, y: this.directions[2].y * speed };
+        }
         let value = this.templates[player.id][cell.y][cell.x];
         if (value == MapHandler.towerNumber) {
             value = 0;

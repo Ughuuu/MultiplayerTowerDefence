@@ -12,7 +12,8 @@
     "info": "pm2 start index.js"
   },
   "engines": {
-    "node": ">= 6.4"
+    "node": ">= 6.4",
+    "npm": "4.4.4"
   },
   "dependencies": {
     "@types/lodash": "^4.14.55",

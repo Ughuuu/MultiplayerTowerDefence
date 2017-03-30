@@ -13,7 +13,6 @@ export class GameRoom extends Room<StateHandler> {
     static patch: number = 1000 / 60;
     static fps: number = 1000 / 30;
     static ms: number = 1 / 30;
-    private debug: boolean;
     private password: string;
     invervalId: number;
     started: boolean = false;
@@ -39,10 +38,6 @@ export class GameRoom extends Room<StateHandler> {
         this.setState(this.addBuilders(this.addHandlers(new StateHandler(options.maxPlayers))));
         var debug = true;
         RoomManager.rooms++;
-        if (this.debug == true) {
-            this.setSimulationInterval(function () { this.update() }.bind(this), GameRoom.fps);
-        }
-       
     }
 
     update() {
@@ -64,7 +59,7 @@ export class GameRoom extends Room<StateHandler> {
     }
 
     onMessage(client: Client, data) {
-        if (this.started == true || this.debug == true)
+        if (this.started == true)
             this.state.onMessage(client, data, this)
     }
 
@@ -86,9 +81,7 @@ export class GameRoom extends Room<StateHandler> {
                 // start server if all players joined
                 if (this.clients.length == this.options.maxPlayers - 1) {
                     this.started = true;
-                    if (this.debug == false) {
                         this.setSimulationInterval(function () { this.update() }.bind(this), GameRoom.fps);
-                    }
                 }
                 return true;
             }

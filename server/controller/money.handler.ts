@@ -12,7 +12,7 @@ export class MoneyHandler extends Handler {
     }
 
     onJoin(player) {
-        this.money[player.id] = 5;
+        this.money[player.id] = 100;
         this.playerIncome[player.id] = 1;
     }
 

@@ -31,7 +31,7 @@ export class TowerBuilder extends Builder {
             '/assets/towers/normal/normal.json',
             1,
             10,
-            15,
+            5,
             ElementType.Normal,
             1000,
             4,

@@ -20,6 +20,10 @@ class TowerType {
         public elementType: ElementType.Normal,
         public speed: number) { }
 };
+class ProjectileType {
+    constructor(public name: string,
+        public model: string) { }
+};
 enum ElementType {
     Normal = 0,
     Fire,

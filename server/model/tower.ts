@@ -2,7 +2,8 @@ import { Point } from './point';
 import { ElementType } from './element.type';
 
 export enum ProjectileType{
-    Arrow = 0
+    Boulder = 0,
+    Arrow
 }
 
 export class Tower {

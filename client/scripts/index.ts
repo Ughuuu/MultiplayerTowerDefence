@@ -9,9 +9,10 @@ class Main {
     private communication: Communication;
     private renderer: Render;
     private unitsMap = {};
-    private geometryMap = {};
+    public geometryMap = {};
     private creepTypes: UnitType[];
     private towerTypes: TowerType[];
+    private projectileTypes: ProjectileType[];
     private clock: THREE.Clock;
     private mouse: THREE.Vector2;
     private offset: { x: number, y: number };
@@ -20,6 +21,7 @@ class Main {
     private windowHalfY: number;
     private INTERSECTED: any;
     private players: {} = {};
+    private loader = new THREE.JSONLoader();
 
     static getInstance() {
         if (!Main.instance) {
@@ -71,40 +73,82 @@ class Main {
         this.creepTypes = unitTypes;
         for (let i = 0; i < this.creepTypes.length; i++) {
             {
-                var loader = new THREE.JSONLoader();
-                loader.load(this.creepTypes[i].model, function (icopy: number, geometry: THREE.Geometry, materials: any) {
-                    try{
-                    materials.forEach(function (material) {
-                        material.side = THREE.DoubleSide;
-                        //material.skinning = true;
-                    });
-                    var material = new THREE.MultiMaterial( materials );
-		            var object = new THREE.SkinnedMesh ( geometry, material );
-                    let value: [THREE.Geometry, THREE.Mesh] = [geometry, object];
-                    this.geometryMap[this.creepTypes[icopy].model] = value;
-                    }catch(e){}
+                this.loader.load(this.creepTypes[i].model, function (icopy: number, geometry: THREE.Geometry, materials: any) {
+                    try {
+                        materials.forEach(function (material) {
+                            material.side = THREE.DoubleSide;
+                            material.skinning = true;
+                        });
+                        var material = new THREE.MultiMaterial(materials);
+                        var object = new THREE.SkinnedMesh(geometry, material);
+                        let value: [THREE.Geometry, THREE.Mesh] = [geometry, object];
+                        this.geometryMap[this.creepTypes[icopy].model] = value;
+                    } catch (e) {
+                        console.log(e);
+                    }
                     progress();
                 }.bind(this, i));
             }
         }
     }
 
+    public setCell(progress) {
+        this.loader.load('assets/tiles/cell.json', function (geometry: THREE.Geometry, materials: any) {
+            try {
+                materials.forEach(function (material) {
+                    //material.side = THREE.DoubleSide;
+                    //material.skinning = true;
+                });
+                var material = new THREE.MultiMaterial(materials);
+                var object = new THREE.Mesh(geometry, material);
+                let value: [THREE.Geometry, THREE.Mesh] = [geometry, object];
+                this.geometryMap['assets/tiles/cell.json'] = value;
+            } catch (e) {
+                console.log(e);
+            }
+            progress();
+        }.bind(this));
+    }
+
     public setTowerTypes(towerTypes: TowerType[], progress) {
         this.towerTypes = towerTypes;
         for (var i = 0; i < this.towerTypes.length; i++) {
             {
-                var loader = new THREE.JSONLoader();
-                loader.load(this.towerTypes[i].model, function (icopy: number, geometry: THREE.Geometry, materials: any) {
-                    try{
-                    materials.forEach(function (material) {
-                        material.skinning = false;
-                        material.side = THREE.DoubleSide;
-                    });
-                    var material = new THREE.MultiMaterial( materials );
-		            var object = new THREE.Mesh( geometry, material );
-                    let value: [THREE.Geometry, THREE.Mesh] = [geometry, object];
-                    this.geometryMap[this.towerTypes[icopy].model] = value;
-                    }catch(e){}
+                this.loader.load(this.towerTypes[i].model, function (icopy: number, geometry: THREE.Geometry, materials: any) {
+                    try {
+                        materials.forEach(function (material) {
+                            material.skinning = false;
+                            material.side = THREE.DoubleSide;
+                        });
+                        var material = new THREE.MultiMaterial(materials);
+                        var object = new THREE.Mesh(geometry, material);
+                        let value: [THREE.Geometry, THREE.Mesh] = [geometry, object];
+                        this.geometryMap[this.towerTypes[icopy].model] = value;
+                    } catch (e) {
+                        console.log(e);
+                    }
+                    progress();
+                }.bind(this, i));
+            }
+        }
+    }
+
+    public setProjectileTypes(projectileTypes: ProjectileType[], progress) {
+        this.projectileTypes = projectileTypes;
+        for (var i = 0; i < this.projectileTypes.length; i++) {
+            {
+                this.loader.load(this.projectileTypes[i].model, function (icopy: number, geometry: THREE.Geometry, materials: any) {
+                    try {
+                        materials.forEach(function (material) {
+                            //material.side = THREE.DoubleSide;
+                        });
+                        var material = new THREE.MultiMaterial(materials);
+                        var object = new THREE.Mesh(geometry, material);
+                        let value: [THREE.Geometry, THREE.Mesh] = [geometry, object];
+                        this.geometryMap[this.projectileTypes[icopy].model] = value;
+                    } catch (e) {
+                        console.log(e);
+                    }
                     progress();
                 }.bind(this, i));
             }
@@ -161,14 +205,21 @@ class Main {
 
     public addCreep(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
         let modelName = this.creepTypes[type].model;
-        let newUnit = new GenericUnit(modelName, health, position, rotation, scale);
+        let newUnit = new GenericUnit(modelName, health, position, rotation, scale, 0);
+        this.unitsMap[id] = newUnit;
+        this.unitsMap[id].loadModel(this.renderer.scene, this.geometryMap[modelName][0], this.geometryMap[modelName][1]);
+    }
+
+    public addProjectile(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
+        let modelName = this.projectileTypes[type].model;
+        let newUnit = new GenericUnit(modelName, health, position, rotation, scale, 2);
         this.unitsMap[id] = newUnit;
         this.unitsMap[id].loadModel(this.renderer.scene, this.geometryMap[modelName][0], this.geometryMap[modelName][1]);
     }
 
     public addTower(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
         let modelName = this.towerTypes[type].model;
-        let newUnit = new GenericUnit(modelName, health, position, rotation, scale);
+        let newUnit = new GenericUnit(modelName, health, position, rotation, scale, 1);
         this.unitsMap[id] = newUnit;
         this.unitsMap[id].loadModel(this.renderer.scene, this.geometryMap[modelName][0], this.geometryMap[modelName][1]);
     }
@@ -187,7 +238,6 @@ class Main {
     }
 
     public createScene() {
-
         const WIDTH = window.innerWidth;
         const HEIGHT = window.innerHeight;
 
@@ -207,11 +257,11 @@ class Main {
     }
 
     public setMap(map: number[][]) {
+        this.renderer.camera.position.x+= (map[0].length * 20)/2;
+        this.renderer.camera.position.y = -5 * map.length;
+        this.renderer.camera.position.z = 20 * map.length;
         this.renderer.initMap(map, map[0].length, map.length, 20, 20);
-    }
-
-    public updateArrows(x: number, y: number, value: number) {
-        this.renderer.updateArrows(x, y, value);
+        this.renderer.moveLights();
     }
 
     public createCamera() {
@@ -225,7 +275,7 @@ class Main {
     }
 
     public createLight() {
-        this.renderer.createLight(0xFFFFFF, 10, 20, 30);
+        this.renderer.createLight();
     }
 
     public update() {

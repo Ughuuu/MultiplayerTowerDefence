@@ -6,6 +6,7 @@ class Communication {
     state: any;
     unitTypes: UnitType[];
     towerTypes: TowerType[];
+    projectileTypes: TowerType[];
     modelCount: number = 0;
     gameRoom;
     precision1: number = Math.pow(10, 6);
@@ -13,8 +14,14 @@ class Communication {
     decimals: number = Math.pow(10, 3);
 
     constructor(client) {
+        Main.getInstance().setCell(this.canStart);
         this.state = null;
         this.client = client;
+    }
+
+    // for now this is only called once, after loading is finished of models
+    canStart() {
+        Main.getInstance().getCommunication().joinRoom('ffa_2_public');
     }
 
     joinRoom(room) {
@@ -27,19 +34,12 @@ class Communication {
         this.gameRoom.state.listen("directions/:id/:y/:x:", "replace", (id, x, y, value) => {
             if (id != this.client.id)
                 return;
-            Main.getInstance().updateArrows(x, y, value);
         });
 
         // remove on a map, a player left
         this.gameRoom.state.listen("directions/:id", "add", (id, value) => {
             if (id != this.client.id)
                 return;
-            for (let i: number = 0; i < value.length; i++) {
-                for (let j: number = 0; j < value[0].length; j++) {
-                    Main.getInstance().updateArrows(i, j, value[i][j]);
-                }
-            }
-
         });
 
         // add on a whole map
@@ -80,7 +80,11 @@ class Communication {
             if (obj == null || !obj.isLoaded) {
                 return;
             }
-            obj.setRotationY(x, y);
+            if(obj.type == 2){
+                obj.setRotationYFix(x, y);
+            }else{
+                obj.setRotationY(x, y, 0.02);
+            }
             obj.moveOnX(x);
             obj.moveOnY(y);
             obj.mesh.updateMatrix();
@@ -97,14 +101,13 @@ class Communication {
             let x = xya.x;
             let y = xya.y;
             if (value.classType == 0) {
-                Main.getInstance().addTower(id, value.type, 100, new THREE.Vector3(x, y, -300), new THREE.Vector3(Math.PI / 2, 0, 0), 
-                2);
+                Main.getInstance().addTower(id, value.type, 100, new THREE.Vector3(x, y, 0), new THREE.Vector3(Math.PI / 2, 0, 0), 1);
             }
             if (value.classType == 1) {
-                Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(x, y, -300), new THREE.Vector3(Math.PI / 2, 0, 0), 4);
+                Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(x, y, 0), new THREE.Vector3(Math.PI / 2, 0, 0), 1);
             }
             if (value.classType == 2) {
-                Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(x, y, -300), new THREE.Vector3(Math.PI / 2, 0, 0), 1);
+                Main.getInstance().addProjectile(id, value.type, 100, new THREE.Vector3(x, y, 0), new THREE.Vector3(Math.PI / 2, 0, 0), 2);
             }
             let obj = Main.getInstance().getUnit(id);
         });
@@ -155,10 +158,13 @@ class Communication {
 
         com.modelCount += state.unit_types.length;
         com.modelCount += state.tower_types.length;
+        com.modelCount += state.projectile_types.length;
         com.unitTypes = state.unit_types;
         com.towerTypes = state.tower_types;
+        com.projectileTypes = state.projectile_types;
         Main.getInstance().setUnitTypes(state.unit_types, com.progress);
         Main.getInstance().setTowerTypes(state.tower_types, com.progress);
+        Main.getInstance().setProjectileTypes(state.projectile_types, com.progress);
     }
 
     onData(data) {

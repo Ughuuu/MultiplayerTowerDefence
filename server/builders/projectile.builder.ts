@@ -16,8 +16,10 @@ export class ProjectileType {
 
 export class ProjectileBuilder extends Builder {
     public static types: ProjectileType[] = [
+        new ProjectileType('boulder',
+            '/assets/projectiles/boulder/boulder.json'),
         new ProjectileType('arrow',
-            '/projectile/boulder/boulder.json')
+            '/assets/projectiles/arrow/arrow.json')
     ];
     public static collisionBit: number = Math.pow(2, 5);
     projectiles = {};
@@ -39,7 +41,7 @@ export class ProjectileBuilder extends Builder {
         projectile.damage = tower.damage;
         projectile.elementType = tower.elementType;
         projectile.speed = tower.projectileSpeed;
-        projectile.type = tower.type;
+        projectile.type = tower.projectileType;
         projectile.startPoint = position;
         projectile.explosionRadius = tower.explosionRadius;
         projectile.sqRange = tower.range * tower.range;

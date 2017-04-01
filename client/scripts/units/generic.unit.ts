@@ -10,7 +10,8 @@ class GenericUnit {
     private materials: any;
     private animationMixer: THREE.AnimationMixer;
     public isLoaded: boolean;
-    constructor(modelName: string, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
+    
+    constructor(modelName: string, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number, public type) {
         this.modelName = modelName;
         this.health = health;
         this.position = position;
@@ -20,7 +21,6 @@ class GenericUnit {
     }
 
     public loadModel(scene: THREE.Scene, geometry: THREE.Geometry, mesh: THREE.Mesh) {
-
         this.animations = geometry.animations;
         this.mesh = mesh.clone();
         this.mesh.scale.set(this.scale, this.scale, this.scale);
@@ -51,9 +51,21 @@ class GenericUnit {
         this.mesh.rotation.set(this.rotation.x, this.rotation.y, this.rotation.z);
     }
 
-    public setRotationY(x: number, y: number) {
+    public setRotationY(x: number, y: number, rate: number) {
         let ang: number = Math.atan2(this.position.y - y, this.position.x - x);
-        this.rotation.y = ang - Math.PI / 2;
+        let newRot = ang - Math.PI / 2;
+        let deltaRot = -rate;
+        if(this.rotation.y - newRot < 0){
+            deltaRot = rate;
+        }
+        this.rotation.y = this.rotation.y + deltaRot;
+        this.mesh.rotation.set(this.rotation.x, this.rotation.y, this.rotation.z);
+    }
+
+    public setRotationYFix(x: number, y: number) {
+        let ang: number = Math.atan2(this.position.y - y, this.position.x - x);
+        let newRot = ang - Math.PI / 2;
+        this.rotation.y = newRot;
         this.mesh.rotation.set(this.rotation.x, this.rotation.y, this.rotation.z);
     }
 

@@ -109,7 +109,7 @@ export class MapHandler extends Handler {
                 return { x: (dir.x) * speed / (value + 1), y: (dir.y) * speed / (value + 1) };
             }
             // return to the cell you belong to
-            return { x: (-pos.x + cell.x) * speed / (value + 1), y: (-pos.y + cell.y) * speed / (value + 1) };
+            //return { x: (-pos.x + cell.x) * speed / (value + 1), y: (-pos.y + cell.y) * speed / (value + 1) };
         } else {
             unit.stuck = 0;
         }
@@ -177,12 +177,64 @@ export class MapHandler extends Handler {
         }
     }
 
+    private neighbourCheckZero(matrix: number[][], x: number, y: number, toX: number, toY: number, toVisit: number[][]) {
+        if (toX < this.size.x
+            && toX > -1
+            && toY < this.size.y
+            && toY > -1
+            && matrix[toY][toX] == 0) {
+            matrix[toY][toX] = 1;
+            toVisit.push([toX, toY]);
+        }
+    }
+
     onJoin(player: Player) {
         this.templates[player.id] = MapHandler.initMap(this.size.x, this.size.y);
         MapHandler.copyMap(this.templates[player.id], this.template);
         this.vectorField[player.id] = MapHandler.initMap(this.size.x, this.size.y);
         this.towers[player.id] = MapHandler.initMap(this.size.x, this.size.y);
         this.computeDistances(player);
+    }
+
+    returnIfTowerWrong(player: Player, position: Point, radius: number) {
+        if(position.y == 0 || position.y == this.size.y - 1){
+            return true;
+        }
+        let pathFind = MapHandler.initMap(this.size.x, this.size.y);
+        MapHandler.copyMap(pathFind, this.towers[player.id]);
+        let start: number = Math.round(radius / 2);
+        position.x = Math.floor(position.x);
+        position.y = Math.floor(position.y);
+        for (let i = 0; i < start; i++) {
+            for (let j = 0; j < start; j++) {
+                if (position.y + i < 0 || position.y + i >= this.size.y || position.x + i < 0 || position.x + i >= this.size.x) {
+                    continue;
+                }
+                pathFind[position.y + i][position.x + j] = 1;
+            }
+        }
+
+        let toVisit = [];
+        for (let i = 0; i < this.size.x; i++) {
+            toVisit.push([i, 0]);
+            pathFind[toVisit[i][1]][toVisit[i][0]] = 0;
+        }
+        while (toVisit.length) { // While there are still squares to visit
+            let x = toVisit[0][0];
+            let y = toVisit[0][1];
+            this.neighbourCheckZero(pathFind, x, y, x + 1, y, toVisit);
+            this.neighbourCheckZero(pathFind, x, y, x - 1, y, toVisit);
+            this.neighbourCheckZero(pathFind, x, y, x, y + 1, toVisit);
+            this.neighbourCheckZero(pathFind, x, y, x, y - 1, toVisit);
+            toVisit.shift();
+        }
+        
+        for (let i = 0; i < this.size.x; i++) {
+            if (pathFind[this.size.y - 1][i] != 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     onLeave(player: Player) {

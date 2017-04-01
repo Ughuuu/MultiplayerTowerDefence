@@ -34,6 +34,7 @@ export class PhysicsHandler extends Handler {
         }
         this.old_state['tower_types'] = TowerBuilder.types;
         this.old_state['unit_types'] = UnitBuilder.types;
+        this.old_state['projectile_types'] = ProjectileBuilder.types;
         this.old_state['bodies'] = {};
         for (let i = 0; i < 5; i++) {
             this.time.push(false);
@@ -91,6 +92,9 @@ export class PhysicsHandler extends Handler {
                 return;
             let tower_type = TowerBuilder.types[type];
             let beforeTowerId = mapHandler.checkTower(player, position, tower_type.radius);
+            if(mapHandler.returnIfTowerWrong(player, position, tower_type.radius)){
+                return;
+            }
             if (!moneyHandler.hasGold(player, tower_type.price)) {
                 return;
             }
@@ -282,16 +286,17 @@ export class PhysicsHandler extends Handler {
                 for (let projectile_id of tower.projectile_ids) {
                     let projectile = projectileBuilder.get(projectile_id);
                     if (projectile.isDead()) {
-                        toRemoveProjectile.push(projectile_id);
-                        continue;
+                        //toRemoveProjectile.push(projectile_id);
+                        //continue;
                     }
                     let unit = unitBuilder.get(projectile.unitId);
                     if (unit == null) {
-                        if (projectile.oldSpeed != null) {
-                            projectile.body.velocity = projectile.oldSpeed;
-                        } else {
-                            toRemoveProjectile.push(projectile_id);
-                        }
+                        toRemoveProjectile.push(projectile_id);
+                        //if (projectile.oldSpeed != null) {
+                        //    projectile.body.velocity = projectile.oldSpeed;
+                        //} else {
+                        //    toRemoveProjectile.push(projectile_id);
+                        //}
                         continue;
                     }
                     let x = unit.body.position[0] - projectile.body.position[0];

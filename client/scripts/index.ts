@@ -22,7 +22,7 @@ class Main {
     private INTERSECTED: any;
     private players: {} = {};
     private loader = new THREE.JSONLoader();
-
+    private hud: Hud;
     static getInstance() {
         if (!Main.instance) {
             Main.instance = new Main();
@@ -81,8 +81,7 @@ class Main {
                         });
                         var material = new THREE.MultiMaterial(materials);
                         var object = new THREE.SkinnedMesh(geometry, material);
-                        let value: [THREE.Geometry, THREE.Mesh] = [geometry, object];
-                        this.geometryMap[this.creepTypes[icopy].model] = value;
+                        this.geometryMap[this.creepTypes[icopy].model] = object;
                     } catch (e) {
                         console.log(e);
                     }
@@ -122,8 +121,7 @@ class Main {
                         });
                         var material = new THREE.MultiMaterial(materials);
                         var object = new THREE.Mesh(geometry, material);
-                        let value: [THREE.Geometry, THREE.Mesh] = [geometry, object];
-                        this.geometryMap[this.towerTypes[icopy].model] = value;
+                        this.geometryMap[this.towerTypes[icopy].model] = object;
                     } catch (e) {
                         console.log(e);
                     }
@@ -144,8 +142,7 @@ class Main {
                         });
                         var material = new THREE.MultiMaterial(materials);
                         var object = new THREE.Mesh(geometry, material);
-                        let value: [THREE.Geometry, THREE.Mesh] = [geometry, object];
-                        this.geometryMap[this.projectileTypes[icopy].model] = value;
+                        this.geometryMap[this.projectileTypes[icopy].model] = object;
                     } catch (e) {
                         console.log(e);
                     }
@@ -186,6 +183,7 @@ class Main {
         let intersects: any = this.raycaster.intersectObjects(this.renderer.scene.children);
         if (intersects.length > 0) {
             var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
+            this.hud.displayTowerInfo(this.towerTypes[0]);
             this.communication.createTower(0, x.x, x.y);
         }
         let position = this.renderer.convertGameCoorToMapCoord(new THREE.Vector3(this.mouse.x, this.mouse.y, 0));
@@ -205,23 +203,20 @@ class Main {
 
     public addCreep(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
         let modelName = this.creepTypes[type].model;
-        let newUnit = new GenericUnit(modelName, health, position, rotation, scale, 0);
+        let newUnit = new Creep(modelName, health, position, rotation, scale, this.renderer.scene, this.geometryMap[modelName]);
         this.unitsMap[id] = newUnit;
-        this.unitsMap[id].loadModel(this.renderer.scene, this.geometryMap[modelName][0], this.geometryMap[modelName][1]);
     }
 
     public addProjectile(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
         let modelName = this.projectileTypes[type].model;
-        let newUnit = new GenericUnit(modelName, health, position, rotation, scale, 2);
+        let newUnit = new Projectile(modelName, health, position, rotation, scale, this.renderer.scene, this.geometryMap[modelName]);
         this.unitsMap[id] = newUnit;
-        this.unitsMap[id].loadModel(this.renderer.scene, this.geometryMap[modelName][0], this.geometryMap[modelName][1]);
     }
 
     public addTower(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
         let modelName = this.towerTypes[type].model;
-        let newUnit = new GenericUnit(modelName, health, position, rotation, scale, 1);
+        let newUnit = new Tower(modelName, health, position, rotation, scale, this.renderer.scene, this.geometryMap[modelName]);
         this.unitsMap[id] = newUnit;
-        this.unitsMap[id].loadModel(this.renderer.scene, this.geometryMap[modelName][0], this.geometryMap[modelName][1]);
     }
 
     public getElementOffset(el) {
@@ -242,9 +237,10 @@ class Main {
         const HEIGHT = window.innerHeight;
 
         const container = document.querySelector('#container');
+        const hudContainer = document.querySelector('#hud');
         this.offset = this.getElementOffset(container);
         this.renderer = new Render();
-
+        this.hud = new Hud(hudContainer);
         this.renderer.createScene(WIDTH, HEIGHT, container);
         this.clock = new THREE.Clock();
 

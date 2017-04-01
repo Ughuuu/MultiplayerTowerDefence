@@ -80,7 +80,8 @@ class Communication {
             if (obj == null || !obj.isLoaded) {
                 return;
             }
-            if(obj.type == 2){
+            let xx = obj instanceof Projectile;
+            if (xx) {
                 obj.setRotationYFix(x, y);
             }else{
                 obj.setRotationY(x, y, 0.02);

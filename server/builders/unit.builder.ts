@@ -10,6 +10,7 @@ import { ProjectileBuilder } from './projectile.builder';
 export class UnitType {
     public damage:number = 15;
     public mass:number = 1;
+
     constructor(public name: string,
         public model: string,
         public radius: number,
@@ -25,7 +26,7 @@ export class UnitType {
 
 export class UnitBuilder extends Builder {
     public static types: UnitType[] = [
-        new UnitType('peasant',
+        new UnitType('Peasant',
             '/assets/units/peasant/peasant.json',
             0.2,//size
             10,//hp
@@ -36,7 +37,7 @@ export class UnitBuilder extends Builder {
             5,//price
             1,//income
             2),//bounty
-        new UnitType('fox',
+        new UnitType('Fox',
             '/assets/units/fox/fox.json',
             0.3,//size
             20,//hp
@@ -47,6 +48,17 @@ export class UnitBuilder extends Builder {
             10,//price
             3,//income
             5),//bounty
+        new UnitType('Skeleton Boss',
+            '/assets/units/skeleton_boss/skeleton_boss.json',
+            0.4,//size
+            100,//hp
+            ElementType.Stone,
+            2,//speed
+            10,//armor
+            WalkType.Ground,
+            50,//price
+            30,//income
+            30),//bounty
     ];
     public static collisionBitGround: number = Math.pow(2, 1);
     public static collisionBitFlying: number = Math.pow(2, 2);
@@ -70,7 +82,7 @@ export class UnitBuilder extends Builder {
                 | UnitBuilder.collisionBitFlying
                 | ProjectileBuilder.collisionBit;
         }
-        let body = this.physicsHandler.createBody(player, circleShape, unit_type.mass, position, 0);
+        let body = this.physicsHandler.createBody(player, circleShape, unit_type.mass * unit_type.radius, position, 0);
         let unit = new Unit(body.id, player.id);
         unit.body = body;
         unit.health = unit_type.health;

@@ -90,6 +90,10 @@ export class PhysicsHandler extends Handler {
             let position: Point = data['createTower']['position'];
             if (type == null || position == null)
                 return;
+            type = Math.floor(type);
+            if (type >= TowerBuilder.types.length) {
+                return;
+            }
             let tower_type = TowerBuilder.types[type];
             let beforeTowerId = mapHandler.checkTower(player, position, tower_type.radius);
             if (mapHandler.returnIfTowerWrong(player, position, tower_type.radius)) {
@@ -141,6 +145,10 @@ export class PhysicsHandler extends Handler {
             let type: number = data['createUnit']['type'];
             if (type == null)
                 return;
+            type = Math.floor(type);
+            if (type >= UnitBuilder.types.length) {
+                return;
+            }
             let unitType = UnitBuilder.types[type];
             if (!moneyHandler.hasGold(player, unitType.price)) {
                 return;

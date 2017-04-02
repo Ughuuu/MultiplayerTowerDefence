@@ -10,7 +10,7 @@ class Main {
     private renderer: Render;
     private unitsMap = {};
     public upgradesMap = {};
-    public  geometryMap = {};
+    public geometryMap = {};
     private creepTypes: UnitType[];
     private towerTypes: TowerType[];
     private projectileTypes: ProjectileType[];
@@ -85,7 +85,7 @@ class Main {
                         var object = new THREE.SkinnedMesh(geometry, material);
                         this.geometryMap[this.creepTypes[icopy].model] = object;
                     } catch (e) {
-                        console.log('error '  + e);
+                        console.log('error ' + e);
                     }
                     progress();
                 }.bind(this, i));
@@ -132,7 +132,7 @@ class Main {
                         else {
                             this.upgradesMap[this.towerTypes[icopy].upgradeFrom].push(this.towerTypes[icopy]);
                         }
-                      
+
                     } catch (e) {
                         console.log(e);
                     }
@@ -181,9 +181,9 @@ class Main {
             }
             if (this.INTERSECTED != object) {
                 //if (this.INTERSECTED) this.INTERSECTED.material.emissive.setHex(this.INTERSECTED.currentHex);
-               // this.INTERSECTED = object;
-              //  this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
-               // this.INTERSECTED.material.emissive.setHex(0xff0000);
+                // this.INTERSECTED = object;
+                //  this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
+                // this.INTERSECTED.material.emissive.setHex(0xff0000);
             }
         }
     }
@@ -197,50 +197,55 @@ class Main {
             let clickedOnTower: boolean = false;
             for (let i: number = 0; i < intersects.length; i++) {
                 if (intersects[i].object.name.includes("tower")) {
-                    let towerId : number;
+                    let towerId: number;
                     towerId = parseInt(intersects[i].object.name.split(':')[1]);
                     clickedOnTower = true;
                     var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
-                    this.hud.displayTowerInfo(this.unitsMap[towerId].type, this.upgradesMap[this.unitsMap[towerId].type.name],x.x, x.y);
+                    this.hud.displayTowerInfo(this.unitsMap[towerId].type, this.upgradesMap[this.unitsMap[towerId].type.name], x.x, x.y);
                     break;
                 }
                 if (intersects[i].object.name.includes("creep")) {
                     let creepId: number;
                     creepId = parseInt(intersects[i].object.name.split(':')[1]);
                     clickedOnCreep = true;
-                    this.hud.displayCreepInfo(this.unitsMap[creepId].type,x.x,x.y);
+                    this.hud.displayCreepInfo(this.unitsMap[creepId].type, x.x, x.y);
                     break;
                 }
             }
             if (!clickedOnCreep && !clickedOnTower) {
                 this.renderer.drawSelectRectangle(intersects[0].object.position.x, intersects[0].object.position.y);
                 var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
-                this.hud.displayEmptyCell(this.upgradesMap["null"],x.x, x.y);
-                }
+                this.hud.displayEmptyCell(this.upgradesMap["null"], x.x, x.y);
+            }
         }
         let position = this.renderer.convertGameCoorToMapCoord(new THREE.Vector3(this.mouse.x, this.mouse.y, 0));
     }
 
     public onKeyPress(event) {
         if (event.code == "Space") {
-            this.communication.createUnit(0);
+            let unitType = Math.round(Math.random() * (this.getCommunication().unitTypes.length));
+            this.communication.createUnit(unitType);
         }
     }
 
     public removeUnit(id: number) {
+        if (this.unitsMap[id] == null) {
+            console.log('remove invalid unit');
+            return;
+        }
         this.renderer.scene.remove(this.unitsMap[id].mesh);
         delete this.unitsMap[id];
     }
 
     public addCreep(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
         let modelName = this.creepTypes[type].model;
-        let newUnit = new Creep(id, this.creepTypes[type],modelName, health, position, rotation, scale, this.renderer.scene, this.geometryMap[modelName]);
+        let newUnit = new Creep(id, this.creepTypes[type], modelName, health, position, rotation, scale * (this.creepTypes[type].radius / 0.2), this.renderer.scene, this.geometryMap[modelName]);
         this.unitsMap[id] = newUnit;
     }
 
     public addProjectile(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
         let modelName = this.projectileTypes[type].model;
-        let newUnit = new Projectile(id, this.projectileTypes[type],modelName, health, position, rotation, scale, this.renderer.scene, this.geometryMap[modelName]);
+        let newUnit = new Projectile(id, this.projectileTypes[type], modelName, health, position, rotation, scale, this.renderer.scene, this.geometryMap[modelName]);
         this.unitsMap[id] = newUnit;
     }
 
@@ -288,7 +293,7 @@ class Main {
         return index;
     }
     public setMap(map: number[][]) {
-        this.renderer.camera.position.x+= (map[0].length * 20)/2;
+        this.renderer.camera.position.x += (map[0].length * 20) / 2;
         this.renderer.camera.position.y = -5 * map.length;
         this.renderer.camera.position.z = 20 * map.length;
         this.renderer.initMap(map, map[0].length, map.length, 20, 20);

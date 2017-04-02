@@ -109,7 +109,7 @@ export class MapHandler extends Handler {
                 return { x: (dir.x) * speed / (value + 1), y: (dir.y) * speed / (value + 1) };
             }
             // return to the cell you belong to
-            return { x: (-pos.x + cell.x) * speed / (value + 1), y: (-pos.y + cell.y) * speed / (value + 1) };
+            //return { x: (-pos.x + cell.x) * speed / (value + 1), y: (-pos.y + cell.y) * speed / (value + 1) };
         } else {
             unit.stuck = 0;
         }
@@ -274,7 +274,6 @@ export class MapHandler extends Handler {
             }
         }
         this.computeDistances(player);
-        console.log(this.vectorField[player.id]);
     }
 
     clearTower(player: Player, position: Point, size: number) {

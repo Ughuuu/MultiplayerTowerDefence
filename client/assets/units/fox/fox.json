@@ -146,7 +146,7 @@
     "animations":[{
         "fps":25,
         "length":15.9375,
-        "name":"Armature|Take 001|BaseLayer",
+        "name":"Basic_Walk",
         "hierarchy":[{
             "parent":-1,
             "keys":[{

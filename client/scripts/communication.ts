@@ -102,7 +102,7 @@ class Communication {
             let x = xya.x;
             let y = xya.y;
             if (value.classType == 0) {
-                Main.getInstance().addTower(id, value.type, 100, new THREE.Vector3(x, y, 0), new THREE.Vector3(Math.PI / 2, 0, 0), 1);
+                Main.getInstance().addTower(id, value.type, 100, new THREE.Vector3(x, y, 0), new THREE.Vector3(Math.PI / 2, 0, 0), 2);
             }
             if (value.classType == 1) {
                 Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(x, y, 0), new THREE.Vector3(Math.PI / 2, 0, 0), 1);

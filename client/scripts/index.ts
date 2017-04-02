@@ -214,7 +214,7 @@ class Main {
             }
             if (!clickedOnCreep && !clickedOnTower) {
                 var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
-                this.hud.displayEmptyCell(this.upgradesMap["null"], 0, x.x, x.y);
+                this.hud.displayEmptyCell(this.upgradesMap["null"],x.x, x.y);
                 }
         }
         let position = this.renderer.convertGameCoorToMapCoord(new THREE.Vector3(this.mouse.x, this.mouse.y, 0));
@@ -282,6 +282,10 @@ class Main {
         container.innerHTML = "Money:" + data.money + "<br> Income:" + data.income;
     }
 
+    public getTowerId(towerType: TowerType) {
+        let index = this.towerTypes.indexOf(towerType);
+        return index;
+    }
     public setMap(map: number[][]) {
         this.renderer.camera.position.x+= (map[0].length * 20)/2;
         this.renderer.camera.position.y = -5 * map.length;

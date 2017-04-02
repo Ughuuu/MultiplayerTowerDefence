@@ -28,6 +28,7 @@ class Hud {
             for (let i = 0; i < upgradeTowers.length; i++) {
                 this.images[i] = document.createElement('img');
                 this.images[i].src = towerType[i].icon;
+                this.images[i].draggable = false;
                 this.images[i].addEventListener("click", () => this.onClick(towerType[i], x, y));
                 this.images[i].addEventListener("mouseover", () => this.onMouseOver(towerType[i]));
                 this.container.appendChild(this.images[i]);
@@ -45,7 +46,7 @@ class Hud {
         this.elementLabel.innerHTML = "<br>Health:" + towerType.elementType;
     }
 
-    public displayEmptyCell(towerType: TowerType[],id:number, x: number, y: number) {
+    public displayEmptyCell(towerType: TowerType[], x: number, y: number) {
         this.clearAll();
         this.upgradesLabel.innerHTML = "<br> Towers:";
         for (let i = 0; i < towerType.length; i++) {
@@ -69,13 +70,13 @@ class Hud {
     }
 
     public onClick(towerType: TowerType, x: number, y: number) {
-        Main.getInstance().getCommunication().createTower(0, x, y);
+        let id = Main.getInstance().getTowerId(towerType);
+        Main.getInstance().getCommunication().createTower(id, x, y);
     }
 
     public onMouseOver(towerType: TowerType) {
         console.log(towerType);
     }
-
 
     public clearAll() {
         for (let i = 0; i < this.images.length; i++) {

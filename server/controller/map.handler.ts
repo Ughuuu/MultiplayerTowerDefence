@@ -105,11 +105,11 @@ export class MapHandler extends Handler {
             if (unit.stuck != null && unit.stuck == 0) {
                 unit.stuck = clock;
             }
-            if (clock - unit.stuck < 1000) {
+            if (clock - unit.stuck < 2000) {
                 return { x: (dir.x) * speed / (value + 1), y: (dir.y) * speed / (value + 1) };
             }
             // return to the cell you belong to
-            //return { x: (-pos.x + cell.x) * speed / (value + 1), y: (-pos.y + cell.y) * speed / (value + 1) };
+            return { x: (-pos.x + cell.x) * speed / (value + 1), y: (-pos.y + cell.y) * speed / (value + 1) };
         } else {
             unit.stuck = 0;
         }
@@ -124,7 +124,7 @@ export class MapHandler extends Handler {
         var toVisit = [];
         for (let i = 0; i < this.size.x; i++) {
             toVisit.push([i, this.size.y - 1]);
-            distance[toVisit[i][1]][toVisit[i][0]] = 0;
+            distance[toVisit[i][1]][toVisit[i][0]] = 1;
         }
         while (toVisit.length) { // While there are still squares to visit
             let x = toVisit[0][0];
@@ -274,6 +274,7 @@ export class MapHandler extends Handler {
             }
         }
         this.computeDistances(player);
+        console.log(this.vectorField[player.id]);
     }
 
     clearTower(player: Player, position: Point, size: number) {

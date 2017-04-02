@@ -83,7 +83,7 @@ class Main {
                         var object = new THREE.SkinnedMesh(geometry, material);
                         this.geometryMap[this.creepTypes[icopy].model] = object;
                     } catch (e) {
-                        console.log(e);
+                        console.log('error '  + e);
                     }
                     progress();
                 }.bind(this, i));

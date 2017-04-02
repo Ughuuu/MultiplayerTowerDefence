@@ -61,7 +61,6 @@ class Render {
     }
 
     public initMap(matrix: number[][], width: number, height: number, cellWidth: number, cellHeight: number) {
-        let textureArrow = new THREE.TextureLoader().load("/assets/arrow.png");
 
         this.initialX = 0;
         this.initialY = 0;
@@ -71,11 +70,9 @@ class Render {
         for (let i: number = 0; i < height; i++) {
             this.planes[i] = [];
             for (let j: number = 0; j < width; j++) {
-                let materialArrow = new THREE.MeshLambertMaterial({ map: textureArrow, side: THREE.DoubleSide });
 
                 this.planes[i][j] = new THREE.PlaneGeometry(cellWidth, cellHeight, width, height);
                 let plane: any;
-                let arrowMesh: THREE.Mesh;
 
                 plane = Main.getInstance().geometryMap['assets/tiles/cell.json'][1].clone();
                 // plane.material.color = new THREE.Color(0, 160, 0);

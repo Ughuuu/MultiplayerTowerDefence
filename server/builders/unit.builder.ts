@@ -25,17 +25,6 @@ export class UnitType {
 
 export class UnitBuilder extends Builder {
     public static types: UnitType[] = [
-        new UnitType('dragon',
-            '/assets/units/dragon/dragon.json',
-            0.2,//size
-            10,//hp
-            ElementType.Iron,
-            1,//speed
-            0,//armor
-            WalkType.Flying,
-            10,//price
-            0.5,//income
-            2),//bounty
         new UnitType('peasant',
             '/assets/units/peasant/peasant.json',
             0.2,//size
@@ -46,7 +35,18 @@ export class UnitBuilder extends Builder {
             WalkType.Ground,
             5,//price
             1,//income
-            4)//bounty
+            2),//bounty
+        new UnitType('fox',
+            '/assets/units/fox/fox.json',
+            0.3,//size
+            20,//hp
+            ElementType.Iron,
+            3,//speed
+            0,//armor
+            WalkType.Ground,
+            10,//price
+            3,//income
+            5),//bounty
     ];
     public static collisionBitGround: number = Math.pow(2, 1);
     public static collisionBitFlying: number = Math.pow(2, 2);

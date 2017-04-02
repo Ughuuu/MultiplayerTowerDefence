@@ -45,7 +45,7 @@ export class TowerBuilder extends Builder {
             4,//range
             0,//explosionRadius
             10,//speed
-            5,//gold
+            3,//gold
             'null')
     ];
     public static collisionBitTower: number = Math.pow(2, 4);

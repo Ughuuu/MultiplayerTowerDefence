@@ -184,7 +184,8 @@ class Main {
         if (intersects.length > 0) {
             var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
             this.hud.displayTowerInfo(this.towerTypes[0]);
-            this.communication.createTower(0, x.x, x.y);
+            if((this.towerTypes.length-1) != 0)
+            this.communication.createTower(Math.round(Math.random()*(this.towerTypes.length-1)), x.x, x.y);
         }
         let position = this.renderer.convertGameCoorToMapCoord(new THREE.Vector3(this.mouse.x, this.mouse.y, 0));
 

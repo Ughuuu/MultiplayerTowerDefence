@@ -17,24 +17,20 @@ class TowerType {
         public radius: number,
         public health: number,
         public damage: number,
-        public elementType: ElementType.Normal,
+        public elementType: ElementType,
         public speed: number) { }
 };
 class ProjectileType {
     constructor(public name: string,
         public model: string) { }
 };
+
 enum ElementType {
-    Normal = 0,
+    Stone = 0,
+    Iron,
     Fire,
-    Water,
-    Light,
-    Dark,
-    Nature,
-    Earth
-};
-
-
+    Ice,
+}
 
 enum WalkType {
     Ground = 0,

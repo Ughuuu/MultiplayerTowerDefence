@@ -29,7 +29,7 @@ export class ProjectileBuilder extends Builder {
     }
 
     create(tower: Tower, position: Point, unitId: number): number {
-        let projectile_type = ProjectileBuilder.types[tower.projectileType];
+        let projectile_type = ProjectileBuilder.types[tower.elementType];
         let particleShape = this.physicsHandler.createParticle();
         particleShape.collisionGroup = ProjectileBuilder.collisionBit;
         particleShape.collisionMask = UnitBuilder.collisionBitGround | UnitBuilder.collisionBitFlying;
@@ -41,7 +41,7 @@ export class ProjectileBuilder extends Builder {
         projectile.damage = tower.damage;
         projectile.elementType = tower.elementType;
         projectile.speed = tower.projectileSpeed;
-        projectile.type = tower.projectileType;
+        projectile.type = tower.elementType;
         projectile.startPoint = position;
         projectile.explosionRadius = tower.explosionRadius;
         projectile.sqRange = tower.range * tower.range;

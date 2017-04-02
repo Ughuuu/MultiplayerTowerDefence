@@ -81,7 +81,7 @@ export class GameRoom extends Room<StateHandler> {
                 // start server if all players joined
                 if (this.clients.length == this.options.maxPlayers - 1) {
                     this.started = true;
-                        this.setSimulationInterval(function () { this.update() }.bind(this), GameRoom.fps);
+                    this.setSimulationInterval(function () { this.update() }.bind(this), GameRoom.fps);
                 }
                 return true;
             }

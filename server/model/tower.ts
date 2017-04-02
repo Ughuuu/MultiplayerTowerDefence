@@ -1,11 +1,6 @@
 import { Point } from './point';
 import { ElementType } from './element.type';
 
-export enum ProjectileType{
-    Boulder = 0,
-    Arrow
-}
-
 export class Tower {
     health: number;
     damage: number;
@@ -16,7 +11,6 @@ export class Tower {
     lastTimeShot: number = 0;
     range: number;
     explosionRadius: number;
-    projectileType: ProjectileType;
     projectileSpeed: number;
     projectile_ids: number[] = [];
 

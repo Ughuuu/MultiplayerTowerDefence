@@ -45,16 +45,19 @@ class Render {
         this.scene.add(this.camera);
     }
     createLight() {
-        let light1 = new THREE.PointLight(0xFFFFFF, 0.8);
-        var ambient = new THREE.AmbientLight(0x404040, 0.3); // soft white light
+        let light1 = new THREE.PointLight(0xFFFFFF, 1);
+        let light2 = new THREE.DirectionalLight(0xFFFFFF, 0.5);
+        light2.position.set(0, -1, 0.3);
+        var ambient = new THREE.AmbientLight(0xFFFFFF, 0.3); // soft white light
         // add to the scene
         this.scene.add(light1);
+        this.scene.add(light2);
         this.scene.add(ambient);
         this.light1 = light1;
     }
 
     moveLights(){
-        this.light1.position.set(this.camera.position.x, this.height/2, 200);
+        this.light1.position.set(this.camera.position.x, this.height/2, 100);
     }
 
     public initMap(matrix: number[][], width: number, height: number, cellWidth: number, cellHeight: number) {

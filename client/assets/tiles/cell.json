@@ -85,7 +85,7 @@
         "specularCoef":50,
         "DbgColor":61166
     },{
-        "colorDiffuse":[0.08,0.3,0.02],
+        "colorDiffuse":[0.1,0.4,0.1],
         "colorSpecular":[0,0,0],
         "colorEmissive":[0,0,0],
         "blending":"NormalBlending",

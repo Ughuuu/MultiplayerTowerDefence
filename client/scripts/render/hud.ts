@@ -59,7 +59,8 @@ class Hud {
         this.upgradesLabel.innerHTML = "<br> Towers:";
         for (let i = 0; i < towerType.length; i++) {
             this.buildingImages[i] = document.createElement('img');
-            this.buildingImages[i].style.width = '200px';
+            this.buildingImages[i].className = "buildings";
+          
             this.buildingImages[i].src = towerType[i].icon;
             this.buildingImages[i].addEventListener("click", () => this.onClickBuilding(towerType[i], x, y));
             this.buildingImages[i].addEventListener("mouseover", () => this.onMouseOverBuilding(towerType[i]));
@@ -86,14 +87,12 @@ class Hud {
             let iconPath = unitType[i].model.substr(0, unitType[i].model.lastIndexOf("/"));
             iconPath += "/icon.jpg";
             this.unitImages[i].className = "units";
-            this.unitImages[i].style.width = '50px';
-            this.unitImages[i].style.height = '50px';
-            this.unitImages[i].style.position = "relative";
             this.unitImages[i].src = iconPath;
-            this.unitImages[i].draggable = false;
+          
             this.unitImages[i].addEventListener("click", () => this.onClickUnit(unitType[i]));
             this.unitImages[i].addEventListener("mouseover", () => this.onMouseOverUnit(unitType[i]));
             this.unitsDiv.appendChild(this.unitImages[i]);
+            this.unitImages[i].draggable = false;
         }
     }
 

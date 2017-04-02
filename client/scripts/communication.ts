@@ -81,11 +81,11 @@ class Communication {
                 return;
             }
             let xx = obj instanceof Projectile;
-            if (xx) {
+            //if (xx) {
                 obj.setRotationYFix(x, y);
-            } else {
-                obj.setRotationY(x, y, 0.2);
-            }
+            //} else {
+            //    obj.setRotationY(x, y, 0.2);
+            //}
             obj.moveOnX(x);
             obj.moveOnY(y);
             obj.mesh.updateMatrix();

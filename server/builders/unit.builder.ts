@@ -8,8 +8,8 @@ import { TowerBuilder } from './tower.builder';
 import { ProjectileBuilder } from './projectile.builder';
 
 export class UnitType {
-    public damage:number = 15;
-    public mass:number = 1;
+    public damage: number = 15;
+    public mass: number = 1;
 
     constructor(public name: string,
         public model: string,
@@ -53,12 +53,23 @@ export class UnitBuilder extends Builder {
             0.4,//size
             100,//hp
             ElementType.Stone,
-            2,//speed
+            0.5,//speed
             10,//armor
             WalkType.Ground,
             50,//price
             30,//income
             30),//bounty
+        new UnitType('Dragon Boss',
+            '/assets/units/dragon/dragon.json',
+            0.7,//size
+            100,//hp
+            ElementType.Fire,
+            2,//speed
+            10,//armor
+            WalkType.Flying,
+            100,//price
+            50,//income
+            80),//bounty
     ];
     public static collisionBitGround: number = Math.pow(2, 1);
     public static collisionBitFlying: number = Math.pow(2, 2);

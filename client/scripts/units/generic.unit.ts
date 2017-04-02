@@ -1,26 +1,28 @@
 class GenericUnit {
     public modelName: string;
-    public health: number;
+    public isLoaded: boolean;
+    public mesh: THREE.Mesh;
+    private health: number;
     private scale: number;
     private position: THREE.Vector3;
     private rotation: THREE.Vector3;
-
-    public mesh: THREE.Mesh;
     private animations: THREE.AnimationClip[];
     private materials: any;
     private animationMixer: THREE.AnimationMixer;
-    public isLoaded: boolean;
-    
-    constructor(modelName: string, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number, public type) {
+
+
+
+
+    constructor(modelName: string, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number, scene: THREE.Scene, mesh: THREE.Mesh) {
         this.modelName = modelName;
         this.health = health;
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
         this.isLoaded = false;
-    }
 
-    public loadModel(scene: THREE.Scene, geometry: THREE.Geometry, mesh: THREE.Mesh) {
+        let geometry: any = mesh.geometry;
+
         this.animations = geometry.animations;
         this.mesh = mesh.clone();
         this.mesh.scale.set(this.scale, this.scale, this.scale);
@@ -33,8 +35,6 @@ class GenericUnit {
         this.playMoveAnimation();
 
         scene.add(this.mesh);
-
-
     }
 
     public setPosition(position: THREE.Vector3) {
@@ -54,8 +54,11 @@ class GenericUnit {
     public setRotationY(x: number, y: number, rate: number) {
         let ang: number = Math.atan2(this.position.y - y, this.position.x - x);
         let newRot = ang - Math.PI / 2;
+        if (Math.abs(this.rotation.y - newRot) < rate) {
+            return;
+        }
         let deltaRot = -rate;
-        if(this.rotation.y - newRot < 0){
+        if (this.rotation.y - newRot < 0) {
             deltaRot = rate;
         }
         this.rotation.y = this.rotation.y + deltaRot;
@@ -86,10 +89,12 @@ class GenericUnit {
         //TO DO 
         //Decide how should these animatins look and move Main.getInstance() from here
         if (this.animations != null) {
-            this.animationMixer.clipAction(this.animations[0], this.mesh)
-                .setDuration(this.animations[0].duration)			// one second
-                .startAt(- Math.random())	// random phase (already running)
-                .play()
+            for (let animation of this.animations) {
+                if (animation != null && animation.name == 'Walk_Basic') {
+                    this.animationMixer.clipAction(animation)
+                        .play()
+                }
+            }
         }
     }
 

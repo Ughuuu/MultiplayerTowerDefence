@@ -1,4 +1,4 @@
-import { Tower, ProjectileType } from '../model/tower';
+import { Tower } from '../model/tower';
 import { ElementType } from '../model/element.type';
 import { Point } from '../model/point';
 import { Player } from '../model/player';
@@ -7,15 +7,15 @@ import { Builder } from './builder';
 import { UnitBuilder } from './unit.builder';
 
 export class TowerType {
+    public radius = 1;
+    public health = 10;
     constructor(public name: string,
         public model: string,
-        public radius: number,
-        public health: number,
+        public icon:  string,
         public damage: number,
         public elementType: ElementType,
         public speed: number,
         public range: number,
-        public projectileType: ProjectileType,
         public explosionRadius: number,
         public projectileSpeed: number,
         public price: number,
@@ -27,19 +27,29 @@ export class TowerBuilder extends Builder {
 
     public static types: TowerType[] = [
         new TowerType(
-            'light_tower',
-            '/assets/towers/normal/normal.json',
-            1,
-            10,
-            5,
-            ElementType.Normal,
-            1000,
-            4,
-            ProjectileType.Arrow,
-            0,
-            6,
-            3,
-            "null")
+            'Stone Tower',
+            '/assets/towers/stone/stone.json',
+            '/assets/towers/stone/icon.jpg',
+            20,//damage
+            ElementType.Stone,
+            2000,//speed
+            4,//range
+            0,//explosionRadius
+            5,//speed
+            15,//gold
+            'null'),
+        new TowerType(
+            'Ballista Tower',
+            '/assets/towers/ballista/ballista.json',
+            '/assets/towers/ballista/icon.jpg',
+            2,//damage
+            ElementType.Iron,
+            500,//speed
+            4,//range
+            0,//explosionRadius
+            10,//speed
+            3,//gold
+            'null')
     ];
     public static collisionBitTower: number = Math.pow(2, 4);
     public static collisionBitSensor: number = Math.pow(2, 3);
@@ -69,7 +79,6 @@ export class TowerBuilder extends Builder {
         tower.speed = tower_type.speed;
         tower.type = type;
         tower.range = tower_type.range;
-        tower.projectileType = tower_type.projectileType;
         tower.explosionRadius = tower_type.explosionRadius;
         tower.projectileSpeed = tower_type.projectileSpeed;
         this.towers[tower.id] = tower;

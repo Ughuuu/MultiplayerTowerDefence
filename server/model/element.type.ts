@@ -1,9 +1,6 @@
 export enum ElementType {
-    Normal = 0,
+    Stone = 0,
+    Iron,
     Fire,
-    Water,
-    Light,
-    Dark,
-    Nature,
-    Earth
+    Ice,
 }

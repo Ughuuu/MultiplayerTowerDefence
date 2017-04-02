@@ -90,9 +90,13 @@ export class PhysicsHandler extends Handler {
             let position: Point = data['createTower']['position'];
             if (type == null || position == null)
                 return;
+            type = Math.floor(type);
+            if (type >= TowerBuilder.types.length) {
+                return;
+            }
             let tower_type = TowerBuilder.types[type];
             let beforeTowerId = mapHandler.checkTower(player, position, tower_type.radius);
-            if(mapHandler.returnIfTowerWrong(player, position, tower_type.radius)){
+            if (mapHandler.returnIfTowerWrong(player, position, tower_type.radius)) {
                 return;
             }
             if (!moneyHandler.hasGold(player, tower_type.price)) {
@@ -141,6 +145,10 @@ export class PhysicsHandler extends Handler {
             let type: number = data['createUnit']['type'];
             if (type == null)
                 return;
+            type = Math.floor(type);
+            if (type >= UnitBuilder.types.length) {
+                return;
+            }
             let unitType = UnitBuilder.types[type];
             if (!moneyHandler.hasGold(player, unitType.price)) {
                 return;
@@ -364,6 +372,8 @@ export class PhysicsHandler extends Handler {
                         type: tower.type,
                         xya: xya
                     };
+                    this.old_state['bodies'][body_id] = serialized_body;
+                    continue;
                 }
                 let unit = unitBuilder.get(body_id);
                 if (unit != null) {
@@ -372,6 +382,8 @@ export class PhysicsHandler extends Handler {
                         type: unit.type,
                         xya: xya
                     };
+                    this.old_state['bodies'][body_id] = serialized_body;
+                    continue;
                 }
                 let projectile = projectileBuilder.get(body_id);
                 if (projectile != null) {
@@ -380,8 +392,9 @@ export class PhysicsHandler extends Handler {
                         type: projectile.type,
                         xya: xya
                     };
+                    this.old_state['bodies'][body_id] = serialized_body;
+                    continue;
                 }
-                this.old_state['bodies'][body_id] = serialized_body;
             }
         }
         return this.old_state;
@@ -392,7 +405,9 @@ export class PhysicsHandler extends Handler {
     }
 
     createParticle() {
-        return new p2.Particle();
+        let particle = new p2.Particle();
+        particle.sensor = true;
+        return particle;
     }
 
     createPlane(player: Player) {

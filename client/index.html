@@ -2,33 +2,16 @@
 <html>
 
 <head>
-  <style>
-    body,
-    html {
-      font-family: Tahoma, Geneva, sans-serif;
-      text-align: center;
-      border: 0px;
-      padding: 0px;
-      margin: 0px;
-      height: 100%;
-      -webkit-box-sizing: border-box;
-    }
-    
-    canvas {
-      display: block;
-    }
-    
-    div {
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      box-sizing: border-box;
-    }
-  </style>
+  <link rel="stylesheet" type="text/css" href="css\style.css">
   <script src="scripts\index.js"></script>
   <script src="scripts\communication.js"></script>
   <script src="scripts\lib\threelib\three.js"></script>
   <script src="scripts\render\render.js"></script>
   <script src="scripts\units\generic.unit.js"></script>
+  <script src="scripts\units\creep.js"></script>
+  <script src="scripts\units\tower.js"></script>
+  <script src="scripts\units\projectile.js"></script>
+  <script src="scripts\render\hud.js"></script>
   <!-- dummy Symbol polyfill -->
   <script>
     if (typeof(Symbol) === "undefined") {
@@ -43,9 +26,8 @@
 </head>
 
 <body>
-  <div style="display: block; border: 0px; margin:0px; padding:0px;" id="container" onmousemove="Main.getInstance().setMouse(event)" onmousedown="Main.getInstance().onMouseDown(event)">
-
-  </div>
+  <div style="display: block;position:relative; border: 0px; margin:0px; padding:0px;" id="container" onmousemove="Main.getInstance().setMouse(event)" onmousedown="Main.getInstance().onMouseDown(event)"></div>
+  <div style="position:fixed;background-color:lightblue; top:50%;left:0px; width:25%;height:50%; z-index: 1;display: block; border: 0px; margin:0px; padding:0px;" id="hud"></div>
   <div style="position:absolute; background-color:orangered; top: 100px; left: 200px; width:200px;height:50px;" id="money"> </div>
   <div style="position:absolute; background-color:orangered; top: 200px; left: 200px; width:200px;height:50px;" id="life"> </div>
   <div style="position:absolute; background-color:orangered; top: 300px; left: 200px; width:200px;height:50px;" id="name"> </div>

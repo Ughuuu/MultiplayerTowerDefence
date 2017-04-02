@@ -5,15 +5,20 @@ export class MoneyHandler extends Handler {
     money: {} = {};
     time: number = 0;
     playerIncome: {} = {};
-    static goldInterval: number = 5000;
+    static goldInterval: number = 10000;
 
     constructor() {
         super('MoneyHandler');
     }
 
     onJoin(player) {
-        this.money[player.id] = 100;
-        this.playerIncome[player.id] = 1;
+        if (process.env.release == null) {
+            this.money[player.id] = 100000;
+        } 
+        else {
+            this.money[player.id] = 100;
+        }
+        this.playerIncome[player.id] = 10;
     }
 
     onLeave(player) {

@@ -14,23 +14,26 @@ class UnitType {
 class TowerType {
     constructor(public name: string,
         public model: string,
+        public icon: string,
         public radius: number,
         public health: number,
         public damage: number,
         public elementType: ElementType,
-        public speed: number) { }
+        public speed: number,
+        public upgradeFrom:string) { }
 };
 class ProjectileType {
     constructor(public name: string,
         public model: string) { }
 };
-
 enum ElementType {
     Stone = 0,
     Iron,
     Fire,
     Ice,
 }
+
+
 
 enum WalkType {
     Ground = 0,

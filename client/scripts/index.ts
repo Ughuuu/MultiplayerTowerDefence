@@ -9,7 +9,8 @@ class Main {
     private communication: Communication;
     private renderer: Render;
     private unitsMap = {};
-    public geometryMap = {};
+    public upgradesMap = {};
+    public  geometryMap = {};
     private creepTypes: UnitType[];
     private towerTypes: TowerType[];
     private projectileTypes: ProjectileType[];
@@ -45,6 +46,7 @@ class Main {
         this.windowHalfY = 0;
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
+        this.upgradesMap = new Map<string, Array<TowerType>>();
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
         document.addEventListener('keydown', this.onKeyPress.bind(this));
     }
@@ -111,6 +113,7 @@ class Main {
 
     public setTowerTypes(towerTypes: TowerType[], progress) {
         this.towerTypes = towerTypes;
+        let x = this.upgradesMap[this.towerTypes[0].upgradeFrom];
         for (var i = 0; i < this.towerTypes.length; i++) {
             {
                 this.loader.load(this.towerTypes[i].model, function (icopy: number, geometry: THREE.Geometry, materials: any) {
@@ -122,6 +125,14 @@ class Main {
                         var material = new THREE.MultiMaterial(materials);
                         var object = new THREE.Mesh(geometry, material);
                         this.geometryMap[this.towerTypes[icopy].model] = object;
+                        if (!this.upgradesMap[this.towerTypes[icopy].upgradeFrom]) {
+                            this.upgradesMap[this.towerTypes[icopy].upgradeFrom] = [];
+                            this.upgradesMap[this.towerTypes[icopy].upgradeFrom].push(this.towerTypes[icopy]);
+                        }
+                        else {
+                            this.upgradesMap[this.towerTypes[icopy].upgradeFrom].push(this.towerTypes[icopy]);
+                        }
+                      
                     } catch (e) {
                         console.log(e);
                     }
@@ -163,16 +174,16 @@ class Main {
 
         if (intersects.length > 0) {
             for (let i: number = 0; i < intersects.length; i++) {
-                if (intersects[i].object.name == "cell") {
+                if (intersects[i].object.name.includes("cell")) {
                     object = intersects[i].object;
                     break;
                 }
             }
             if (this.INTERSECTED != object) {
-                if (this.INTERSECTED) this.INTERSECTED.material.emissive.setHex(this.INTERSECTED.currentHex);
-                this.INTERSECTED = object;
-                this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
-                this.INTERSECTED.material.emissive.setHex(0xff0000);
+                //if (this.INTERSECTED) this.INTERSECTED.material.emissive.setHex(this.INTERSECTED.currentHex);
+               // this.INTERSECTED = object;
+              //  this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
+               // this.INTERSECTED.material.emissive.setHex(0xff0000);
             }
         }
     }
@@ -180,15 +191,34 @@ class Main {
     public onMouseDown(event) {
         this.raycaster.setFromCamera(this.mouse.clone(), this.renderer.camera);
         // calculate objects intersecting the picking ray
-        let intersects: any = this.raycaster.intersectObjects(this.renderer.scene.children);
+        let intersects: THREE.Intersection[] = this.raycaster.intersectObjects(this.renderer.scene.children);
         if (intersects.length > 0) {
-            var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
-            this.hud.displayTowerInfo(this.towerTypes[0]);
-            if((this.towerTypes.length-1) != 0)
-            this.communication.createTower(Math.round(Math.random()*(this.towerTypes.length-1)), x.x, x.y);
+            let clickedOnCreep: boolean = false;
+            let clickedOnTower: boolean = false;
+            for (let i: number = 0; i < intersects.length; i++) {
+                if (intersects[i].object.name.includes("tower")) {
+                    let towerId : number;
+                    towerId = parseInt(intersects[i].object.name.split(':')[1]);
+                    clickedOnTower = true;
+                    var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
+                    this.hud.displayTowerInfo(this.unitsMap[towerId].type, this.upgradesMap[this.unitsMap[towerId].type.name],x.x, x.y);
+                    break;
+                }
+                if (intersects[i].object.name.includes("creep")) {
+                    let creepId: number;
+                    creepId = parseInt(intersects[i].object.name.split(':')[1]);
+                    clickedOnCreep = true;
+                    this.hud.displayCreepInfo(this.unitsMap[creepId].type,x.x,x.y);
+                    break;
+                }
+            }
+            if (!clickedOnCreep && !clickedOnTower) {
+                this.renderer.drawSelectRectangle(intersects[0].object.position.x, intersects[0].object.position.y);
+                var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
+                this.hud.displayEmptyCell(this.upgradesMap["null"],x.x, x.y);
+                }
         }
         let position = this.renderer.convertGameCoorToMapCoord(new THREE.Vector3(this.mouse.x, this.mouse.y, 0));
-
     }
 
     public onKeyPress(event) {
@@ -204,19 +234,19 @@ class Main {
 
     public addCreep(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
         let modelName = this.creepTypes[type].model;
-        let newUnit = new Creep(modelName, health, position, rotation, scale, this.renderer.scene, this.geometryMap[modelName]);
+        let newUnit = new Creep(id, this.creepTypes[type],modelName, health, position, rotation, scale, this.renderer.scene, this.geometryMap[modelName]);
         this.unitsMap[id] = newUnit;
     }
 
     public addProjectile(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
         let modelName = this.projectileTypes[type].model;
-        let newUnit = new Projectile(modelName, health, position, rotation, scale, this.renderer.scene, this.geometryMap[modelName]);
+        let newUnit = new Projectile(id, this.projectileTypes[type],modelName, health, position, rotation, scale, this.renderer.scene, this.geometryMap[modelName]);
         this.unitsMap[id] = newUnit;
     }
 
     public addTower(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
         let modelName = this.towerTypes[type].model;
-        let newUnit = new Tower(modelName, health, position, rotation, scale, this.renderer.scene, this.geometryMap[modelName]);
+        let newUnit = new Tower(id, this.towerTypes[type], modelName, health, position, rotation, scale, this.renderer.scene, this.geometryMap[modelName]);
         this.unitsMap[id] = newUnit;
     }
 
@@ -253,6 +283,10 @@ class Main {
         container.innerHTML = "Money:" + data.money + "<br> Income:" + data.income;
     }
 
+    public getTowerId(towerType: TowerType) {
+        let index = this.towerTypes.indexOf(towerType);
+        return index;
+    }
     public setMap(map: number[][]) {
         this.renderer.camera.position.x+= (map[0].length * 20)/2;
         this.renderer.camera.position.y = -5 * map.length;

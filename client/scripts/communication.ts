@@ -84,7 +84,7 @@ class Communication {
             if (xx) {
                 obj.setRotationYFix(x, y);
             }else{
-                obj.setRotationY(x, y, 0.2);
+                obj.setRotationY(x, y, 0.02);
             }
             obj.moveOnX(x);
             obj.moveOnY(y);
@@ -102,10 +102,10 @@ class Communication {
             let x = xya.x;
             let y = xya.y;
             if (value.classType == 0) {
-                Main.getInstance().addTower(id, value.type, 100, new THREE.Vector3(x, y, 0), new THREE.Vector3(Math.PI / 2, 0, 0), 1);
+                Main.getInstance().addTower(id, value.type, 100, new THREE.Vector3(x, y, 0), new THREE.Vector3(Math.PI / 2, 0, 0), 2);
             }
             if (value.classType == 1) {
-                Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(x, y, 0), new THREE.Vector3(Math.PI / 2, -Math.PI, 0), 1);
+                Main.getInstance().addCreep(id, value.type, 100, new THREE.Vector3(x, y, 0), new THREE.Vector3(Math.PI / 2, 0, 0), 1);
             }
             if (value.classType == 2) {
                 Main.getInstance().addProjectile(id, value.type, 100, new THREE.Vector3(x, y, 0), new THREE.Vector3(Math.PI / 2, 0, 0), 2);

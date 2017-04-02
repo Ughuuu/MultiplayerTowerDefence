@@ -16,6 +16,7 @@ class Render {
     initialY: number;
     light1: THREE.Light;
     light2: THREE.Light;
+    currentPlane: THREE.Mesh;
 
     constructor() {
         this.planes = [];
@@ -45,19 +46,16 @@ class Render {
         this.scene.add(this.camera);
     }
     createLight() {
-        let light1 = new THREE.PointLight(0xFFFFFF, 1.2);
-        let light2 = new THREE.DirectionalLight(0xFFFFFF, 0.5);
-        light2.position.set(0, -1, 0.3);
-        var ambient = new THREE.AmbientLight(0xFFFFFF, 0.3); // soft white light
+        let light1 = new THREE.PointLight(0xFFFFFF, 0.8);
+        var ambient = new THREE.AmbientLight(0x404040, 0.3); // soft white light
         // add to the scene
         this.scene.add(light1);
-        this.scene.add(light2);
         this.scene.add(ambient);
         this.light1 = light1;
     }
 
     moveLights(){
-        this.light1.position.set(this.camera.position.x, this.height/2, 100);
+        this.light1.position.set(this.camera.position.x, this.height/2, 200);
     }
 
     public initMap(matrix: number[][], width: number, height: number, cellWidth: number, cellHeight: number) {
@@ -88,6 +86,18 @@ class Render {
         }
     }
 
+    public drawSelectRectangle(x: number, y: number) {
+        this.scene.remove(this.currentPlane);
+        let material = new THREE.MeshLambertMaterial({ color: 0xffff00 });
+        material.opacity = 0.7;
+        material.transparent = true;
+        let planeGeometry = new THREE.PlaneGeometry(this.cellWidth, this.cellHeight, 1, 1);
+        this.currentPlane = new THREE.Mesh(planeGeometry, material);
+        this.currentPlane.position.x = x;
+        this.currentPlane.position.y = y;
+        this.currentPlane.position.z = 5;
+        this.scene.add(this.currentPlane);
+    }
     public convertGameCoorToMapCoord(position: THREE.Vector3) {
         let x = (position.x - this.initialX) / this.cellWidth;
         let y = (position.y + this.initialY) / this.cellWidth;
@@ -98,6 +108,8 @@ class Render {
     public loadJson(modelPath: string) {
 
     }
+
+
     public createSphere(radius: number, id: any, x: number, y: number) {
         const sphereMaterial =
             new THREE.MeshLambertMaterial(

@@ -91,6 +91,7 @@ class Main {
                 }.bind(this, i));
             }
         }
+        this.hud.drawBuyUnits(this.creepTypes);
     }
 
     public setCell(progress) {
@@ -292,6 +293,12 @@ class Main {
         let index = this.towerTypes.indexOf(towerType);
         return index;
     }
+
+    public getUnitId(towerType: UnitType) {
+        let index = this.creepTypes.indexOf(towerType);
+        return index;
+    }
+
     public setMap(map: number[][]) {
         this.renderer.camera.position.x += (map[0].length * 20) / 2;
         this.renderer.camera.position.y = -5 * map.length;

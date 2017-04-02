@@ -6,32 +6,40 @@ class Hud {
     nameLabel: HTMLLabelElement;
     elementLabel: HTMLLabelElement;
     upgradesLabel: HTMLLabelElement;
-    images: HTMLImageElement[];
+    buildingImages: HTMLImageElement[];
+    unitImages: HTMLImageElement[];
+    unitsDiv: HTMLDivElement;
     constructor(container) {
         this.damageLabel = document.createElement('label');
         this.healthLabel = document.createElement('label');
         this.nameLabel = document.createElement('label');
         this.elementLabel = document.createElement('label');
         this.upgradesLabel = document.createElement('label');
+        this.unitsDiv = document.createElement('div');
+        this.unitsDiv.style.position = 'absolute';
+        this.unitsDiv.style.bottom = '30px';
+
         this.container = container;
-        this.images = [];
+        this.unitImages = [];
+        this.buildingImages = [];
         container.appendChild(this.damageLabel);
         container.appendChild(this.healthLabel);
         container.appendChild(this.nameLabel);
         container.appendChild(this.elementLabel);
         container.appendChild(this.upgradesLabel);
+        container.appendChild(this.unitsDiv);
     }
     public displayTowerInfo(towerType: TowerType, upgradeTowers: TowerType[], x: number, y: number) {
         this.clearAll();
         if (upgradeTowers) {
             this.upgradesLabel.innerHTML="<br> Upgrades:"
             for (let i = 0; i < upgradeTowers.length; i++) {
-                this.images[i] = document.createElement('img');
-                this.images[i].src = towerType[i].icon;
-                this.images[i].draggable = false;
-                this.images[i].addEventListener("click", () => this.onClick(towerType[i], x, y));
-                this.images[i].addEventListener("mouseover", () => this.onMouseOver(towerType[i]));
-                this.container.appendChild(this.images[i]);
+                this.buildingImages[i] = document.createElement('img');
+                this.buildingImages[i].src = towerType[i].icon;
+                this.buildingImages[i].draggable = false;
+                this.buildingImages[i].addEventListener("click", () => this.onClickBuilding(towerType[i], x, y));
+                this.buildingImages[i].addEventListener("mouseover", () => this.onMouseOverBuilding(towerType[i]));
+                this.container.appendChild(this.buildingImages[i]);
             }
         }
         else {
@@ -50,12 +58,12 @@ class Hud {
         this.clearAll();
         this.upgradesLabel.innerHTML = "<br> Towers:";
         for (let i = 0; i < towerType.length; i++) {
-            this.images[i] = document.createElement('img');
-            this.images[i].style.width = '200px';
-            this.images[i].src = towerType[i].icon;
-            this.images[i].addEventListener("click", () => this.onClick(towerType[i], x, y));
-            this.images[i].addEventListener("mouseover", () => this.onMouseOver(towerType[i]));
-            this.container.appendChild(this.images[i]);
+            this.buildingImages[i] = document.createElement('img');
+            this.buildingImages[i].style.width = '200px';
+            this.buildingImages[i].src = towerType[i].icon;
+            this.buildingImages[i].addEventListener("click", () => this.onClickBuilding(towerType[i], x, y));
+            this.buildingImages[i].addEventListener("mouseover", () => this.onMouseOverBuilding(towerType[i]));
+            this.container.appendChild(this.buildingImages[i]);
         }
     }
     public displayCreepInfo(towerType: TowerType, x: number, y: number) {
@@ -69,19 +77,48 @@ class Hud {
 
     }
 
-    public onClick(towerType: TowerType, x: number, y: number) {
+    public drawBuyUnits(unitType: UnitType[]) {
+        for (let i = 0; i < this.unitImages.length; i++) {
+            this.unitsDiv.removeChild(this.unitImages[i]);
+        }
+        for (let i = 0; i < unitType.length; i++) {
+            this.unitImages[i] = document.createElement('img');
+            let iconPath = unitType[i].model.substr(0, unitType[i].model.lastIndexOf("/"));
+            iconPath += "/icon.jpg";
+            this.unitImages[i].className = "units";
+            this.unitImages[i].style.width = '50px';
+            this.unitImages[i].style.height = '50px';
+            this.unitImages[i].style.position = "relative";
+            this.unitImages[i].src = iconPath;
+            this.unitImages[i].draggable = false;
+            this.unitImages[i].addEventListener("click", () => this.onClickUnit(unitType[i]));
+            this.unitImages[i].addEventListener("mouseover", () => this.onMouseOverUnit(unitType[i]));
+            this.unitsDiv.appendChild(this.unitImages[i]);
+        }
+    }
+
+    public onClickBuilding(towerType: TowerType, x: number, y: number) {
         let id = Main.getInstance().getTowerId(towerType);
         Main.getInstance().getCommunication().createTower(id, x, y);
     }
 
-    public onMouseOver(towerType: TowerType) {
+    public onMouseOverBuilding(towerType: TowerType) {
+    }
+
+    public onClickUnit(unitType: UnitType) {
+        let id = Main.getInstance().getUnitId(unitType);
+        Main.getInstance().getCommunication().createUnit(id);
+    }
+
+    public onMouseOverUnit(towerType: UnitType) {
     }
 
     public clearAll() {
-        for (let i = 0; i < this.images.length; i++) {
-            this.container.removeChild(this.images[i]);
+        for (let i = 0; i < this.buildingImages.length; i++) {
+            this.container.removeChild(this.buildingImages[i]);
         }
-        this.images = [];
+        this.unitImages = [];
+        this.buildingImages = [];
         this.nameLabel.innerHTML = "";
         this.damageLabel.innerHTML = "";
         this.healthLabel.innerHTML = "";

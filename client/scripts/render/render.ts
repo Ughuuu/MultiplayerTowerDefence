@@ -45,7 +45,7 @@ class Render {
         this.scene.add(this.camera);
     }
     createLight() {
-        let light1 = new THREE.PointLight(0xFFFFFF, 1);
+        let light1 = new THREE.PointLight(0xFFFFFF, 1.2);
         let light2 = new THREE.DirectionalLight(0xFFFFFF, 0.5);
         light2.position.set(0, -1, 0.3);
         var ambient = new THREE.AmbientLight(0xFFFFFF, 0.3); // soft white light

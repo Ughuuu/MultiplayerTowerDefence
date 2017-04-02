@@ -9,10 +9,7 @@ class GenericUnit {
     private animations: THREE.AnimationClip[];
     private materials: any;
     private animationMixer: THREE.AnimationMixer;
-  
-   
-  
-    
+
     constructor(modelName: string, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number, scene: THREE.Scene, mesh: THREE.Mesh) {
         this.modelName = modelName;
         this.health = health;

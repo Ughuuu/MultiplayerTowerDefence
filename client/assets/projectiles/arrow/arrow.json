@@ -32,7 +32,7 @@
         "DbgName":"Material",
         "depthWrite":true,
         "wireframe":false,
-        "colorDiffuse":[0.8,0.8,0.8],
+        "colorDiffuse":[0.0611422,0.0586508,0.0555485],
         "blending":"NormalBlending"
     }]
 }

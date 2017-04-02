@@ -11,6 +11,7 @@ export class TowerType {
     public health = 10;
     constructor(public name: string,
         public model: string,
+        public icon:  string,
         public damage: number,
         public elementType: ElementType,
         public speed: number,
@@ -28,6 +29,7 @@ export class TowerBuilder extends Builder {
         new TowerType(
             'Stone Tower',
             '/assets/towers/stone/stone.json',
+            '/assets/towers/stone/icon.jpg',
             20,//damage
             ElementType.Stone,
             2000,//speed
@@ -39,6 +41,7 @@ export class TowerBuilder extends Builder {
         new TowerType(
             'Ballista Tower',
             '/assets/towers/ballista/ballista.json',
+            '/assets/towers/ballista/icon.jpg',
             2,//damage
             ElementType.Iron,
             500,//speed

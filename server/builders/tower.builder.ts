@@ -29,10 +29,10 @@ export class TowerBuilder extends Builder {
         new TowerType(
             'Stone Tower',
             '/assets/towers/stone/stone.json',
-            '/assets/towers/stone/icon.jpg',
+            '/assets/towers/stone/icon.png',
             20,//damage
             ElementType.Stone,
-            2000,//speed
+            20,//speed
             4,//range
             0,//explosionRadius
             5,//speed
@@ -41,10 +41,10 @@ export class TowerBuilder extends Builder {
         new TowerType(
             'Ballista Tower',
             '/assets/towers/ballista/ballista.json',
-            '/assets/towers/ballista/icon.jpg',
+            '/assets/towers/ballista/icon.png',
             2,//damage
             ElementType.Iron,
-            500,//speed
+            50,//speed
             4,//range
             0,//explosionRadius
             10,//speed

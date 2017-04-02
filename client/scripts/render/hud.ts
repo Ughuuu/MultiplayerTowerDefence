@@ -85,7 +85,7 @@ class Hud {
         for (let i = 0; i < unitType.length; i++) {
             this.unitImages[i] = document.createElement('img');
             let iconPath = unitType[i].model.substr(0, unitType[i].model.lastIndexOf("/"));
-            iconPath += "/icon.jpg";
+            iconPath += "/icon.png";
             this.unitImages[i].className = "units";
             this.unitImages[i].src = iconPath;
           

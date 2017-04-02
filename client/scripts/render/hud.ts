@@ -75,7 +75,6 @@ class Hud {
     }
 
     public onMouseOver(towerType: TowerType) {
-        console.log(towerType);
     }
 
     public clearAll() {

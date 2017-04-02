@@ -174,16 +174,16 @@ class Main {
 
         if (intersects.length > 0) {
             for (let i: number = 0; i < intersects.length; i++) {
-                if (intersects[i].object.name.includes("c ell")) {
+                if (intersects[i].object.name.includes("cell")) {
                     object = intersects[i].object;
                     break;
                 }
             }
             if (this.INTERSECTED != object) {
-                if (this.INTERSECTED) this.INTERSECTED.material.emissive.setHex(this.INTERSECTED.currentHex);
-                this.INTERSECTED = object;
-                this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
-                this.INTERSECTED.material.emissive.setHex(0xff0000);
+                //if (this.INTERSECTED) this.INTERSECTED.material.emissive.setHex(this.INTERSECTED.currentHex);
+               // this.INTERSECTED = object;
+              //  this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
+               // this.INTERSECTED.material.emissive.setHex(0xff0000);
             }
         }
     }
@@ -213,6 +213,7 @@ class Main {
                 }
             }
             if (!clickedOnCreep && !clickedOnTower) {
+                this.renderer.drawSelectRectangle(intersects[0].object.position.x, intersects[0].object.position.y);
                 var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
                 this.hud.displayEmptyCell(this.upgradesMap["null"],x.x, x.y);
                 }

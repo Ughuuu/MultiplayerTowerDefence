@@ -16,6 +16,7 @@ class Render {
     initialY: number;
     light1: THREE.Light;
     light2: THREE.Light;
+    currentPlane: THREE.Mesh;
 
     constructor() {
         this.planes = [];
@@ -88,6 +89,18 @@ class Render {
         }
     }
 
+    public drawSelectRectangle(x: number, y: number) {
+        this.scene.remove(this.currentPlane);
+        let material = new THREE.MeshLambertMaterial({ color: 0xffff00 });
+        material.opacity = 0.7;
+        material.transparent = true;
+        let planeGeometry = new THREE.PlaneGeometry(this.cellWidth, this.cellHeight, 1, 1);
+        this.currentPlane = new THREE.Mesh(planeGeometry, material);
+        this.currentPlane.position.x = x;
+        this.currentPlane.position.y = y;
+        this.currentPlane.position.z = 5;
+        this.scene.add(this.currentPlane);
+    }
     public convertGameCoorToMapCoord(position: THREE.Vector3) {
         let x = (position.x - this.initialX) / this.cellWidth;
         let y = (position.y + this.initialY) / this.cellWidth;
@@ -98,6 +111,8 @@ class Render {
     public loadJson(modelPath: string) {
 
     }
+
+
     public createSphere(radius: number, id: any, x: number, y: number) {
         const sphereMaterial =
             new THREE.MeshLambertMaterial(

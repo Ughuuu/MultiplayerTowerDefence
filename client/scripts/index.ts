@@ -240,6 +240,9 @@ class Main {
 
     public addCreep(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
         let modelName = this.creepTypes[type].model;
+        if (this.creepTypes[type].walkType == WalkType.Flying) {
+            position.z = 30;
+        }
         let newUnit = new Creep(id, this.creepTypes[type], modelName, health, position, rotation, scale * (this.creepTypes[type].radius / 0.2), this.renderer.scene, this.geometryMap[modelName]);
         this.unitsMap[id] = newUnit;
     }
@@ -301,10 +304,15 @@ class Main {
 
     public setMap(map: number[][]) {
         this.renderer.camera.position.x += (map[0].length * 20) / 2;
-        this.renderer.camera.position.y = -5 * map.length;
-        this.renderer.camera.position.z = 20 * map.length;
+        this.renderer.camera.position.y = 25 * map.length;
+        this.renderer.camera.position.z = 25 * map.length;
+
+        this.renderer.camera.rotation.x = (90 + 60) * Math.PI / 180;
+        this.renderer.camera.rotation.y = Math.PI;
+        this.renderer.camera.rotation.z = 0;
         this.renderer.initMap(map, map[0].length, map.length, 20, 20);
         this.renderer.moveLights();
+        this.renderer.camera.updateProjectionMatrix();
     }
 
     public createCamera() {

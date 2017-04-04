@@ -29,9 +29,9 @@ export class UnitBuilder extends Builder {
         new UnitType('Peasant',
             '/assets/units/peasant/peasant.json',
             0.2,//size
-            10,//hp
+            6,//hp
             ElementType.Iron,
-            1,//speed
+            0.2,//speed
             0,//armor
             WalkType.Ground,
             5,//price
@@ -39,34 +39,45 @@ export class UnitBuilder extends Builder {
             2),//bounty
         new UnitType('Fox',
             '/assets/units/fox/fox.json',
-            0.3,//size
-            20,//hp
+            0.2,//size
+            4,//hp
             ElementType.Iron,
-            3,//speed
+            1,//speed
             0,//armor
             WalkType.Ground,
             10,//price
             3,//income
             5),//bounty
-        new UnitType('Skeleton Boss',
+        new UnitType('Skeleton',
             '/assets/units/skeleton_boss/skeleton_boss.json',
             0.4,//size
             100,//hp
             ElementType.Stone,
-            0.5,//speed
+            0.2,//speed
             10,//armor
             WalkType.Ground,
             50,//price
             30,//income
             30),//bounty
-        new UnitType('Dragon Boss',
+        new UnitType('Dragon',
             '/assets/units/dragon/dragon.json',
-            0.7,//size
+            0.5,//size
             100,//hp
             ElementType.Fire,
-            2,//speed
+            1.5,//speed
             10,//armor
             WalkType.Flying,
+            100,//price
+            50,//income
+            80),//bounty
+        new UnitType('Pirate',
+            '/assets/units/pirate/pirate.json',
+            0.3,//size
+            100,//hp
+            ElementType.Ice,
+            2,//speed
+            10,//armor
+            WalkType.Ground,
             100,//price
             50,//income
             80),//bounty

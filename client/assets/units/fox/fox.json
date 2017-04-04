@@ -165,7 +165,7 @@
         "wireframe":false,
         "shading":"lambert",
         "blending":"NormalBlending",
-        "mapDiffuse":"texture.png",
+        "mapDiffuse":"texture.jpg",
         "DbgIndex":0,
         "DbgColor":15658734,
         "colorDiffuse":[0.8,0.8,0.8],

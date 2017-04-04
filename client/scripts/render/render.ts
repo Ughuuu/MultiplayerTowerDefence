@@ -40,16 +40,17 @@ class Render {
                 near,
                 far
             );
-        this.camera.rotation.x = 30 * Math.PI / 180;
-        // TODO compute these values from map
-        this.camera.position.set(0, -50, 300);
+        this.camera.rotation.x = 120 * Math.PI / 180;
         this.scene.add(this.camera);
     }
     createLight() {
-        let light1 = new THREE.PointLight(0xFFFFFF, 0.8);
+        let light1 = new THREE.PointLight(0xFFFFFF, 2);
+        let light2 = new THREE.DirectionalLight(0xFFFFFF, 1);
+        light2.position.set(.2, -1, -.2);
         var ambient = new THREE.AmbientLight(0x404040, 0.3); // soft white light
         // add to the scene
         this.scene.add(light1);
+        this.scene.add(light2);
         this.scene.add(ambient);
         this.light1 = light1;
     }
@@ -77,7 +78,7 @@ class Render {
                 plane.name = "cell[" + i + "][" + j + "]";
                 plane.position.x = (j + 0.5) * cellWidth + this.initialX;
                 plane.position.y = (i + 0.5) * cellHeight - this.initialY;
-                plane.position.z = 2;
+                plane.position.z = 0;
                 plane.rotation.x = Math.PI / 2;
                 plane.rotation.y = Math.floor((Math.random() * 4)) * Math.PI;
                 plane.scale.set(1.27, 1.27, 1.27);

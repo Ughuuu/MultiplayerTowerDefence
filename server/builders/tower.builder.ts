@@ -32,7 +32,7 @@ export class TowerBuilder extends Builder {
             '/assets/towers/stone/icon.png',
             20,//damage
             ElementType.Stone,
-            20,//speed
+            2000,//speed
             4,//range
             0,//explosionRadius
             5,//speed
@@ -44,7 +44,7 @@ export class TowerBuilder extends Builder {
             '/assets/towers/ballista/icon.png',
             2,//damage
             ElementType.Iron,
-            50,//speed
+            500,//speed
             4,//range
             0,//explosionRadius
             10,//speed

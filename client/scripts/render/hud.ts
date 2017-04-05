@@ -60,6 +60,7 @@ class Hud {
         for (let i = 0; i < towerType.length; i++) {
             this.buildingImages[i] = document.createElement('img');
             this.buildingImages[i].className = "buildings";
+                this.buildingImages[i].draggable = false;
           
             this.buildingImages[i].src = towerType[i].icon;
             this.buildingImages[i].addEventListener("click", () => this.onClickBuilding(towerType[i], x, y));

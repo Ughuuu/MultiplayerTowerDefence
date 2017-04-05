@@ -33,7 +33,7 @@ export class UnitBuilder extends Builder {
             ElementType.Iron,
             0.2,//speed
             0,//armor
-            WalkType.Ground,
+            WalkType.Slow,
             5,//price
             1,//income
             2),//bounty
@@ -44,7 +44,7 @@ export class UnitBuilder extends Builder {
             ElementType.Iron,
             1,//speed
             0,//armor
-            WalkType.Ground,
+            WalkType.Fast,
             10,//price
             3,//income
             5),//bounty
@@ -55,7 +55,7 @@ export class UnitBuilder extends Builder {
             ElementType.Stone,
             0.2,//speed
             10,//armor
-            WalkType.Ground,
+            WalkType.Boss,
             50,//price
             30,//income
             30),//bounty
@@ -77,7 +77,7 @@ export class UnitBuilder extends Builder {
             ElementType.Ice,
             1.5,//speed
             10,//armor
-            WalkType.Ground,
+            WalkType.Fast,
             100,//price
             50,//income
             80),//bounty
@@ -88,7 +88,7 @@ export class UnitBuilder extends Builder {
             ElementType.Ice,
             0.7,//speed
             10,//armor
-            WalkType.Ground,
+            WalkType.Slow,
             100,//price
             50,//income
             80),//bounty
@@ -104,7 +104,7 @@ export class UnitBuilder extends Builder {
     create(type: number, player: Player, position: Point): number {
         let unit_type = UnitBuilder.types[type];
         let circleShape = this.physicsHandler.createCircle(unit_type.radius);
-        if (unit_type.walkType == WalkType.Ground) {
+        if (unit_type.walkType != WalkType.Flying) {
             circleShape.collisionGroup = UnitBuilder.collisionBitGround;
             circleShape.collisionMask = TowerBuilder.collisionBit
                 | UnitBuilder.collisionBitGround

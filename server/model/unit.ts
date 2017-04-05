@@ -2,7 +2,9 @@ import { Point } from './point';
 import { ElementType } from './element.type';
 
 export enum WalkType {
-    Ground = 0,
+    Slow = 0,
+    Fast,
+    Boss,
     Flying
 }
 

@@ -11,7 +11,7 @@ export class TowerType {
     public health = 10;
     constructor(public name: string,
         public model: string,
-        public icon:  string,
+        public icon: string,
         public damage: number,
         public elementType: ElementType,
         public speed: number,
@@ -62,7 +62,7 @@ export class TowerBuilder extends Builder {
 
     create(type: number, player: Player, position: Point): number {
         let tower_type = TowerBuilder.types[type];
-        let boxShape = this.physicsHandler.createBox(tower_type.radius, tower_type.radius);
+        let boxShape = this.physicsHandler.createCircle(tower_type.radius/2);
         boxShape.collisionGroup = TowerBuilder.collisionBitTower;
         boxShape.collisionMask = UnitBuilder.collisionBitGround;
         let circleShape = this.physicsHandler.createCircle(tower_type.range);

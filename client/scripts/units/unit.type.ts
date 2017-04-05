@@ -20,7 +20,7 @@ class TowerType {
         public damage: number,
         public elementType: ElementType,
         public speed: number,
-        public upgradeFrom:string) { }
+        public upgradeFrom: string) { }
 };
 class ProjectileType {
     constructor(public name: string,
@@ -36,7 +36,9 @@ enum ElementType {
 
 
 enum WalkType {
-    Ground = 0,
+    Slow = 0,
+    Fast,
+    Boss,
     Flying
-};
+}
 

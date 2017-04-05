@@ -70,6 +70,9 @@ export class GameRoom extends Room<StateHandler> {
     }
 
     requestJoin(options) {
+        if (this.started == true) {
+            return;
+        }
         if (this.options.isPasswordRequired == true) {
             // first player to join sets the pasword
             if (options.password != null && this.clients.length == 0) {

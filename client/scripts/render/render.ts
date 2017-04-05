@@ -55,14 +55,14 @@ class Render {
         this.light1 = light1;
     }
 
-    moveLights(){
-        this.light1.position.set(this.camera.position.x, this.height/2, 200);
+    moveLights() {
+        this.light1.position.set(this.camera.position.x, this.height / 2, 200);
     }
 
-    public initMap(matrix: number[][], width: number, height: number, cellWidth: number, cellHeight: number) {
+    public initMap(initialX: number, initialY: number, matrix: number[][], width: number, height: number, cellWidth: number, cellHeight: number) {
 
-        this.initialX = 0;
-        this.initialY = 0;
+        this.initialX = initialX;
+        this.initialY = initialY;
         this.cellWidth = cellWidth;
         this.cellHeight = cellHeight;
 

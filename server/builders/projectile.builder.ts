@@ -32,7 +32,11 @@ export class ProjectileBuilder extends Builder {
         let projectile_type = ProjectileBuilder.types[tower.elementType];
         let particleShape = this.physicsHandler.createParticle();
         particleShape.collisionGroup = ProjectileBuilder.collisionBit;
-        particleShape.collisionMask = UnitBuilder.collisionBitGround | UnitBuilder.collisionBitFlying;
+        if (tower.elementType == ElementType.Stone) {
+            particleShape.collisionMask = UnitBuilder.collisionBitGround;
+        } else {
+            particleShape.collisionMask = UnitBuilder.collisionBitGround | UnitBuilder.collisionBitFlying;
+        }
         let body = this.physicsHandler.createBody(this.players[tower.owner_id], particleShape, 1, position, 0);
         let projectile = new Projectile(body.id, tower.id);
         tower.projectile_ids.push(projectile.id);

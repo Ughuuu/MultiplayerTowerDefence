@@ -22,8 +22,10 @@ class Main {
     private windowHalfY: number;
     private INTERSECTED: any;
     private players: {} = {};
+    private locations: {} = {};
     private loader = new THREE.JSONLoader();
     private hud: Hud;
+    private map: number[][];
     static getInstance() {
         if (!Main.instance) {
             Main.instance = new Main();
@@ -39,6 +41,10 @@ class Main {
             str += 'Hp of ' + id + ': ' + this.players[id];
         }
         container.innerHTML = str;
+    }
+
+    setLocation(id, location) {
+        this.locations[id] = location;
     }
 
     constructor() {
@@ -212,11 +218,12 @@ class Main {
                     this.hud.displayCreepInfo(this.unitsMap[creepId].type, x.x, x.y);
                     break;
                 }
-            }
-            if (!clickedOnCreep && !clickedOnTower) {
-                this.renderer.drawSelectRectangle(intersects[0].object.position.x, intersects[0].object.position.y);
-                var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
-                this.hud.displayEmptyCell(this.upgradesMap["null"], x.x, x.y);
+                if (!clickedOnCreep && !clickedOnTower && intersects[i].object.name.includes("cell")) {
+                    intersects[i].object.name
+                    this.renderer.drawSelectRectangle(intersects[0].object.position.x, intersects[0].object.position.y);
+                    var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
+                    this.hud.displayEmptyCell(this.upgradesMap["null"], x.x, x.y);
+                }
             }
         }
         let position = this.renderer.convertGameCoorToMapCoord(new THREE.Vector3(this.mouse.x, this.mouse.y, 0));
@@ -302,15 +309,30 @@ class Main {
         return index;
     }
 
+    moveCamera(location: number) {
+        if (location == null) {
+            location = 0;
+        }
+        this.renderer.camera.position.x = (this.map[0].length * 20) * location + (this.map[0].length * 20) / 2;
+
+    }
+
     public setMap(map: number[][]) {
-        this.renderer.camera.position.x += (map[0].length * 20) / 2;
-        this.renderer.camera.position.y = 25 * map.length;
-        this.renderer.camera.position.z = 25 * map.length;
+        this.map = map;
+    }
+
+    createMap(player) {
+        if (this.locations[player] == null) {
+            return;
+        }
+        this.moveCamera(this.locations[this.communication.client.id]);
+        this.renderer.camera.position.y = 25 * this.map.length;
+        this.renderer.camera.position.z = 25 * this.map.length;
 
         this.renderer.camera.rotation.x = (90 + 60) * Math.PI / 180;
         this.renderer.camera.rotation.y = Math.PI;
         this.renderer.camera.rotation.z = 0;
-        this.renderer.initMap(map, map[0].length, map.length, 20, 20);
+        this.renderer.initMap(this.locations[player] * (this.map[0].length * 20), 0, this.map, this.map[0].length, this.map.length, 20, 20);
         this.renderer.moveLights();
         this.renderer.camera.updateProjectionMatrix();
     }

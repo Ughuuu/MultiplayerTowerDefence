@@ -56,6 +56,14 @@ class Communication {
         this.gameRoom.state.listen("players/:id/life", "replace", (id, value) => {
             Main.getInstance().setLife(id, value);
         });
+        this.gameRoom.state.listen("players/:id/location", "replace", (id, value) => {
+            Main.getInstance().setLocation(id, value);
+        });
+        this.gameRoom.state.listen("players/:id", "add", (id, value) => {
+            Main.getInstance().setLife(id, value.life);
+            Main.getInstance().setLocation(id, value.location);
+            Main.getInstance().createMap(id);
+        });
         this.gameRoom.state.listen(this.listen);
     }
 
@@ -82,7 +90,7 @@ class Communication {
             }
             let xx = obj instanceof Projectile;
             //if (xx) {
-                obj.setRotationYFix(x, y);
+            obj.setRotationYFix(x, y);
             //} else {
             //    obj.setRotationY(x, y, 0.2);
             //}
@@ -166,6 +174,11 @@ class Communication {
         Main.getInstance().setUnitTypes(state.unit_types, com.progress);
         Main.getInstance().setTowerTypes(state.tower_types, com.progress);
         Main.getInstance().setProjectileTypes(state.projectile_types, com.progress);
+        for (let key in state.players) {
+            Main.getInstance().setLife(key, state.players[key].life);
+            Main.getInstance().setLocation(key, state.players[key].location);
+            Main.getInstance().createMap(key);
+        }
     }
 
     onData(data) {

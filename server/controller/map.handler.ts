@@ -197,7 +197,7 @@ export class MapHandler extends Handler {
     }
 
     returnIfTowerWrong(player: Player, position: Point, radius: number) {
-        if(position.y == 0 || position.y == this.size.y - 1){
+        if (position.y <= 0 || position.y >= this.size.y - 1 || position.x < 0 || position.x > this.size.x - 1) {
             return true;
         }
         let pathFind = MapHandler.initMap(this.size.x, this.size.y);
@@ -228,7 +228,7 @@ export class MapHandler extends Handler {
             this.neighbourCheckZero(pathFind, x, y, x, y - 1, toVisit);
             toVisit.shift();
         }
-        
+
         for (let i = 0; i < this.size.x; i++) {
             if (pathFind[this.size.y - 1][i] != 0) {
                 return false;

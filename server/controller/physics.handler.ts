@@ -3,10 +3,11 @@ import { MapHandler } from './map.handler';
 import { GameRoom } from '../rooms/game.room';
 import { Player } from '../model/player';
 import { Point } from '../model/point';
-import { Unit } from '../model/unit';
+import { Unit, WalkType } from '../model/unit';
 import { Tower } from '../model/tower';
 import { Projectile } from '../model/projectile';
 import { UnitBuilder, UnitType } from '../builders/unit.builder';
+import { ElementType } from '../model/element.type';
 import { ProjectileBuilder, ProjectileType } from '../builders/projectile.builder';
 import { TowerBuilder, TowerType } from '../builders/tower.builder';
 import { MoneyHandler } from '../controller/money.handler';
@@ -91,7 +92,7 @@ export class PhysicsHandler extends Handler {
             if (type == null || position == null)
                 return;
             type = Math.floor(type);
-            if (type >= TowerBuilder.types.length) {
+            if (type < 0 && type >= TowerBuilder.types.length) {
                 return;
             }
             let tower_type = TowerBuilder.types[type];
@@ -146,11 +147,11 @@ export class PhysicsHandler extends Handler {
             if (type == null)
                 return;
             type = Math.floor(type);
-            if (type >= UnitBuilder.types.length) {
+            if (type < 0 && type >= UnitBuilder.types.length) {
                 return;
             }
             let unitType = UnitBuilder.types[type];
-            if (!moneyHandler.hasGold(player, unitType.price)) {
+            if (unitType == null || !moneyHandler.hasGold(player, unitType.price)) {
                 return;
             }
             moneyHandler.spawn(player, unitType.price, unitType.income, gameRoom);
@@ -169,8 +170,9 @@ export class PhysicsHandler extends Handler {
         this.createUnitCall(player, data, handlers, builders, gameRoom);
     }
 
-    towerInRange(player: Player, tower: Tower, other, time: number, projectileBuilder: ProjectileBuilder) {
-        if (time - tower.lastTimeShot > tower.speed) {
+    towerInRange(player: Player, tower: Tower, other, time: number, projectileBuilder: ProjectileBuilder, unitBuilder: UnitBuilder) {
+        let unit = unitBuilder.get(other.id);
+        if (time - tower.lastTimeShot > tower.speed && !(tower.elementType == ElementType.Stone && unit.walkType == WalkType.Flying)) {
             tower.lastTimeShot = time;
             projectileBuilder.create(tower, new Point(tower.body.position[0], tower.body.position[1]), other.id);
         }
@@ -210,12 +212,12 @@ export class PhysicsHandler extends Handler {
                 let bodyB = this.events[id][event].bodyB;
                 let tower = towerBuilder.get(bodyA.id);
                 if (tower != null) {
-                    this.towerInRange(players[id], tower, bodyB, gameRoom.clock.currentTime, projectileBuilder);
+                    this.towerInRange(players[id], tower, bodyB, gameRoom.clock.currentTime, projectileBuilder, unitBuilder);
                     continue;
                 }
                 tower = towerBuilder.get(bodyB.id);
                 if (tower != null) {
-                    this.towerInRange(players[id], tower, bodyA, gameRoom.clock.currentTime, projectileBuilder);
+                    this.towerInRange(players[id], tower, bodyA, gameRoom.clock.currentTime, projectileBuilder, unitBuilder);
                     continue;
                 }
                 let projectile = projectileBuilder.get(bodyA.id);
@@ -356,8 +358,8 @@ export class PhysicsHandler extends Handler {
         let mapHandler: MapHandler = handlers['MapHandler'];
         for (let id in players) {
             for (let body of this.worlds[id].bodies) {
-                if (this.time[this.getSpeedLevel(body.velocity[0], body.velocity[1])] == false)
-                    continue;
+                //if (this.time[this.getSpeedLevel(body.velocity[0], body.velocity[1])] == false)
+                //    continue;
                 let body_id: number = body.id;
                 var serialized_body;
                 let tower = towerBuilder.get(body_id);

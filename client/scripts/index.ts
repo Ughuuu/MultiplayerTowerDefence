@@ -1,4 +1,5 @@
 
+
 /// <reference path="./render/render.ts" />
 /// <reference path="./communication.ts" />
 /// <reference path="./units/generic.unit.ts" />
@@ -8,6 +9,7 @@ class Main {
 
     private communication: Communication;
     private renderer: Render;
+    private towers: Tower[];
     private unitsMap = {};
     public upgradesMap = {};
     public geometryMap = {};
@@ -20,12 +22,42 @@ class Main {
     private raycaster: THREE.Raycaster;
     private windowHalfX: number;
     private windowHalfY: number;
-    private INTERSECTED: any;
     private players: {} = {};
-    private locations: {} = {};
     private loader = new THREE.JSONLoader();
     private hud: Hud;
-    private map: number[][];
+    private map;
+    private locations: {} = {};
+    setLocation(id, location) {
+        this.locations[id] = location;
+    }
+
+    moveCamera(location: number) {
+        if (location == null) {
+            location = 0;
+        }
+        this.renderer.camera.position.x = (this.map[0].length * 20) * location + (this.map[0].length * 20) / 2;
+
+    }
+
+    public setMap(map: number[][]) {
+        this.map = map;
+    }
+
+    createMap(player) {
+        if (this.locations[player] == null) {
+            return;
+        }
+        this.moveCamera(this.locations[this.communication.client.id]);
+        this.renderer.camera.position.y = 25 * this.map.length;
+        this.renderer.camera.position.z = 25 * this.map.length;
+
+        this.renderer.camera.rotation.x = (90 + 60) * Math.PI / 180;
+        this.renderer.camera.rotation.y = Math.PI;
+        this.renderer.camera.rotation.z = 0;
+        this.renderer.initMap(this.locations[player] * (this.map[0].length * 20), 0, this.map, this.map[0].length, this.map.length, 20, 20);
+        this.renderer.moveLights();
+        this.renderer.camera.updateProjectionMatrix();
+    }
     static getInstance() {
         if (!Main.instance) {
             Main.instance = new Main();
@@ -43,15 +75,12 @@ class Main {
         container.innerHTML = str;
     }
 
-    setLocation(id, location) {
-        this.locations[id] = location;
-    }
-
     constructor() {
         this.windowHalfX = 0;
         this.windowHalfY = 0;
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
+        this.towers = [];
         this.upgradesMap = new Map<string, Array<TowerType>>();
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
         document.addEventListener('keydown', this.onKeyPress.bind(this));
@@ -173,26 +202,6 @@ class Main {
     public setMouse(event: any) {
         this.mouse.x = ((event.clientX - this.offset.x) / window.innerWidth) * 2 - 1;;
         this.mouse.y = - ((event.clientY - this.offset.y) / window.innerHeight) * 2 + 1;
-        this.raycaster.setFromCamera(this.mouse.clone(), this.renderer.camera);
-
-        // calculate objects intersecting the picking ray
-        let intersects: any = this.raycaster.intersectObjects(this.renderer.scene.children);
-        let object: any;
-
-        if (intersects.length > 0) {
-            for (let i: number = 0; i < intersects.length; i++) {
-                if (intersects[i].object.name.includes("cell")) {
-                    object = intersects[i].object;
-                    break;
-                }
-            }
-            if (this.INTERSECTED != object) {
-                //if (this.INTERSECTED) this.INTERSECTED.material.emissive.setHex(this.INTERSECTED.currentHex);
-                // this.INTERSECTED = object;
-                //  this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
-                // this.INTERSECTED.material.emissive.setHex(0xff0000);
-            }
-        }
     }
 
     public onMouseDown(event) {
@@ -200,33 +209,22 @@ class Main {
         // calculate objects intersecting the picking ray
         let intersects: THREE.Intersection[] = this.raycaster.intersectObjects(this.renderer.scene.children);
         if (intersects.length > 0) {
-            let clickedOnCreep: boolean = false;
-            let clickedOnTower: boolean = false;
-            for (let i: number = 0; i < intersects.length; i++) {
-                if (intersects[i].object.name.includes("tower")) {
-                    let towerId: number;
-                    towerId = parseInt(intersects[i].object.name.split(':')[1]);
-                    clickedOnTower = true;
-                    var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
-                    this.hud.displayTowerInfo(this.unitsMap[towerId].type, this.upgradesMap[this.unitsMap[towerId].type.name], x.x, x.y);
-                    break;
-                }
-                if (intersects[i].object.name.includes("creep")) {
-                    let creepId: number;
-                    creepId = parseInt(intersects[i].object.name.split(':')[1]);
-                    clickedOnCreep = true;
-                    this.hud.displayCreepInfo(this.unitsMap[creepId].type, x.x, x.y);
-                    break;
-                }
-                if (!clickedOnCreep && !clickedOnTower && intersects[i].object.name.includes("cell")) {
-                    intersects[i].object.name
-                    this.renderer.drawSelectRectangle(intersects[0].object.position.x, intersects[0].object.position.y);
-                    var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
-                    this.hud.displayEmptyCell(this.upgradesMap["null"], x.x, x.y);
+            let position = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
+            this.renderer.drawSelectRectangle(intersects[0].object.position.x, intersects[0].object.position.y);
+            let clickedTower: Tower = null;
+            for (let i: number = 0; i < this.towers.length; i++) {
+                if (this.towers[i].mapPosition.x == position.x && this.towers[i].mapPosition.y == position.y) {
+                    clickedTower = this.towers[i];
                 }
             }
+            if (clickedTower != null) {
+                this.hud.displayTowerInfo(clickedTower.type, this.upgradesMap[clickedTower.type.name], position.x, position.y);
+            }
+            else {
+                this.hud.displayEmptyCell(this.upgradesMap["null"], position.x, position.y);
+            }
         }
-        let position = this.renderer.convertGameCoorToMapCoord(new THREE.Vector3(this.mouse.x, this.mouse.y, 0));
+
     }
 
     public onKeyPress(event) {
@@ -262,7 +260,9 @@ class Main {
 
     public addTower(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
         let modelName = this.towerTypes[type].model;
-        let newUnit = new Tower(id, this.towerTypes[type], modelName, health, position, rotation, scale, this.renderer.scene, this.geometryMap[modelName]);
+        let mapPosition = this.renderer.convertGameCoorToMapCoord(position);
+        let newUnit = new Tower(id, this.towerTypes[type], modelName, health, position, mapPosition, rotation, scale, this.renderer.scene, this.geometryMap[modelName]);
+        this.towers.push(newUnit);
         this.unitsMap[id] = newUnit;
     }
 
@@ -307,34 +307,6 @@ class Main {
     public getUnitId(towerType: UnitType) {
         let index = this.creepTypes.indexOf(towerType);
         return index;
-    }
-
-    moveCamera(location: number) {
-        if (location == null) {
-            location = 0;
-        }
-        this.renderer.camera.position.x = (this.map[0].length * 20) * location + (this.map[0].length * 20) / 2;
-
-    }
-
-    public setMap(map: number[][]) {
-        this.map = map;
-    }
-
-    createMap(player) {
-        if (this.locations[player] == null) {
-            return;
-        }
-        this.moveCamera(this.locations[this.communication.client.id]);
-        this.renderer.camera.position.y = 25 * this.map.length;
-        this.renderer.camera.position.z = 25 * this.map.length;
-
-        this.renderer.camera.rotation.x = (90 + 60) * Math.PI / 180;
-        this.renderer.camera.rotation.y = Math.PI;
-        this.renderer.camera.rotation.z = 0;
-        this.renderer.initMap(this.locations[player] * (this.map[0].length * 20), 0, this.map, this.map[0].length, this.map.length, 20, 20);
-        this.renderer.moveLights();
-        this.renderer.camera.updateProjectionMatrix();
     }
 
     public createCamera() {

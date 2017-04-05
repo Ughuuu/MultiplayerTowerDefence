@@ -54,7 +54,7 @@ class Main {
         this.renderer.camera.rotation.x = (90 + 60) * Math.PI / 180;
         this.renderer.camera.rotation.y = Math.PI;
         this.renderer.camera.rotation.z = 0;
-        this.renderer.initMap(this.locations[player] * (this.map[0].length * 20), 0, this.map, this.map[0].length, this.map.length, 20, 20);
+        this.renderer.initMap(this.communication.client.id == player, this.locations[player] * (this.map[0].length * 20), 0, this.map, this.map[0].length, this.map.length, 20, 20);
         this.renderer.moveLights();
         this.renderer.camera.updateProjectionMatrix();
     }

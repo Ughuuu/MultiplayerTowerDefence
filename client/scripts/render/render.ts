@@ -59,10 +59,12 @@ class Render {
         this.light1.position.set(this.camera.position.x, this.height / 2, 200);
     }
 
-    public initMap(initialX: number, initialY: number, matrix: number[][], width: number, height: number, cellWidth: number, cellHeight: number) {
+    public initMap(originalPlayer: boolean, initialX: number, initialY: number, matrix: number[][], width: number, height: number, cellWidth: number, cellHeight: number) {
 
+        if(originalPlayer){
         this.initialX = initialX;
         this.initialY = initialY;
+        }
         this.cellWidth = cellWidth;
         this.cellHeight = cellHeight;
 
@@ -76,8 +78,8 @@ class Render {
                 plane = Main.getInstance().geometryMap['assets/tiles/cell.json'][1].clone();
                 // plane.material.color = new THREE.Color(0, 160, 0);
                 plane.name = "cell[" + i + "][" + j + "]";
-                plane.position.x = (j + 0.5) * cellWidth + this.initialX;
-                plane.position.y = (i + 0.5) * cellHeight - this.initialY;
+                plane.position.x = (j + 0.5) * cellWidth + initialX;
+                plane.position.y = (i + 0.5) * cellHeight - initialY;
                 plane.position.z = 0;
                 plane.rotation.x = Math.PI / 2;
                 plane.rotation.y = Math.floor((Math.random() * 4)) * Math.PI;

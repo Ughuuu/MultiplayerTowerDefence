@@ -8,6 +8,7 @@ class Main {
 
     private communication: Communication;
     private renderer: Render;
+    private towers: Tower[];
     private unitsMap = {};
     public upgradesMap = {};
     public geometryMap = {};
@@ -20,7 +21,6 @@ class Main {
     private raycaster: THREE.Raycaster;
     private windowHalfX: number;
     private windowHalfY: number;
-    private INTERSECTED: any;
     private players: {} = {};
     private loader = new THREE.JSONLoader();
     private hud: Hud;
@@ -46,6 +46,7 @@ class Main {
         this.windowHalfY = 0;
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
+        this.towers = [];
         this.upgradesMap = new Map<string, Array<TowerType>>();
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
         document.addEventListener('keydown', this.onKeyPress.bind(this));
@@ -167,26 +168,6 @@ class Main {
     public setMouse(event: any) {
         this.mouse.x = ((event.clientX - this.offset.x) / window.innerWidth) * 2 - 1;;
         this.mouse.y = - ((event.clientY - this.offset.y) / window.innerHeight) * 2 + 1;
-        this.raycaster.setFromCamera(this.mouse.clone(), this.renderer.camera);
-
-        // calculate objects intersecting the picking ray
-        let intersects: any = this.raycaster.intersectObjects(this.renderer.scene.children);
-        let object: any;
-
-        if (intersects.length > 0) {
-            for (let i: number = 0; i < intersects.length; i++) {
-                if (intersects[i].object.name.includes("cell")) {
-                    object = intersects[i].object;
-                    break;
-                }
-            }
-            if (this.INTERSECTED != object) {
-                //if (this.INTERSECTED) this.INTERSECTED.material.emissive.setHex(this.INTERSECTED.currentHex);
-                // this.INTERSECTED = object;
-                //  this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
-                // this.INTERSECTED.material.emissive.setHex(0xff0000);
-            }
-        }
     }
 
     public onMouseDown(event) {
@@ -194,32 +175,22 @@ class Main {
         // calculate objects intersecting the picking ray
         let intersects: THREE.Intersection[] = this.raycaster.intersectObjects(this.renderer.scene.children);
         if (intersects.length > 0) {
-            let clickedOnCreep: boolean = false;
-            let clickedOnTower: boolean = false;
-            for (let i: number = 0; i < intersects.length; i++) {
-                if (intersects[i].object.name.includes("tower")) {
-                    let towerId: number;
-                    towerId = parseInt(intersects[i].object.name.split(':')[1]);
-                    clickedOnTower = true;
-                    var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
-                    this.hud.displayTowerInfo(this.unitsMap[towerId].type, this.upgradesMap[this.unitsMap[towerId].type.name], x.x, x.y);
-                    break;
-                }
-                if (intersects[i].object.name.includes("creep")) {
-                    let creepId: number;
-                    creepId = parseInt(intersects[i].object.name.split(':')[1]);
-                    clickedOnCreep = true;
-                    this.hud.displayCreepInfo(this.unitsMap[creepId].type, x.x, x.y);
-                    break;
+            let position = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
+            this.renderer.drawSelectRectangle(intersects[0].object.position.x, intersects[0].object.position.y);
+            let clickedTower: Tower = null;
+            for (let i: number = 0; i < this.towers.length; i++) {
+                if (this.towers[i].mapPosition.x == position.x && this.towers[i].mapPosition.y == position.y ) {
+                    clickedTower = this.towers[i];
                 }
             }
-            if (!clickedOnCreep && !clickedOnTower) {
-                this.renderer.drawSelectRectangle(intersects[0].object.position.x, intersects[0].object.position.y);
-                var x = this.renderer.convertGameCoorToMapCoord(intersects[0].object.position);
-                this.hud.displayEmptyCell(this.upgradesMap["null"], x.x, x.y);
+            if (clickedTower != null) {
+                this.hud.displayTowerInfo(clickedTower.type, this.upgradesMap[clickedTower.type.name], position.x, position.y);
+            }
+            else {
+                this.hud.displayEmptyCell(this.upgradesMap["null"], position.x, position.y);
             }
         }
-        let position = this.renderer.convertGameCoorToMapCoord(new THREE.Vector3(this.mouse.x, this.mouse.y, 0));
+       
     }
 
     public onKeyPress(event) {
@@ -255,7 +226,9 @@ class Main {
 
     public addTower(id: number, type: number, health: number, position: THREE.Vector3, rotation: THREE.Vector3, scale: number) {
         let modelName = this.towerTypes[type].model;
-        let newUnit = new Tower(id, this.towerTypes[type], modelName, health, position, rotation, scale, this.renderer.scene, this.geometryMap[modelName]);
+        let mapPosition=this.renderer.convertGameCoorToMapCoord(position);
+        let newUnit = new Tower(id, this.towerTypes[type], modelName, health, position, mapPosition, rotation, scale, this.renderer.scene, this.geometryMap[modelName]);
+        this.towers.push(newUnit);
         this.unitsMap[id] = newUnit;
     }
 

@@ -36,19 +36,19 @@ export class TowerBuilder extends Builder {
             4,//range
             0,//explosionRadius
             5,//speed
-            15,//gold
+            30,//gold
             'null'),
         new TowerType(
             'Ballista Tower',
             '/assets/towers/ballista/ballista.json',
             '/assets/towers/ballista/icon.png',
-            2,//damage
+            4,//damage
             ElementType.Iron,
             500,//speed
             4,//range
             0,//explosionRadius
             10,//speed
-            3,//gold
+            15,//gold
             'null')
     ];
     public static collisionBitTower: number = Math.pow(2, 4);

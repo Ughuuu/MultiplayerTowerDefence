@@ -36,7 +36,7 @@ export class UnitBuilder extends Builder {
             WalkType.Slow,
             5,//price
             1,//income
-            2),//bounty
+            1),//bounty
         new UnitType('Fox',
             '/assets/units/fox/fox.json',
             0.2,//size
@@ -46,8 +46,8 @@ export class UnitBuilder extends Builder {
             0,//armor
             WalkType.Fast,
             20,//price
-            3,//income
-            5),//bounty
+            10,//income
+            4),//bounty
         new UnitType('Skeleton',
             '/assets/units/skeleton/skeleton.json',
             0.35,//size
@@ -57,7 +57,7 @@ export class UnitBuilder extends Builder {
             10,//armor
             WalkType.Boss,
             100,//price
-            30,//income
+            60,//income
             30),//bounty
         new UnitType('Dragon',
             '/assets/units/dragon/dragon.json',
@@ -69,7 +69,7 @@ export class UnitBuilder extends Builder {
             WalkType.Flying,
             300,//price
             180,//income
-            200),//bounty
+            50),//bounty
         new UnitType('Pirate',
             '/assets/units/pirate/pirate.json',
             0.3,//size
@@ -80,7 +80,7 @@ export class UnitBuilder extends Builder {
             WalkType.Fast,
             500,//price
             300,//income
-            300),//bounty
+            100),//bounty
         new UnitType('Knight',
             '/assets/units/knight/knight.json',
             0.3,//size
@@ -91,7 +91,7 @@ export class UnitBuilder extends Builder {
             WalkType.Slow,
             150,//price
             75,//income
-            80),//bounty
+            30),//bounty
     ];
     public static collisionBitGround: number = Math.pow(2, 1);
     public static collisionBitFlying: number = Math.pow(2, 2);

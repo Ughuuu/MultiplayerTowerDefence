@@ -1,4 +1,5 @@
 {
+    "scale":0.7,
     "bones":[{
         "name":"Root",
         "parent":-1,
@@ -15750,8 +15751,7 @@
     "materials":[{
         "mapDiffuseRepeat":[1,1],
         "shading":"phong",
-        "colorDiffuse":[1, 1, 1],
-        "colorSpecular":[0.3,0.3,0.3],
+        "colorDiffuse":[0.7, 0.7, 0.7],
         "DbgName":"material plm",
         "transparent":false,
         "mapDiffuseWrap":["repeat","repeat"],

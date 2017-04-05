@@ -49,8 +49,8 @@ export class UnitBuilder extends Builder {
             3,//income
             5),//bounty
         new UnitType('Skeleton',
-            '/assets/units/skeleton_boss/skeleton_boss.json',
-            0.4,//size
+            '/assets/units/skeleton/skeleton.json',
+            0.35,//size
             100,//hp
             ElementType.Stone,
             0.2,//speed
@@ -75,7 +75,18 @@ export class UnitBuilder extends Builder {
             0.3,//size
             100,//hp
             ElementType.Ice,
-            2,//speed
+            1.5,//speed
+            10,//armor
+            WalkType.Ground,
+            100,//price
+            50,//income
+            80),//bounty
+        new UnitType('Knight',
+            '/assets/units/knight/knight.json',
+            0.3,//size
+            100,//hp
+            ElementType.Ice,
+            0.7,//speed
             10,//armor
             WalkType.Ground,
             100,//price

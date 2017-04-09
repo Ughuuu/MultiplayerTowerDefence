@@ -27,6 +27,7 @@ class Main {
     private hud: Hud;
     private map;
     private locations: {} = {};
+    private playerID: string;
     setLocation(id, location) {
         this.locations[id] = location;
     }
@@ -65,16 +66,6 @@ class Main {
         return Main.instance;
     }
 
-    setLife(id, life) {
-        this.players[id] = life;
-        const container = document.querySelector('#life');
-        let str = "";
-        for (let id in this.players) {
-            str += 'Hp of ' + id + ': ' + this.players[id];
-        }
-        container.innerHTML = str;
-    }
-
     constructor() {
         this.windowHalfX = 0;
         this.windowHalfY = 0;
@@ -84,6 +75,16 @@ class Main {
         this.upgradesMap = new Map<string, Array<TowerType>>();
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
         document.addEventListener('keydown', this.onKeyPress.bind(this));
+    }
+
+    public setLife(id, life) {
+        this.players[id] = life;
+        this.hud.setLife(id,life);
+    }
+
+    public setPlayerID(id) {
+        this.playerID = id;
+        this.hud.setPlayerInfo(id);
     }
 
     public createCommunication(client) {
@@ -224,6 +225,10 @@ class Main {
                 this.hud.displayEmptyCell(this.upgradesMap["null"], position.x, position.y);
             }
         }
+        else {
+            this.hud.clearAll();
+            this.renderer.removeSelectRectangle();
+        }
 
     }
 
@@ -294,9 +299,7 @@ class Main {
     }
 
     public onData(data) {
-        const container = document.querySelector('#money');
-
-        container.innerHTML = "Money:" + data.money + "<br> Income:" + data.income;
+        this.hud.setMoney(data.money, data.income);
     }
 
     public getTowerId(towerType: TowerType) {

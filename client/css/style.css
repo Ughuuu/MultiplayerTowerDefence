@@ -10,13 +10,8 @@ html {
 }
 
 canvas {
+    position: fixed;
     display: block;
-}
-
-.units {
-    bottom: 50px;
-    width:50px;
-    background-image: url('/assets/gui/button.png');
 }
 
 div {
@@ -30,10 +25,62 @@ div {
     box-sizing: border-box;
 }
 
-#container canvas, #hud {
+.units {
+    bottom: 50px;
+    width:50px;
+    background-image: url('/assets/gui/button.png');
+}
+
+#units {
+   position:absolute;
+   bottom :30px;
+}
+
+#container {
     position: fixed;
 }
+#hud {
+    position: fixed;
+    background-image: url('/assets/gui/panel.png');
+    display: block;
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
+    position: fixed;
+    top: 0%;
+    left: 0px;
+    width: 20%;
+    height: 100%;
+    background-color: green;
+}
+
 .buildings {
-    width :50px;
-    height : 50px;
+    top: 50%;
+    width: 50px;
+    height: 50px;
+}
+
+#money {
+    position: absolute;
+    background-color: orangered;
+    top: 100px;
+    left: 200px;
+    width: 200px;
+    height: 50px;
+}
+#name {
+    position: absolute;
+    background-color: orangered;
+    top: 300px;
+    left: 200px;
+    width: 200px;
+    height: 50px;
+}
+.life {
+    position: absolute;
+    background-color: orangered;
+    top: 200px;
+    left: 200px;
+    width: 200px;
+    height: 50px;
 }

@@ -87,20 +87,30 @@ class Render {
                 this.scene.add(plane);
             }
         }
-    }
-
-    public drawSelectRectangle(x: number, y: number) {
-        this.scene.remove(this.currentPlane);
         let material = new THREE.MeshLambertMaterial({ color: 0xffff00 });
         material.opacity = 0.7;
         material.transparent = true;
         let planeGeometry = new THREE.PlaneGeometry(this.cellWidth, this.cellHeight, 1, 1);
         this.currentPlane = new THREE.Mesh(planeGeometry, material);
+        this.currentPlane.visible = false;
+        this.scene.add(this.currentPlane);
+    }
+
+    public drawSelectRectangle(x: number, y: number) {
+        
+
+        
+        this.currentPlane.visible = true;
         this.currentPlane.position.x = x;
         this.currentPlane.position.y = y;
         this.currentPlane.position.z = 5;
-        this.scene.add(this.currentPlane);
+      
     }
+
+    public removeSelectRectangle() {
+        this.currentPlane.visible = false;
+    }
+
     public convertGameCoorToMapCoord(position: THREE.Vector3) {
         let x = (position.x - this.initialX) / this.cellWidth;
         let y = (position.y + this.initialY) / this.cellWidth;

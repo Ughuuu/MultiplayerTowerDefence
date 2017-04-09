@@ -6,9 +6,13 @@ class Hud {
     nameLabel: HTMLLabelElement;
     elementLabel: HTMLLabelElement;
     upgradesLabel: HTMLLabelElement;
+    moneyLabel: HTMLDivElement;
+    lifeLabels: HTMLDivElement[];
     buildingImages: HTMLImageElement[];
     unitImages: HTMLImageElement[];
     unitsDiv: HTMLDivElement;
+    playersLife: Map<string, HTMLDivElement>
+    playerInfo: HTMLDivElement;
     constructor(container) {
         this.damageLabel = document.createElement('label');
         this.healthLabel = document.createElement('label');
@@ -16,8 +20,15 @@ class Hud {
         this.elementLabel = document.createElement('label');
         this.upgradesLabel = document.createElement('label');
         this.unitsDiv = document.createElement('div');
-        this.unitsDiv.style.position = 'absolute';
-        this.unitsDiv.style.bottom = '30px';
+        this.unitsDiv.id = "units";
+
+        this.playerInfo = document.createElement('div');
+ 
+        this.playersLife = new Map<string, HTMLDivElement>();
+        this.playerInfo.id = "name";
+        this.moneyLabel = document.createElement('div');
+        this.moneyLabel.id = "money";
+        this.lifeLabels = [];
 
         this.container = container;
         this.unitImages = [];
@@ -28,6 +39,8 @@ class Hud {
         container.appendChild(this.elementLabel);
         container.appendChild(this.upgradesLabel);
         container.appendChild(this.unitsDiv);
+        container.appendChild(this.moneyLabel);
+        container.appendChild(this.playerInfo);
     }
     public displayTowerInfo(towerType: TowerType, upgradeTowers: TowerType[], x: number, y: number) {
         this.clearAll();
@@ -113,6 +126,22 @@ class Hud {
     public onMouseOverUnit(towerType: UnitType) {
     }
 
+    public setMoney(money: number, income:number) {
+        this.moneyLabel.innerHTML = "Money:" + money + "<br> Income:" + income;
+    }
+    public setLife(playerID: string, value: number) {
+        if (!(playerID in this.playersLife)) {
+            this.playersLife[playerID] = document.createElement('div');
+            this.playersLife[playerID].className = "life";
+            
+            this.container.appendChild(this.playersLife[playerID]);
+        }
+        this.playersLife[playerID].innerHTML = 'Hp of ' + playerID + ': ' + value;
+    }
+
+    public setPlayerInfo(playerInfo: any) {
+        this.playerInfo.innerHTML = playerInfo;
+    }
     public clearAll() {
         for (let i = 0; i < this.buildingImages.length; i++) {
             this.container.removeChild(this.buildingImages[i]);

@@ -162,9 +162,8 @@ class Communication {
 
     init(state) {
         let com = Main.getInstance().getCommunication();
-        const container = document.querySelector('#name');
-        container.innerHTML = "Id:" + com.client.id;
-
+        Main.getInstance().setPlayerID(com.client.id);
+       
         com.modelCount += state.unit_types.length;
         com.modelCount += state.tower_types.length;
         com.modelCount += state.projectile_types.length;

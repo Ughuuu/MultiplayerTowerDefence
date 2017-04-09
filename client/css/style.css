@@ -77,7 +77,6 @@ div {
     height: 50px;
 }
 .life {
-    position: absolute;
     background-color: orangered;
     top: 200px;
     left: 200px;

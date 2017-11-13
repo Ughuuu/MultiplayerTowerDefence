@@ -26,45 +26,46 @@ class Communication {
 
     joinRoom(room) {
         this.gameRoom = this.client.join(room);
+        console.log("try join room");
         this.gameRoom.onJoin.add(this.onJoin);
 
         this.gameRoom.onUpdate.addOnce(this.init);
         this.gameRoom.onData.add(this.onData);
         // remove on a map, a player left
-        this.gameRoom.state.listen("directions/:id/:y/:x:", "replace", (id, x, y, value) => {
-            if (id != this.client.id)
+        this.gameRoom.listen("directions/:id/:y/:x:", (change) => {
+            if (change.path.id != this.client.id)
                 return;
         });
 
         // remove on a map, a player left
-        this.gameRoom.state.listen("directions/:id", "add", (id, value) => {
-            if (id != this.client.id)
+        this.gameRoom.listen("directions/:id", (change) => {
+            if (change.path.id != this.client.id)
                 return;
         });
 
         // add on a whole map
-        this.gameRoom.state.listen("template", "add", (map) => {
-            Main.getInstance().setMap(map);
+        this.gameRoom.listen("template", (change) => {
+            Main.getInstance().setMap(change.value);
         });
 
         // change on a map
-        this.gameRoom.state.listen("template/:y/:x", "replace", (id, y, x, value) => {
-            let mesh: any = Main.getInstance().getRenderer().scene.getObjectByName("cell[" + y + "][" + x + "]");
-            mesh.material.color = new THREE.Color(value * 50);
+        this.gameRoom.listen("template/:y/:x", (change) => {
+            let mesh: any = Main.getInstance().getRenderer().scene.getObjectByName("cell[" + change.path.x + "][" + change.path.y + "]");
+            mesh.material.color = new THREE.Color(change.value * 50);
         });
         // change on a map
-        this.gameRoom.state.listen("players/:id/life", "replace", (id, value) => {
-            Main.getInstance().setLife(id, value);
+        this.gameRoom.listen("players/:id/life", (change) => {
+            Main.getInstance().setLife(change.path.id, change.value);
         });
-        this.gameRoom.state.listen("players/:id/location", "replace", (id, value) => {
-            Main.getInstance().setLocation(id, value);
+        this.gameRoom.listen("players/:id/location", (change) => {
+            Main.getInstance().setLocation(change.path.id, change.value);
         });
-        this.gameRoom.state.listen("players/:id", "add", (id, value) => {
-            Main.getInstance().setLife(id, value.life);
-            Main.getInstance().setLocation(id, value.location);
-            Main.getInstance().createMap(id);
+        this.gameRoom.listen("players/:id", "add", (change) => {
+            Main.getInstance().setLife(change.path.id, change.value.life);
+            Main.getInstance().setLocation(change.path.id, change.value.location);
+            Main.getInstance().createMap(change.path.id);
         });
-        this.gameRoom.state.listen(this.listen);
+        this.gameRoom.listen(this.listen);
     }
 
     getXYA(xya: number) {
@@ -202,10 +203,11 @@ class Communication {
         let com = Main.getInstance().getCommunication();
     }
 
-    listen(number, message, value) {
-        //console.log(number, message, value);
+    listen(path, value) {
+        console.log(path, value);
     }
 
     onJoin(client, room) {
+    	console.log("Client " + client + " joined room " + room);
     }
 }

@@ -17,11 +17,11 @@ export class GameRoom extends Room<StateHandler> {
     invervalId: number;
     started: boolean = false;
 
-    addHandlers(stateHandler: StateHandler): StateHandler {
+    addHandlers(stateHandler: StateHandler, options): StateHandler {
         stateHandler.addHandler(new PhysicsHandler());
         stateHandler.addHandler(new ChatHandler());
         stateHandler.addHandler(new MoneyHandler());
-        stateHandler.addHandler(new MapHandler(this.options.map));
+        stateHandler.addHandler(new MapHandler(options.map));
         return stateHandler;
     }
 
@@ -32,10 +32,10 @@ export class GameRoom extends Room<StateHandler> {
         return stateHandler;
     }
 
-    constructor(options) {
-        super(options);
-        this.setPatchRate(GameRoom.patch);
-        this.setState(this.addBuilders(this.addHandlers(new StateHandler(options.maxPlayers))));
+    onInit(options) {
+        this.patchRate = GameRoom.patch;
+        this.maxClients = options.maxClients;
+        this.setState(this.addBuilders(this.addHandlers(new StateHandler(options.maxClients), options)));
         var debug = true;
         RoomManager.rooms++;
     }
@@ -46,6 +46,7 @@ export class GameRoom extends Room<StateHandler> {
     }
 
     onJoin(client: Client, options) {
+    	console.log("onJoin: " + client);
         RoomManager.players++;
         if (options.name == null) {
             options.name = client.id;
@@ -54,6 +55,7 @@ export class GameRoom extends Room<StateHandler> {
     }
 
     onLeave(client: Client) {
+    	console.log("onLeave: " + client);
         RoomManager.players--;
         this.state.onLeave(client);
     }
@@ -69,32 +71,18 @@ export class GameRoom extends Room<StateHandler> {
         this.state.onDispose();
     }
 
+/*
     requestJoin(options) {
         if (this.started == true) {
-            return;
-        }
-        if (this.options.isPasswordRequired == true) {
-            // first player to join sets the pasword
-            if (options.password != null && this.clients.length == 0) {
-                this.password = options.password;
-                return true;
-            }
-            // same password, let him connect
-            if (options.password != null && options.password == this.password && this.clients.length < this.options.maxPlayers) {
-                // start server if all players joined
-                if (this.clients.length == this.options.maxPlayers - 1) {
-                    this.started = true;
-                    this.setSimulationInterval(function () { this.update() }.bind(this), GameRoom.fps);
-                }
-                return true;
-            }
-            return false;
+            //return 0;
         }
         // start server if all players joined
-        if (this.clients.length == this.options.maxPlayers - 1) {
+        if (this.clients.length == this.maxClients - 1) {
             this.started = true;
             this.setSimulationInterval(function () { this.update() }.bind(this), GameRoom.fps);
         }
-        return this.clients.length < this.options.maxPlayers;
+        return true;
+        //return 1;
     }
+    */
 }

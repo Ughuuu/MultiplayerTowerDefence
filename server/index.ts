@@ -9,9 +9,7 @@ const app = express();
 const httpServer = createServer(app);
 
 RouteManager.init(app);
-RoomManager.init(httpServer);
+var gameServer = RoomManager.init(httpServer);
 
-httpServer.listen(AppConstants.port, () =>{
-    console.log(`Listening on http://localhost:${ AppConstants.port }`);
-});
+gameServer.listen(AppConstants.port);
 

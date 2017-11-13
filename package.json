@@ -18,11 +18,11 @@
   },
   "dependencies": {
     "@types/three": "^0.84.2",
-    "colyseus": "^0.4.15",
+    "colyseus": "^0.5.11",
     "express": "^4.13.3",
     "p2": "^0.7.1",
     "pm2": "^2.4.2",
-    "typescript": "^2.2.1"
+    "typescript": "^2.6.1"
   },
   "devDependencies": {
     "concurrently": "^3.4.0",

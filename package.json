@@ -10,7 +10,9 @@
   "scripts": {
     "start": "tsc && node index.js",
     "dev": "concurrently \"tsc -w\" \"nodemon --harmony ./index.js\"",
-    "info": "pm2 start index.js"
+    "info": "pm2 start index.js",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "engines": {
     "node": ">= 6.4",
@@ -22,11 +24,13 @@
     "express": "^4.13.3",
     "p2": "^0.7.1",
     "pm2": "^2.4.2",
-    "typescript": "^2.6.1"
+    "typescript": "^2.6.1",
+    "snyk": "^1.316.2"
   },
   "devDependencies": {
     "concurrently": "^3.4.0",
     "gulp": "^3.9.0",
     "nodemon": "^1.7.1"
-  }
+  },
+  "snyk": true
 }
